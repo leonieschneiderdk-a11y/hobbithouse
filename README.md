@@ -52,3 +52,15 @@ Each piece of furniture is placed as a stand-in box first, then swapped for the 
 ## Credits
 
 See [CREDITS.md](CREDITS.md).
+
+## Automated Blender build (photoreal)
+
+`blender/build_scene.py` builds the house in Blender with no manual work. It reads the room layout from `index.html`, so the Blender house always matches the web game. It builds walls with arched openings, floors, ceilings, beams and a stone dado, all with the Poly Haven materials. It then places the Poly Haven models, lights the scene with the sunset sky, the sun, a skylight, windows and lanterns, and renders it with Cycles.
+
+```bash
+pip install bpy==4.2.0        # needs Python 3.11; this is Blender as a Python module
+python blender/build_scene.py --rooms entrance,living2 --render out.png --samples 64 --res 1920x1080
+python blender/build_scene.py --rooms all --blend house.blend   # whole house, saved as a .blend you can open in Blender
+```
+
+![Entrance hall and living room, rendered by the script](docs/blender-preview-entrance.png)
