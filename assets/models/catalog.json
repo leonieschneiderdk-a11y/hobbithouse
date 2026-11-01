@@ -1,0 +1,410 @@
+{
+ "ArmChair_01": {
+  "size": [
+   0.848,
+   1.065,
+   0.766
+  ],
+  "bytes": 691648
+ },
+ "Barrel_01": {
+  "size": [
+   0.563,
+   0.88,
+   0.563
+  ],
+  "bytes": 615388
+ },
+ "Chandelier_01": {
+  "size": [
+   0.746,
+   0.798,
+   0.816
+  ],
+  "bytes": 1247196
+ },
+ "Chandelier_02": {
+  "size": [
+   0.679,
+   0.848,
+   0.619
+  ],
+  "bytes": 1097968
+ },
+ "ClassicNightstand_01": {
+  "size": [
+   0.568,
+   0.7,
+   0.424
+  ],
+  "bytes": 386000
+ },
+ "GothicBed_01": {
+  "size": [
+   1.494,
+   1.534,
+   2.04
+  ],
+  "bytes": 1089872
+ },
+ "GothicCabinet_01": {
+  "size": [
+   1.719,
+   2.361,
+   1.117
+  ],
+  "bytes": 935356
+ },
+ "Lantern_01": {
+  "size": [
+   0.122,
+   0.294,
+   0.097
+  ],
+  "bytes": 1358424
+ },
+ "Ottoman_01": {
+  "size": [
+   0.885,
+   0.624,
+   0.621
+  ],
+  "bytes": 578336
+ },
+ "Rockingchair_01": {
+  "size": [
+   0.708,
+   0.995,
+   0.833
+  ],
+  "bytes": 756856
+ },
+ "Sofa_01": {
+  "size": [
+   1.571,
+   0.797,
+   0.658
+  ],
+  "bytes": 460888
+ },
+ "WoodenChair_01": {
+  "size": [
+   0.688,
+   2.274,
+   0.658
+  ],
+  "bytes": 1002068
+ },
+ "WoodenTable_01": {
+  "size": [
+   1.8,
+   0.549,
+   0.657
+  ],
+  "bytes": 484648
+ },
+ "WoodenTable_02": {
+  "size": [
+   0.301,
+   0.418,
+   0.301
+  ],
+  "bytes": 453708
+ },
+ "boulder_01": {
+  "size": [
+   1.272,
+   1.004,
+   1.83
+  ],
+  "bytes": 3537172
+ },
+ "brass_candleholders": {
+  "size": [
+   1.052,
+   0.835,
+   0.364
+  ],
+  "bytes": 2643396
+ },
+ "caged_hanging_light": {
+  "size": [
+   1.162,
+   0.75,
+   0.315
+  ],
+  "bytes": 1245112
+ },
+ "chinese_sofa": {
+  "size": [
+   2.285,
+   0.86,
+   0.969
+  ],
+  "bytes": 360940
+ },
+ "coffee_table_round_01": {
+  "size": [
+   1.301,
+   0.491,
+   1.301
+  ],
+  "bytes": 404960
+ },
+ "dining_chair_02": {
+  "size": [
+   0.434,
+   0.973,
+   0.576
+  ],
+  "bytes": 870288
+ },
+ "dining_table": {
+  "size": [
+   2.256,
+   0.877,
+   1.39
+  ],
+  "bytes": 531784
+ },
+ "island_tree_01": {
+  "size": [
+   4.754,
+   5.024,
+   4.799
+  ],
+  "bytes": 9318944
+ },
+ "lantern_chandelier_01": {
+  "size": [
+   0.579,
+   0.878,
+   0.575
+  ],
+  "bytes": 1240672
+ },
+ "old_bed_frame": {
+  "size": [
+   0.905,
+   1.201,
+   2.002
+  ],
+  "bytes": 2033568
+ },
+ "ornate_mirror_01": {
+  "size": [
+   0.486,
+   0.744,
+   0.026
+  ],
+  "bytes": 633428
+ },
+ "painted_wooden_bench": {
+  "size": [
+   1.165,
+   0.889,
+   0.497
+  ],
+  "bytes": 407672
+ },
+ "painted_wooden_nightstand": {
+  "size": [
+   0.505,
+   0.616,
+   0.509
+  ],
+  "bytes": 454008
+ },
+ "painted_wooden_shelves": {
+  "size": [
+   0.511,
+   1.125,
+   0.367
+  ],
+  "bytes": 439380
+ },
+ "potted_plant_01": {
+  "size": [
+   0.587,
+   1.35,
+   0.634
+  ],
+  "bytes": 2842696
+ },
+ "potted_plant_02": {
+  "size": [
+   0.701,
+   0.841,
+   0.657
+  ],
+  "bytes": 2570116
+ },
+ "potted_plant_04": {
+  "size": [
+   0.168,
+   0.267,
+   0.185
+  ],
+  "bytes": 699484
+ },
+ "rock_moss_set_01": {
+  "size": [
+   8.005,
+   1.768,
+   6.949
+  ],
+  "bytes": 1880976
+ },
+ "scandinavian_masonry_heater": {
+  "size": [
+   1.168,
+   2.36,
+   1.335
+  ],
+  "bytes": 782520
+ },
+ "shrub_01": {
+  "size": [
+   2.586,
+   0.396,
+   0.219
+  ],
+  "bytes": 2047780
+ },
+ "shrub_02": {
+  "size": [
+   6.054,
+   1.703,
+   2.285
+  ],
+  "bytes": 1328372
+ },
+ "shrub_04": {
+  "size": [
+   0.584,
+   0.219,
+   0.146
+  ],
+  "bytes": 1298824
+ },
+ "sofa_02": {
+  "size": [
+   1.807,
+   0.709,
+   0.818
+  ],
+  "bytes": 383432
+ },
+ "stone_fire_pit": {
+  "size": [
+   1.448,
+   0.388,
+   1.433
+  ],
+  "bytes": 644568
+ },
+ "street_lamp_02": {
+  "size": [
+   0.386,
+   1.675,
+   0.807
+  ],
+  "bytes": 1048280
+ },
+ "throw_pillows_01": {
+  "size": [
+   0.94,
+   0.45,
+   0.452
+  ],
+  "bytes": 1078812
+ },
+ "treasure_chest": {
+  "size": [
+   0.959,
+   0.619,
+   0.523
+  ],
+  "bytes": 1537900
+ },
+ "vintage_cabinet_01": {
+  "size": [
+   2.022,
+   2.235,
+   0.67
+  ],
+  "bytes": 2670324
+ },
+ "vintage_grandfather_clock_01": {
+  "size": [
+   0.626,
+   2.191,
+   0.427
+  ],
+  "bytes": 1293164
+ },
+ "vintage_oil_lamp": {
+  "size": [
+   0.22,
+   0.802,
+   0.22
+  ],
+  "bytes": 730252
+ },
+ "wicker_basket_01": {
+  "size": [
+   0.383,
+   0.117,
+   0.295
+  ],
+  "bytes": 1071480
+ },
+ "wine_barrel_01": {
+  "size": [
+   0.742,
+   0.871,
+   0.756
+  ],
+  "bytes": 852152
+ },
+ "wooden_barrels_01": {
+  "size": [
+   4.44,
+   0.956,
+   3.345
+  ],
+  "bytes": 2263968
+ },
+ "wooden_bookshelf_worn": {
+  "size": [
+   1.374,
+   2.063,
+   0.581
+  ],
+  "bytes": 896480
+ },
+ "wooden_candlestick": {
+  "size": [
+   0.097,
+   0.22,
+   0.099
+  ],
+  "bytes": 1795572
+ },
+ "wooden_lantern_01": {
+  "size": [
+   0.221,
+   0.53,
+   0.235
+  ],
+  "bytes": 1267976
+ },
+ "wooden_picnic_table": {
+  "size": [
+   2.241,
+   0.746,
+   3.022
+  ],
+  "bytes": 995264
+ }
+}
