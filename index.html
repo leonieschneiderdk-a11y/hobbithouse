@@ -1269,8 +1269,8 @@ let toastT=0;function toast(t){const el=$('toast');el.textContent=t;el.classList
 
 // ---------------------------------------------------------------- loop
 let indoorF=0,frameN=0,last=performance.now(),time=0,needCull=true;
-function cull(inside){const cx=player.x,cz=player.z;for(const r of [...ROOMS,ENTRANCE]){if(!r.content)continue;r.content.visible=Math.hypot(cx-r.cx,cz-r.cz)<(inside?42:30);}
-  GAR.content.visible=player.y<-1||Math.hypot(cx-(LIFT.x0+LIFT.x1)/2,cz-(LIFT.z0+LIFT.z1)/2)<14;}
+function cull(inside){const cx=player.x,cz=player.z;for(const r of [...ROOMS,ENTRANCE]){if(!r.content)continue;r.content.visible=!r.photo&&Math.hypot(cx-r.cx,cz-r.cz)<(inside?42:30);}if(typeof photoTick==='function')photoTick(cx,cz);
+  GAR.content.visible=!PHOTOS.some(P=>P.garage&&P.group)&&(player.y<-1||Math.hypot(cx-(LIFT.x0+LIFT.x1)/2,cz-(LIFT.z0+LIFT.z1)/2)<14);}
 const _cp=new THREE.Vector3();
 function updatePool(){_cp.copy(camera.position);const arr=LIGHTS.map(L=>[L,L.pos.distanceToSquared(_cp)]).sort((a,b)=>a[1]-b[1]).slice(0,NPOOL).map(a=>a[0]);
   const free=POOL.filter(p=>!arr.includes(p.src));const keep=new Set(POOL.map(p=>p.src));for(const L of arr){if(keep.has(L))continue;const slot=free.shift();if(!slot)break;slot.src=L;slot.cur=0;slot.l.position.copy(L.pos);slot.l.color.copy(L.lc);slot.l.distance=L.dist;}}
@@ -1363,6 +1363,43 @@ if(THREE.RGBELoader){new THREE.RGBELoader().load('assets/hdri/venice_sunset_2k.h
     m.map=tex(name,'diff',true,r);m.normalMap=tex(name,'nor',false,r);m.normalScale.set(ns,ns);m.roughnessMap=tex(name,'rough',false,r);m.roughness=1;m.bumpMap=null;m.metalness=0;
     if(name==='thatch_roof_angled'||name==='clay_plaster'){m.vertexColors=false;m.color.setRGB(1,1,1);}if(m===M.terrain)m.color.setRGB(1,1,1);m.needsUpdate=true;n++;}
   console.log('scanned materials applied to',n,'materials');}
+// ---------------------------------------------------------------- your room images, turned into layered 3D scenes (tools/photo3d.py)
+// Each room's own picture becomes two meshes standing in the room: the foreground, split wherever depth jumps so objects stand
+// free of the walls, and an AI-filled background behind it. The stand-in furniture in that room is hidden.
+const PHOTO_OF={kitchen2:'kitchen',dining2:'dining',pantry:'pantry',wine:'wine',winefood:'winefood',red:'red',cat:'lounge',office2:'office',bath:'bath-east',bedroom2:'bedroom',
+  closet:'closet',masterbath:'masterbath',baby:'baby',spa:'spa',guest:'guest',movie:'movie',gaming:'gaming',tv:'tv',living2:'living',library:'library',childlounge:'childlounge',reading:'reading',
+  music:'music',laundry:'laundry',painting:'painting',workshop:'workshop'};
+const KIDS=['child1','child2','child3','kids-room-a','kids-room-b','kids-room-c'],KBATH=['kidsbath','bath-copper','bathspa'];
+const PH_HFOV=62*Math.PI/180,PHOTOS=[];let kb=0;
+function photoSpot(r,img,base=0){const d=r.doors.find(q=>!q.outside)||r.doors[0];const side=d?d.side:'S';const cx=(r.x0+r.x1)/2,cz=(r.z0+r.z1)/2;
+  const along=(side==='N'||side==='S')?r.x1-r.x0:r.z1-r.z0,deep=(side==='N'||side==='S')?r.z1-r.z0:r.x1-r.x0;
+  const pos={S:[cx,r.z1-0.45],N:[cx,r.z0+0.45],E:[r.x1-0.45,cz],W:[r.x0+0.45,cz]}[side],yaw={S:0,N:Math.PI,E:Math.PI/2,W:-Math.PI/2}[side];
+  return {img,r,x:pos[0],z:pos[1],y:base,yaw,far:Math.max(2.5,Math.min(deep-0.7,(along/2-0.15)/Math.tan(PH_HFOV/2)))};}
+for(const r of ROOMS){let img=PHOTO_OF[r.type];if(r.type==='kid')img=KIDS[(r.kid||0)%KIDS.length];if(r.type==='kidsbath')img=KBATH[(kb++)%KBATH.length];if(img)PHOTOS.push(photoSpot(r,img));}
+PHOTOS.push(Object.assign(photoSpot(Object.assign({},ENT,{doors:[{side:'S'}]}),'entrance-hall'),{r:ENT}));
+for(const [img,x0,x1,z0,z1,side] of [['garage-main',-19.7,4.2,6,13.2,'E'],['garage-classic',8.3,22.1,6,13.2,'W'],['garage-super',22.1,41,6,13.2,'W'],['garage-lifts',-19.7,1.1,13.2,25.1,'N'],['garage-workshop',1.1,22.3,13.2,25.1,'N'],['garage-lounge',22.3,41,13.2,25.1,'N']])
+  PHOTOS.push(Object.assign(photoSpot({x0,x1,z0,z1,doors:[{side}]},img,GAR.y),{garage:true}));
+const phTL=new THREE.TextureLoader();
+function phLoad(u,srgb){return new Promise((res,rej)=>phTL.load(u,t=>{if(srgb)t.encoding=THREE.sRGBEncoding;t.anisotropy=maxAniso;res(t);},undefined,rej));}
+function phImg(u){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=u;});}
+function phMesh(Z,W,H,aspect,far,tex,cut,ext,push){const tanH=Math.tan(PH_HFOV/2),tanV=tanH/aspect,near=far/12;
+  const pos=new Float32Array(W*H*3),uv=new Float32Array(W*H*2),zz=new Float32Array(W*H);
+  for(let j=0;j<H;j++)for(let i=0;i<W;i++){const k=j*W+i;const u=-ext+i/(W-1)*(1+2*ext),v=-ext+j/(H-1)*(1+2*ext);const cu=Math.min(1,Math.max(0,u)),cv=Math.min(1,Math.max(0,v));
+    const zf=Z[Math.round(cv*(H-1))*W+Math.round(cu*(W-1))];const z=(near+zf*(far-near))*push;zz[k]=z;pos[k*3]=(u-0.5)*2*tanH*z;pos[k*3+1]=(0.5-v)*2*tanV*z;pos[k*3+2]=-z;uv[k*2]=cu;uv[k*2+1]=1-cv;}
+  const idx=[];const ok=(a,b,c)=>!cut||Math.max(zz[a],zz[b],zz[c])/Math.min(zz[a],zz[b],zz[c])<1.07;
+  for(let j=0;j<H-1;j++)for(let i=0;i<W-1;i++){const a=j*W+i,b=a+1,c=a+W,d=c+1;if(ok(a,c,b))idx.push(a,c,b);if(ok(b,c,d))idx.push(b,c,d);}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setIndex(idx);
+  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,color:0xffffff}));m.frustumCulled=false;return m;}
+async function phBuild(P){P.state='loading';const b='assets/photo3d/'+P.img;
+  try{const [fg,bg,dimg]=await Promise.all([phLoad(b+'.jpg',true),phLoad(b+'_bg.jpg',true),phImg(b+'_d.png')]);
+    const c=document.createElement('canvas');c.width=dimg.width;c.height=dimg.height;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(dimg,0,0);const px=g.getImageData(0,0,c.width,c.height).data;
+    const W=c.width,H=c.height,Zf=new Float32Array(W*H),Zb=new Float32Array(W*H);for(let i=0;i<W*H;i++){Zf[i]=(px[i*4]*256+px[i*4+1])/65535;Zb[i]=px[i*4+2]/255;}
+    const aspect=fg.image.width/fg.image.height;const grp=new THREE.Group();grp.position.set(P.x,P.y+1.6,P.z);grp.rotation.y=P.yaw;
+    bg.wrapS=bg.wrapT=THREE.MirroredRepeatWrapping;grp.add(phMesh(Zb,W,H,aspect,P.far,bg,false,0.2,1.015));grp.add(phMesh(Zf,W,H,aspect,P.far,fg,true,0,1));
+    scene.add(grp);P.group=grp;P.state='ready';if(P.r&&P.r.content){P.r.photo=true;P.r.content.visible=false;}if(P.garage&&GAR.content)GAR.content.visible=false;}
+  catch(e){P.state='failed';console.warn('photo3d',P.img,e);}}
+function photoTick(cx,cz){for(const P of PHOTOS){const d=Math.hypot(cx-P.x,cz-P.z);if(!P.state&&d<34&&(!P.garage||player.y<-1||d<12))phBuild(P);if(P.group)P.group.visible=d<60&&(P.garage?player.y<-1:player.y>-2);}}
+window.__photos=PHOTOS;
 statusEl.textContent='';const enter=$('enter');enter.disabled=false;enter.textContent='Enter the house';
 enter.addEventListener('click',()=>{start();if(!isTouch){try{const p=canvas.requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(e){}}});
 if(prev&&prev.started){player.x=prev.x;player.y=prev.y;player.z=prev.z;player.yaw=prev.yaw;player.pitch=prev.pitch;start();}

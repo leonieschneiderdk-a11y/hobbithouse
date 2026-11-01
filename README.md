@@ -37,6 +37,12 @@ python3 -m http.server 8000
 
 Then open http://localhost:8000.
 
+## Your room images in 3D
+
+Every room with a picture on the Canva board shows that picture as a 3D scene, standing at the room's entrance wall and facing in. Walk in with WASD: from the doorway it matches the image, and as you move the furniture, lamps and beams shift in depth against the walls behind them.
+
+`tools/photo3d.py` makes these from the images. Depth Anything V2 (large) estimates the depth of each picture, the depth edges are snapped to the edges in the photo, the picture is split into foreground and background wherever the depth jumps, and the strip of wall hidden behind each object is filled in by inpainting so moving sideways reveals wall instead of stretched streaks. The results are in `assets/photo3d/`.
+
 ## How it is built
 
 | Path | What it holds |
@@ -44,6 +50,7 @@ Then open http://localhost:8000.
 | `index.html` | The whole game: floor plan, rooms, grounds, lighting, post-processing and controls |
 | `assets/models/` | Poly Haven models (furniture, chandeliers, barrels, trees, rocks), compressed to `.glb` |
 | `assets/khronos/` | Models from the Khronos glTF sample library (velvet sofa, plant, lantern, coals, car) |
+| `assets/photo3d/` | Each room image with its depth and filled-in background, used to build the 3D photo rooms |
 | `assets/hdri/` | Poly Haven sunset sky, used for realistic reflections |
 | `assets/materials/` | Photo-scanned Poly Haven surface materials (colour, relief and roughness maps) for walls, stone, wood, floors, ceilings, the thatched roofs and the ground |
 
