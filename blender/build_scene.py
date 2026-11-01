@@ -202,7 +202,7 @@ def build_space(s, spaces, doors, M):
         cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
         c = cutter_box(cx, cy, True, 0.01, 0.01, False); bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=True, segments=48, radius1=2.4, radius2=2.4, depth=1)
         bmesh.ops.translate(bm, vec=(cx, cy, hgt), verts=bm.verts); bm.to_mesh(c.data); bm.free(); apply_cuts(ceil, [c])
-        sky = light((cx, cy, hgt + 0.05), 4000, kind='AREA', colour=(0.85, 0.9, 1.0)); sky.data.shape = 'DISK'; sky.data.size = 4.6
+        sky = light((cx, cy, hgt + 0.05), 2600, kind='AREA', colour=(0.9, 0.92, 1.0)); sky.data.shape = 'DISK'; sky.data.size = 4.6
     long_x = (x1 - x0) >= (y1 - y0); n = max(1, int(((x1 - x0) if long_x else (y1 - y0)) / 1.8))
     for i in range(1, n):            # ceiling beams across the short span
         if long_x: x = x0 + i * (x1 - x0) / n; cube('beam', x - 0.11, x + 0.11, y0 + 0.15, y1 - 0.15, hgt - 0.28, hgt - lift, M['beam'], 1.2)
@@ -389,7 +389,8 @@ def furnish(s, M):
         for dx, dy in ((-7.2, 9.6), (7.2, 9.6), (-7.2, -9.8), (7.2, -9.8)): model('potted_plant_01', (cx + dx, cy + dy, 0), fit=(None, None, 1.6))
         model('vintage_grandfather_clock_01', (x0 + 0.55, cy - 6.0, 0), math.pi / 2, fit=(None, None, 2.2))
         model('painted_wooden_bench', (cx - 4.0, y0 + 0.55, 0), math.pi, fit=(1.6, None, None))
-        cyl = bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=3.6, depth=0.012, location=(cx, cy, 0.008)); r = bpy.context.active_object; link(r, 'furniture'); r.data.materials.append(M['rug']); box_uv(r, 0.45)
+        for rad, z, mat in ((3.6, 0.006, 'rug_dark'), (3.35, 0.008, 'rug_border'), (3.1, 0.010, 'rug'), (1.6, 0.012, 'rug_border'), (1.35, 0.014, 'rug')):
+            bpy.ops.mesh.primitive_cylinder_add(vertices=128, radius=rad, depth=0.004, location=(cx, cy, z)); r = bpy.context.active_object; link(r, 'furniture'); r.data.materials.append(M[mat]); box_uv(r, 0.45)
     elif t == 'hall':
         L = x1 - x0
         for i in range(int(L / 6)):
@@ -458,7 +459,7 @@ def main():
              thatch=pbr('thatch_roof_angled'), grass=pbr('leafy_grass'), cobble=pbr('cobblestone_floor_01'), gravel=pbr('gravel_floor'),
              marble=flat('marble', (0.82, 0.79, 0.74), 0.25), porcelain=flat('porcelain', (0.93, 0.92, 0.9), 0.15), copper=flat('copper', (0.75, 0.38, 0.22), 0.3, 1.0),
              glass=flat('glass', (0.9, 0.95, 0.95), 0.02, transmission=1.0), water=flat('water', (0.08, 0.16, 0.18), 0.04, transmission=0.6),
-             pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.26, 0.07, 0.05)), rug_border=pbr('quatrefoil_jacquard_fabric', (0.42, 0.3, 0.12)))
+             pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.16, 0.04, 0.03), 1.6), rug_border=pbr('quatrefoil_jacquard_fabric', (0.3, 0.2, 0.07), 1.6), rug_dark=pbr('quatrefoil_jacquard_fabric', (0.06, 0.04, 0.03), 1.6))
     spaces = read_plan()
     if args.only: spaces_build = [s for s in spaces if s['type'] in args.only.split(',')]
     else: spaces_build = spaces
