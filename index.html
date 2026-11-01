@@ -1354,11 +1354,15 @@ if(THREE.GLTFLoader){const gl=new THREE.GLTFLoader();const cache={};const loadOn
   loadProgress();}
 if(THREE.RGBELoader){new THREE.RGBELoader().load('assets/hdri/venice_sunset_2k.hdr',hdr=>{try{hdr.mapping=THREE.EquirectangularReflectionMapping;const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromEquirectangular(hdr).texture;hdr.dispose();pm.dispose();}catch(e){console.warn('hdr',e);}});}
 // real sunset sky light for reflections
-// photo textures for floors and grass
-{const tl=new THREE.TextureLoader();const ld=(u,srgb,rep)=>{const t=tl.load(u);if(srgb)t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=maxAniso;return t;};
-  const wd=ld('assets/textures/hardwood2_diffuse.jpg',true),wr=ld('assets/textures/hardwood2_roughness.jpg',false),wb=ld('assets/textures/hardwood2_bump.jpg',false);
-  M.floorWood.map=wd;M.floorWood.roughnessMap=wr;M.floorWood.normalMap=null;M.floorWood.bumpMap=wb;M.floorWood.bumpScale=0.6;M.floorWood.roughness=1;M.floorWood.color=new THREE.Color(0xd8c0a8);M.floorWood.needsUpdate=true;
-  const gr=ld('assets/textures/grasslight-big.jpg',true);M.terrain.map=gr;M.terrain.needsUpdate=true;}
+// photo-scanned Poly Haven materials replace every drawn texture: walls, stone, wood, floors, ceilings, thatch, plaster, ground
+{const tl=new THREE.TextureLoader();const base='assets/materials/';const cache={};
+  const tex=(n,kind,srgb,rep)=>{const k=n+kind+rep.join();if(cache[k])return cache[k];const t=tl.load(base+n+'_'+kind+'.jpg');if(srgb)t.encoding=THREE.sRGBEncoding;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=maxAniso;return cache[k]=t;};
+  const SWAP=new Map([[T.wall,['plastered_stone_wall',[1,1.36],1]],[T.plaster,['white_stucco',[1,1],0.8]],[T.stoneWall,['rustic_stone_wall',[1,1],1.2]],[T.woodFloor,['oak_wood_planks',[1,1],0.9]],[T.woodCeil,['dark_wooden_planks',[1,1],0.9]],
+    [T.wood,['oak_wood_planks',[1,1],0.8]],[T.tiles,['brown_floor_tiles',[1,1],1]],[T.tilesDark,['cobblestone_floor_01',[1,1],1]],[T.grass,['leafy_grass',[1,1],0.8]],[T.thatch,['thatch_roof_angled',[1,1],1.4]],[T.ext,['clay_plaster',[1,1],1]]]);
+  let n=0;for(const m of allMats){const sw=m.map&&SWAP.get(m.map);if(!sw)continue;const [name,rep,ns]=sw;const r=m.userData.fullHeight?rep:[1,1];
+    m.map=tex(name,'diff',true,r);m.normalMap=tex(name,'nor',false,r);m.normalScale.set(ns,ns);m.roughnessMap=tex(name,'rough',false,r);m.roughness=1;m.bumpMap=null;m.metalness=0;
+    if(name==='thatch_roof_angled'||name==='clay_plaster'){m.vertexColors=false;m.color.setRGB(1,1,1);}if(m===M.terrain)m.color.setRGB(1,1,1);m.needsUpdate=true;n++;}
+  console.log('scanned materials applied to',n,'materials');}
 statusEl.textContent='';const enter=$('enter');enter.disabled=false;enter.textContent='Enter the house';
 enter.addEventListener('click',()=>{start();if(!isTouch){try{const p=canvas.requestPointerLock();if(p&&p.catch)p.catch(()=>{});}catch(e){}}});
 if(prev&&prev.started){player.x=prev.x;player.y=prev.y;player.z=prev.z;player.yaw=prev.yaw;player.pitch=prev.pitch;start();}

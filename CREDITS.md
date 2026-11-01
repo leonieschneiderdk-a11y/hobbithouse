@@ -56,6 +56,24 @@ These models and the `venice_sunset` sky are from [Poly Haven](https://polyhaven
 - [wooden_picnic_table](https://polyhaven.com/a/wooden_picnic_table)
 - [venice_sunset](https://polyhaven.com/a/venice_sunset) (HDRI)
 
+### Surface materials (Poly Haven, CC0)
+
+- [brown_floor_tiles](https://polyhaven.com/a/brown_floor_tiles)
+- [castle_brick_07](https://polyhaven.com/a/castle_brick_07)
+- [clay_plaster](https://polyhaven.com/a/clay_plaster)
+- [cobblestone_floor_01](https://polyhaven.com/a/cobblestone_floor_01)
+- [dark_wooden_planks](https://polyhaven.com/a/dark_wooden_planks)
+- [forest_ground_04](https://polyhaven.com/a/forest_ground_04)
+- [gravel_floor](https://polyhaven.com/a/gravel_floor)
+- [leafy_grass](https://polyhaven.com/a/leafy_grass)
+- [mossy_rock](https://polyhaven.com/a/mossy_rock)
+- [oak_wood_planks](https://polyhaven.com/a/oak_wood_planks)
+- [plastered_stone_wall](https://polyhaven.com/a/plastered_stone_wall)
+- [rustic_stone_wall](https://polyhaven.com/a/rustic_stone_wall)
+- [stony_dirt_path](https://polyhaven.com/a/stony_dirt_path)
+- [thatch_roof_angled](https://polyhaven.com/a/thatch_roof_angled)
+- [white_stucco](https://polyhaven.com/a/white_stucco)
+
 ## Khronos glTF Sample Assets
 
 From the [Khronos glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sample-Assets) repository. Textures were resized to 1024 px.
@@ -67,10 +85,6 @@ From the [Khronos glTF-Sample-Assets](https://github.com/KhronosGroup/glTF-Sampl
 - [CarConcept](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/CarConcept): CC-BY 4.0
 - [SheenChair](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/SheenChair): CC0
 - [Lantern](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/Lantern): CC0
-
-## Textures
-
-Wood floor and grass textures are from the [three.js examples](https://github.com/mrdoob/three.js/tree/dev/examples/textures) (MIT).
 
 ## Engine
 

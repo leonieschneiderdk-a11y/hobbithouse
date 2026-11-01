@@ -43,7 +43,7 @@ Then open http://localhost:8000.
 | `assets/models/` | Poly Haven models (furniture, chandeliers, barrels, trees, rocks), compressed to `.glb` |
 | `assets/khronos/` | Models from the Khronos glTF sample library (velvet sofa, plant, lantern, coals, car) |
 | `assets/hdri/` | Poly Haven sunset sky, used for realistic reflections |
-| `assets/textures/` | Photo textures for wood floors and grass |
+| `assets/materials/` | Photo-scanned Poly Haven surface materials (colour, relief and roughness maps) for walls, stone, wood, floors, ceilings, the thatched roofs and the ground |
 
 The floor plan is defined in pixels from the drawn plan (`room({... px:[x0,y0,x1,y1] ...})`), at 0.12 m per pixel. Every door and opening gets a keep-clear zone, and furniture that would block one is removed when the world is built.
 
