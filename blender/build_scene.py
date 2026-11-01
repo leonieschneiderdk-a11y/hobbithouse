@@ -234,7 +234,7 @@ def build_space(s, spaces, doors, M):
                 gaps.append((at - 1.2, at + 1.2))
         apply_cuts(w, wc); apply_cuts(dado, dc); s.setdefault('gaps', {})[side] = gaps
 
-def dome(px, Hd, axis, M, ov=1.7, y0=3.0):
+def dome(px, Hd, axis, M, ov=1.7, y0=3.45):
     a, b, c, d = px; cx, cy = (bx(a) + bx(c)) / 2, (by(b) + by(d)) / 2; hx, hy = (bx(c) - bx(a)) / 2 + ov, (by(b) - by(d)) / 2 + ov
     NU, NV = 56, 40; me = bpy.data.meshes.new('thatch'); bm = bmesh.new(); vs = []
     for j in range(NV + 1):
@@ -250,7 +250,8 @@ def dome(px, Hd, axis, M, ov=1.7, y0=3.0):
         for i in range(NU): bm.faces.new((vs[j][i], vs[j][i + 1], vs[j + 1][i + 1], vs[j + 1][i]))
     bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('thatch', me); coll('roof').objects.link(o); me.materials.append(M['thatch'])
     for f in me.polygons: f.use_smooth = True
-    sol = o.modifiers.new('thickness', 'SOLIDIFY'); sol.thickness = 0.45; box_uv(o, 2.2)
+    sol = o.modifiers.new('thickness', 'SOLIDIFY'); sol.thickness = 0.45; sol.offset = 1.0; box_uv(o, 2.2)
+    return o
 
 # ---------------------------------------------------------------- furnishing
 def free_spots(s, side, width, margin=0.35):
@@ -380,12 +381,12 @@ def furnish(s, M):
         for dx, dy in ((-7.2, 9.6), (7.2, 9.6), (-7.2, -9.8), (7.2, -9.8)): model('potted_plant_01', (cx + dx, cy + dy, 0), fit=(None, None, 1.6))
         model('vintage_grandfather_clock_01', (x0 + 0.55, cy - 6.0, 0), math.pi / 2, fit=(None, None, 2.2))
         model('painted_wooden_bench', (cx - 4.0, y0 + 0.55, 0), math.pi, fit=(1.6, None, None))
-        cyl = bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=3.6, depth=0.012, location=(cx, cy, 0.008)); r = bpy.context.active_object; link(r, 'furniture'); r.data.materials.append(M['rug']); box_uv(r, 0.9)
+        cyl = bpy.ops.mesh.primitive_cylinder_add(vertices=96, radius=3.6, depth=0.012, location=(cx, cy, 0.008)); r = bpy.context.active_object; link(r, 'furniture'); r.data.materials.append(M['rug']); box_uv(r, 0.45)
     elif t == 'hall':
         L = x1 - x0
         for i in range(int(L / 6)):
             x = x0 + 3 + i * 6; model('lantern_chandelier_01', (x, cy, hgt - 1.0), fit=(0.55, None, None), c='lamps'); light((x, cy, hgt - 0.9), 140, 0.15)
-        r = cube('runner', x0 + 0.6, x1 - 0.6, cy - 0.7, cy + 0.7, 0.002, 0.012, M['rug'], 0.9, c='furniture')
+        r = cube('runner', x0 + 0.6, x1 - 0.6, cy - 0.7, cy + 0.7, 0.002, 0.012, M['rug'], 0.45, c='furniture')
 
 # ---------------------------------------------------------------- outside
 def build_outside(spaces, M):
@@ -449,7 +450,7 @@ def main():
              thatch=pbr('thatch_roof_angled'), grass=pbr('leafy_grass'), cobble=pbr('cobblestone_floor_01'), gravel=pbr('gravel_floor'),
              marble=flat('marble', (0.82, 0.79, 0.74), 0.25), porcelain=flat('porcelain', (0.93, 0.92, 0.9), 0.15), copper=flat('copper', (0.75, 0.38, 0.22), 0.3, 1.0),
              glass=flat('glass', (0.9, 0.95, 0.95), 0.02, transmission=1.0), water=flat('water', (0.08, 0.16, 0.18), 0.04, transmission=0.6),
-             pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.78, 0.3, 0.2)))
+             pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.5, 0.16, 0.1)))
     spaces = read_plan()
     if args.only: spaces_build = [s for s in spaces if s['type'] in args.only.split(',')]
     else: spaces_build = spaces
@@ -459,7 +460,10 @@ def main():
     if not args.only:
         for px, Hd, ax in (([405, 772, 768, 1013], 7.2, 'x'), ([353, 872, 407, 960], 4.6, 'y'), ([420, 980, 507, 1040], 4.8, 'x'), ([768, 798, 915, 987], 8.6, 'y'), ([915, 772, 1077, 1073], 7.6, 'y'),
                            ([1075, 773, 1156, 881], 6.0, 'x'), ([1077, 793, 1292, 1002], 7.0, 'x'), ([1278, 793, 1492, 1002], 6.6, 'x'), ([1492, 854, 1640, 941], 5.8, 'x')):
-            dome(px, Hd, 'x' if ax == 'x' else 'y', M)
+            o = dome(px, Hd, 'x' if ax == 'x' else 'y', M, y0=5.15 if px == [768, 798, 915, 987] else 3.45)
+            if px != [768, 798, 915, 987]:      # keep lower roofs out of the tall entrance hall
+                e = next(sp for sp in spaces if sp['type'] == 'entrance'); c = cube('cut', e['x0'] + 0.05, e['x1'] - 0.05, e['y0'] + 0.05, e['y1'] - 0.05, -1, 5.1, M['wall'])
+                apply_cuts(o, [c])
         build_outside(spaces, M)
     setup_world()
     sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = args.samples; sc.cycles.use_denoising = True
