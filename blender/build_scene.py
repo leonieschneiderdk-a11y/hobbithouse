@@ -263,7 +263,7 @@ def free_spots(s, side, width, margin=0.35):
         t += 0.25
     return spots
 
-FACE = {'N': 0.0, 'S': math.pi, 'W': -math.pi / 2, 'E': math.pi / 2}   # rotation so a model's front faces into the room
+FACE = {'N': 0.0, 'S': math.pi, 'W': math.pi / 2, 'E': -math.pi / 2}   # rotation so a model's front faces into the room
 def against(s, side, at, depth):
     lo, hi, line, horiz, out = side_line(s, side); off = line - out * (WT + depth / 2 + 0.05)
     return ((at, off, 0) if horiz else (off, at, 0)), FACE[side]
@@ -281,6 +281,37 @@ def walls_by_length(s):
     sides = [sd for sd in 'NSWE' if sd not in s['nowalls']]
     return sorted(sides, key=lambda sd: -(side_line(s, sd)[1] - side_line(s, sd)[0]) + 2.0 * sum(b - a for a, b in s.get('gaps', {}).get(sd, [])) / max(1, (side_line(s, sd)[1] - side_line(s, sd)[0])))
 
+def hang(s, side, at, name, w, z=1.75):
+    lo, hi, line, horiz, out = side_line(s, side); off = line - out * (WT + 0.03)
+    model(name, ((at, off, z) if horiz else (off, at, z)), FACE[side], fit=(w, None, None), c='decor')
+
+def fill_room(s, used):
+    t = s['type']; x0, x1, y0, y1 = s['x0'], s['x1'], s['y0'], s['y1']; area = (x1 - x0) * (y1 - y0)
+    if t in ('hall', 'pantry', 'wine', 'winefood', 'closet', 'linen', 'laundry', 'spa') or area < 8: return
+    frames = ['hanging_picture_frame_01', 'hanging_picture_frame_02', 'fancy_picture_frame_01']
+    pieces = (['GothicCabinet_01', 1.6, 0.9], ['wooden_bookshelf_worn', 1.4, 0.6], ['painted_wooden_bench', 1.3, 0.5], ['vintage_cabinet_01', 1.8, 0.6], ['potted_plant_01', 0.6, 0.6]) if area > 25 else (['painted_wooden_nightstand', 0.5, 0.5], ['potted_plant_02', 0.6, 0.6], ['painted_wooden_shelves', 0.6, 0.45])
+    k = 0
+    for sd in [q for q in 'NSWE' if q not in s['nowalls']]:
+        lo, hi, line, horiz, out = side_line(s, sd)
+        # pictures every ~2.6 m of clear wall, above any furniture
+        for at in free_spots(s, sd, 0.9)[::11]:
+            hang(s, sd, at, frames[k % 3], 0.75 if area > 25 else 0.55, 1.85); k += 1
+        # furniture in the gaps left along the wall
+        for at in free_spots(s, sd, 1.9)[::9]:
+            if any(abs(at - u) < (uw + 1.9) / 2 + 0.3 for u, uw in used[sd]): continue
+            name, w, d = pieces[k % len(pieces)]; k += 1
+            loc, rot = against(s, sd, at, d); model(name, loc, rot, fit=(w, None, 2.2 if 'shelf' in name or 'cabinet' in name else None)); used[sd].append((at, w))
+            if name in ('painted_wooden_nightstand', 'GothicCabinet_01'):
+                top = 0.62 if 'night' in name else 0.92
+                model(['brass_vase_01', 'antique_ceramic_vase_01', 'mantel_clock_01'][k % 3], (loc[0], loc[1], top), rot, fit=(None, None, 0.35))
+    if area > 60:      # a second seating group in large rooms
+        gx, gy = (x0 + (x1 - x0) * 0.25, (y0 + y1) / 2) if (x1 - x0) > (y1 - y0) else ((x0 + x1) / 2, y0 + (y1 - y0) * 0.25)
+        cube('rug border', gx - 1.7, gx + 1.7, gy - 1.3, gy + 1.3, 0.001, 0.009, MATS['rug_border'], 0.45, c='furniture'); cube('rug', gx - 1.56, gx + 1.56, gy - 1.16, gy + 1.16, 0.002, 0.011, MATS['rug'], 0.45, c='furniture')
+        model('ArmChair_01', (gx - 0.9, gy + 0.6, 0), math.pi + 0.5, fit=(0.85, None, None)); model('ArmChair_01', (gx + 0.9, gy + 0.6, 0), math.pi - 0.5, fit=(0.85, None, None))
+        model('coffee_table_round_01', (gx, gy - 0.2, 0), fit=(0.9, None, None)); model('tea_set_01', (gx, gy - 0.2, 0.43), fit=(0.5, None, None))
+        model('Rockingchair_01', (gx, gy - 1.3, 0), 0.0, fit=(0.75, None, None))
+
+MATS = {}
 def furnish(s, M):
     t = s['type']; x0, x1, y0, y1, hgt = s['x0'], s['x1'], s['y0'], s['y1'], s['h']; cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
     area = (x1 - x0) * (y1 - y0); sides = walls_by_length(s); used = {sd: [] for sd in 'NSWE'}
@@ -396,6 +427,7 @@ def furnish(s, M):
         for i in range(int(L / 6)):
             x = x0 + 3 + i * 6; model('lantern_chandelier_01', (x, cy, hgt - 1.0), fit=(0.55, None, None), c='lamps'); light((x, cy, hgt - 0.9), 140, 0.15)
         r = cube('runner', x0 + 0.6, x1 - 0.6, cy - 0.7, cy + 0.7, 0.002, 0.012, M['rug'], 0.45, c='furniture')
+    fill_room(s, used)
 
 # ---------------------------------------------------------------- outside
 def build_outside(spaces, M):
@@ -454,13 +486,13 @@ def main():
     ap.add_argument('--samples', type=int, default=48); ap.add_argument('--res', default='1280x720'); ap.add_argument('--only', default='')
     args = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:])
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    M = dict(wall=pbr('clay_plaster'), wall_ext=pbr('clay_plaster', (0.95, 0.9, 0.82)), stone=pbr('rustic_stone_wall'), floor_wood=pbr('oak_wood_planks'), floor_stone=pbr('brown_floor_tiles'),
+    M = dict(wall=pbr('clay_plaster'), wall_ext=pbr('clay_plaster', (0.95, 0.9, 0.82)), stone=pbr('rustic_stone_wall'), floor_wood=pbr('oak_wood_planks', (1, 1, 1), 1.5), floor_stone=pbr('brown_floor_tiles', (1, 1, 1), 1.3),
              floor_dark=pbr('cobblestone_floor_01'), ceiling=pbr('dark_wooden_planks'), beam=pbr('dark_wooden_planks', (0.55, 0.45, 0.38)), wood_dark=pbr('dark_wooden_planks', (0.7, 0.6, 0.5)),
              thatch=pbr('thatch_roof_angled'), grass=pbr('leafy_grass'), cobble=pbr('cobblestone_floor_01'), gravel=pbr('gravel_floor'),
              marble=flat('marble', (0.82, 0.79, 0.74), 0.25), porcelain=flat('porcelain', (0.93, 0.92, 0.9), 0.15), copper=flat('copper', (0.75, 0.38, 0.22), 0.3, 1.0),
              glass=flat('glass', (0.9, 0.95, 0.95), 0.02, transmission=1.0), water=flat('water', (0.08, 0.16, 0.18), 0.04, transmission=0.6),
              pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.16, 0.04, 0.03), 1.6), rug_border=pbr('quatrefoil_jacquard_fabric', (0.3, 0.2, 0.07), 1.6), rug_dark=pbr('quatrefoil_jacquard_fabric', (0.06, 0.04, 0.03), 1.6))
-    spaces = read_plan()
+    spaces = read_plan(); MATS.update(M)
     if args.only: spaces_build = [s for s in spaces if s['type'] in args.only.split(',')]
     else: spaces_build = spaces
     doors = all_doors(spaces)
@@ -506,7 +538,7 @@ def main():
         if not sp: return None
         best = None
         for (kx, ky) in ((0, 0), (1, 0), (0, 1), (1, 1)):
-            px = sp['x0'] + 0.75 if kx == 0 else sp['x1'] - 0.75; py = sp['y0'] + 0.75 if ky == 0 else sp['y1'] - 0.75
+            px = sp['x0'] + 1.3 if kx == 0 else sp['x1'] - 1.3; py = sp['y0'] + 1.3 if ky == 0 else sp['y1'] - 1.3
             tx = sp['x1'] - 1 if kx == 0 else sp['x0'] + 1; ty = sp['y1'] - 1 if ky == 0 else sp['y0'] + 1
             d = math.hypot(tx - px, ty - py)
             if not best or d > best[0]: best = (d, px, py, tx, ty)
