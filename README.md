@@ -4,6 +4,8 @@ A walkable 3D model of the hobbit house and its estate, built with [three.js](ht
 
 ## Play it
 
+**Full instructions, including the photoreal Blender version: [PLAY.md](PLAY.md).**
+
 Once GitHub Pages is switched on (see below), the game is at:
 
 **https://leonieschneiderdk-a11y.github.io/hobbithouse/**

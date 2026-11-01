@@ -299,6 +299,12 @@ def furnish(s, M):
             lo, hi, line, horiz, out = side_line(s, sd); at = min(spots, key=lambda q: abs(q - (lo + hi) / 2)); o2 = line - out * (WT + 0.18)
             loc = (at, o2, 1.85) if horiz else (o2, at, 1.85); model('wooden_lantern_01', loc, FACE[sd], fit=(None, None, 0.42), c='lamps')
             light((loc[0], loc[1], 2.1), 90, 0.1)
+    def floor_rug(w, d, at=None):
+        rx, ry = at or (cx, cy)
+        cube('rug border', rx - w / 2, rx + w / 2, ry - d / 2, ry + d / 2, 0.001, 0.009, M['rug_border'], 0.45, c='furniture')
+        cube('rug', rx - w / 2 + 0.14, rx + w / 2 - 0.14, ry - d / 2 + 0.14, ry + d / 2 - 0.14, 0.002, 0.011, M['rug'], 0.45, c='furniture')
+    if t not in ('hall', 'entrance', 'bath', 'kidsbath', 'masterbath', 'spa', 'pantry', 'wine', 'winefood', 'laundry', 'linen', 'kitchen2', 'workshop') and area > 9:
+        floor_rug(min(4.2, (x1 - x0) * 0.6), min(3.2, (y1 - y0) * 0.6))
     def plants(n=2):
         for (px, py) in [(x0 + 0.65, y0 + 0.65), (x1 - 0.65, y1 - 0.65), (x1 - 0.65, y0 + 0.65), (x0 + 0.65, y1 - 0.65)][:n]:
             if any(abs(px - a) < 1 or abs(py - b) < 1 for a, b in []): continue
@@ -328,6 +334,8 @@ def furnish(s, M):
             model('coffee_table_round_01', (cx, cy, 0), fit=(1.0, None, None))
             model('ArmChair_01', (cx + 1.3, cy + 0.9, 0), math.pi * 0.75, fit=(0.85, None, None))
         if t in ('reading', 'tv', 'childlounge', 'living2'): P(other, 'wooden_bookshelf_worn', 1.4, 0.6, 2.2)
+        for sd in sides[2:4]: P(sd, 'GothicCabinet_01' if area > 30 else 'painted_wooden_nightstand', 1.2 if area > 30 else 0.5, 0.6)
+        model('WoodenTable_02', (cx + 1.6, cy - 0.9, 0), fit=(0.45, None, None)); model('vintage_oil_lamp', (cx + 1.6, cy - 0.9, 0.42), fit=(None, None, 0.4)); light((cx + 1.6, cy - 0.9, 0.75), 30, 0.06)
         if t == 'music': model('Rockingchair_01', (cx - 1.2, cy - 0.8, 0), 0.6, fit=(0.8, None, None))
         if t == 'cat': model('wicker_basket_01', (cx + 0.6, cy - 0.8, 0), fit=(0.5, None, None))
         plants(2)
@@ -450,7 +458,7 @@ def main():
              thatch=pbr('thatch_roof_angled'), grass=pbr('leafy_grass'), cobble=pbr('cobblestone_floor_01'), gravel=pbr('gravel_floor'),
              marble=flat('marble', (0.82, 0.79, 0.74), 0.25), porcelain=flat('porcelain', (0.93, 0.92, 0.9), 0.15), copper=flat('copper', (0.75, 0.38, 0.22), 0.3, 1.0),
              glass=flat('glass', (0.9, 0.95, 0.95), 0.02, transmission=1.0), water=flat('water', (0.08, 0.16, 0.18), 0.04, transmission=0.6),
-             pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.5, 0.16, 0.1)))
+             pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.26, 0.07, 0.05)), rug_border=pbr('quatrefoil_jacquard_fabric', (0.42, 0.3, 0.12)))
     spaces = read_plan()
     if args.only: spaces_build = [s for s in spaces if s['type'] in args.only.split(',')]
     else: spaces_build = spaces
@@ -471,7 +479,41 @@ def main():
     sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = 0.4
     w, h = map(int, args.res.split('x')); sc.render.resolution_x, sc.render.resolution_y = w, h
     cam = bpy.data.objects.new('camera', bpy.data.cameras.new('camera')); sc.collection.objects.link(cam); sc.camera = cam
-    if args.blend: bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(args.blend))
+    if args.blend:
+        e = next(sp for sp in spaces if sp['type'] == 'entrance')
+        cam.location = (e['x0'] + 2.0, (e['y0'] + e['y1']) / 2, 1.65); cam.rotation_euler = (math.radians(88), 0, math.radians(-90)); cam.data.lens = 22
+        sc.render.engine = 'BLENDER_EEVEE_NEXT'; ee = sc.eevee
+        for attr, val in (('use_raytracing', True), ('use_shadows', True), ('shadow_ray_count', 2), ('use_gtao', True), ('taa_render_samples', 64), ('use_volumetric_shadows', True)):
+            if hasattr(ee, attr): setattr(ee, attr, val)
+        sc.use_nodes = True; nt = sc.node_tree; nt.nodes.clear()
+        rl = nt.nodes.new('CompositorNodeRLayers'); gl = nt.nodes.new('CompositorNodeGlare'); gl.glare_type = 'FOG_GLOW'; gl.threshold = 1.0; gl.size = 7; gl.mix = 0.0
+        st = nt.nodes.new('CompositorNodeGlare'); st.glare_type = 'STREAKS'; st.threshold = 3.0; st.streaks = 4; st.mix = -0.85
+        out = nt.nodes.new('CompositorNodeComposite'); nt.links.new(rl.outputs[0], gl.inputs[0]); nt.links.new(gl.outputs[0], st.inputs[0]); nt.links.new(st.outputs[0], out.inputs[0])
+        try:
+            for scr in bpy.data.screens:
+                for area in scr.areas:
+                    if area.type == 'VIEW_3D':
+                        for sp in area.spaces:
+                            if sp.type == 'VIEW_3D': sp.shading.type = 'RENDERED'; sp.shading.use_compositor = 'ALWAYS'
+        except Exception as ex: print('viewport setup skipped:', ex)
+        blend = os.path.abspath(args.blend); bpy.ops.wm.save_as_mainfile(filepath=blend)
+        try: bpy.ops.file.make_paths_relative(); bpy.ops.wm.save_mainfile()
+        except Exception as ex: print('relative paths:', ex)
+        sc.render.engine = 'CYCLES'; print('saved', blend, flush=True)
+    def room_shot(typ):
+        sp = next((q for q in spaces if q['type'] == typ), None)
+        if not sp: return None
+        best = None
+        for (kx, ky) in ((0, 0), (1, 0), (0, 1), (1, 1)):
+            px = sp['x0'] + 0.75 if kx == 0 else sp['x1'] - 0.75; py = sp['y0'] + 0.75 if ky == 0 else sp['y1'] - 0.75
+            tx = sp['x1'] - 1 if kx == 0 else sp['x0'] + 1; ty = sp['y1'] - 1 if ky == 0 else sp['y0'] + 1
+            d = math.hypot(tx - px, ty - py)
+            if not best or d > best[0]: best = (d, px, py, tx, ty)
+        _, px, py, tx, ty = best; head = math.degrees(math.atan2(-(tx - px), ty - py))
+        return (px, py, 1.55, 84, head, 16)
+    for nm, typ in (('bedroom', 'bedroom2'), ('dining_kitchen', 'dining2'), ('library', 'library'), ('living', 'living2'), ('kids_room', 'kid')):
+        sh = room_shot(typ)
+        if sh: SHOTS[nm] = sh
     if args.shots:
         os.makedirs(args.out, exist_ok=True)
         for name in (SHOTS if args.shots == 'all' else args.shots.split(',')):
