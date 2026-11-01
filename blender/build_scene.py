@@ -145,7 +145,7 @@ def cutter_box(cx, cy, horiz, w, h, arched, z0=0.0):
 def apply_cuts(obj, cutters):
     if not cutters: return
     for c in cutters:
-        mod = obj.modifiers.new('cut', 'BOOLEAN'); mod.object = c; mod.operation = 'DIFFERENCE'; mod.solver = 'EXACT'
+        mod = obj.modifiers.new('cut', 'BOOLEAN'); mod.object = c; mod.operation = 'DIFFERENCE'; mod.solver = 'EXACT'; mod.use_self = True; mod.use_hole_tolerant = True
     bpy.context.view_layer.objects.active = obj
     for mod in list(obj.modifiers): bpy.ops.object.modifier_apply(modifier=mod.name)
     for c in cutters: bpy.data.objects.remove(c, do_unlink=True)
@@ -268,12 +268,22 @@ def against(s, side, at, depth):
     lo, hi, line, horiz, out = side_line(s, side); off = line - out * (WT + depth / 2 + 0.05)
     return ((at, off, 0) if horiz else (off, at, 0)), FACE[side]
 
+BOOK_LEVELS = (0.06, 0.255, 0.45, 0.645, 0.84)     # shelf heights as a fraction of the bookshelf's height
+def stock_books(shelf, side):
+    sz = _lib['wooden_bookshelf_worn'][1] * shelf.scale[0]; hgt, wid = sz.z, sz.x
+    for i, f in enumerate(BOOK_LEVELS):
+        for k in (-1, 1):
+            if (i + k) % 3 == 0: continue
+            off = Vector((k * wid * 0.24, 0.02, hgt * f)); off.rotate(shelf.rotation_euler)
+            model('book_encyclopedia_set_01', shelf.location + off, shelf.rotation_euler.z + (math.pi if (i + k) % 2 else 0), fit=(wid * 0.42, None, hgt * 0.16), c='decor')
+
 def place_on_wall(s, side, name, w, d, h=None, prefer=0.5, gap_after=0.4, used=None):
     spots = free_spots(s, side, w)
     if used: spots = [t for t in spots if all(abs(t - u) > (w + uw) / 2 + 0.2 for u, uw in used)]
     if not spots: return None
     lo, hi, *_ = side_line(s, side); target = lo + (hi - lo) * prefer; at = min(spots, key=lambda t: abs(t - target))
     loc, rot = against(s, side, at, d); inst = model(name, loc, rot, fit=(w, None, h))
+    if name == 'wooden_bookshelf_worn' and inst: stock_books(inst, side)
     if used is not None: used.append((at, w))
     return at
 
@@ -300,7 +310,8 @@ def fill_room(s, used):
         for at in free_spots(s, sd, 1.9)[::9]:
             if any(abs(at - u) < (uw + 1.9) / 2 + 0.3 for u, uw in used[sd]): continue
             name, w, d = pieces[k % len(pieces)]; k += 1
-            loc, rot = against(s, sd, at, d); model(name, loc, rot, fit=(w, None, 2.2 if 'shelf' in name or 'cabinet' in name else None)); used[sd].append((at, w))
+            loc, rot = against(s, sd, at, d); inst = model(name, loc, rot, fit=(w, None, 2.2 if 'shelf' in name or 'cabinet' in name else None)); used[sd].append((at, w))
+            if name == 'wooden_bookshelf_worn' and inst: stock_books(inst, sd)
             if name in ('painted_wooden_nightstand', 'GothicCabinet_01'):
                 top = 0.62 if 'night' in name else 0.92
                 model(['brass_vase_01', 'antique_ceramic_vase_01', 'mantel_clock_01'][k % 3], (loc[0], loc[1], top), rot, fit=(None, None, 0.35))
@@ -374,11 +385,11 @@ def furnish(s, M):
         for sd in sides[:3]:
             for _ in range(4):
                 if P(sd, 'wooden_bookshelf_worn', 1.4, 0.6, 2.2) is None: break
-        model('WoodenTable_01' if t == 'office2' else 'dining_table', (cx, cy, 0), 0, fit=(1.8 if t == 'office2' else 2.0, None, None))
+        model('WoodenTable_01' if t == 'office2' else 'dining_table', (cx, cy, 0), 0, fit=(1.8 if t == 'office2' else 2.0, None, 0.8))
         model('dining_chair_02', (cx, cy - 0.85, 0), math.pi, fit=(None, None, 0.95)); model('ArmChair_01', (cx + 1.4, cy + 1.2, 0), math.pi * 0.8, fit=(0.85, None, None))
         model('vintage_oil_lamp', (cx - 0.5, cy, 0.8), fit=(None, None, 0.45))
     elif t == 'dining2':
-        model('dining_table', (cx, cy, 0), math.pi / 2, fit=(None, 3.0, None))
+        model('dining_table', (cx, cy, 0), math.pi / 2, fit=(None, 3.0, 0.8))
         for i in range(3):
             for sg in (-1, 1): model('dining_chair_02', (cx + sg * 0.85, cy - 1.0 + i, 0), -sg * math.pi / 2, fit=(None, None, 0.95))
         model('brass_candleholders', (cx, cy, 0.78), math.pi / 2, fit=(None, 0.8, None)); P(main, 'vintage_cabinet_01', 1.8, 0.6); plants(2)
@@ -488,7 +499,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     M = dict(wall=pbr('clay_plaster'), wall_ext=pbr('clay_plaster', (0.95, 0.9, 0.82)), stone=pbr('rustic_stone_wall'), floor_wood=pbr('oak_wood_planks', (1, 1, 1), 1.5), floor_stone=pbr('brown_floor_tiles', (1, 1, 1), 1.3),
              floor_dark=pbr('cobblestone_floor_01'), ceiling=pbr('dark_wooden_planks'), beam=pbr('dark_wooden_planks', (0.55, 0.45, 0.38)), wood_dark=pbr('dark_wooden_planks', (0.7, 0.6, 0.5)),
-             thatch=pbr('thatch_roof_angled'), grass=pbr('leafy_grass'), cobble=pbr('cobblestone_floor_01'), gravel=pbr('gravel_floor'),
+             thatch=pbr('thatch_roof_angled', (1.0, 0.82, 0.6)), grass=pbr('leafy_grass', (0.62, 0.8, 0.42)), cobble=pbr('cobblestone_floor_01'), gravel=pbr('gravel_floor'),
              marble=flat('marble', (0.82, 0.79, 0.74), 0.25), porcelain=flat('porcelain', (0.93, 0.92, 0.9), 0.15), copper=flat('copper', (0.75, 0.38, 0.22), 0.3, 1.0),
              glass=flat('glass', (0.9, 0.95, 0.95), 0.02, transmission=1.0), water=flat('water', (0.08, 0.16, 0.18), 0.04, transmission=0.6),
              pool_water=flat('pool water', (0.2, 0.55, 0.6), 0.03, emit=(0.1, 0.4, 0.45), strength=0.4), rug=pbr('quatrefoil_jacquard_fabric', (0.16, 0.04, 0.03), 1.6), rug_border=pbr('quatrefoil_jacquard_fabric', (0.3, 0.2, 0.07), 1.6), rug_dark=pbr('quatrefoil_jacquard_fabric', (0.06, 0.04, 0.03), 1.6))

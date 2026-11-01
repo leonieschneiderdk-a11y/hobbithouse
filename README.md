@@ -65,4 +65,8 @@ python blender/build_scene.py --rooms entrance,living2 --render out.png --sample
 python blender/build_scene.py --rooms all --blend house.blend   # whole house, saved as a .blend you can open in Blender
 ```
 
-![Entrance hall and living room, rendered by the script](docs/blender-preview-entrance.png)
+| | |
+| --- | --- |
+| ![Library](docs/renders/library.png) | ![Kids' room](docs/renders/kids_room.png) |
+| ![Dining room and kitchen](docs/renders/dining_kitchen.png) | ![Living room](docs/renders/living.png) |
+| ![Garden side of the house](docs/renders/garden_view.png) | ![Front door](docs/renders/front.png) |
