@@ -12,6 +12,7 @@ Each room is rebuilt as a real 3D room from its image, then saved so they can be
 | Pantry | `blender/rooms/pantry.py` | `assets/rooms/pantry/pantry.glb` | [room.html?r=pantry](room.html?r=pantry) | ![](docs/rooms/pantry.png) ![](docs/rooms/pantry_long.png) |
 | Hallway | `blender/rooms/hallway.py` (runners: `tools/hallway_textures.py`) | `assets/rooms/hallway/hallway.glb` | [room.html?r=hallway](room.html?r=hallway) | ![](docs/rooms/hallway.png) ![](docs/rooms/hallway_door.png) |
 | Bathroom & spa | `blender/rooms/bathroom.py` | `assets/rooms/bathroom/bathroom.glb` | [room.html?r=bathroom](room.html?r=bathroom) | ![](docs/rooms/bathroom.png) |
+| Spa & sauna | `blender/rooms/spa.py` | `assets/rooms/spa/spa.glb` | [room.html?r=spa](room.html?r=spa) | ![](docs/rooms/spa.png) ![](docs/rooms/spa_pool.png) |
 
 ## Adding the next room
 
