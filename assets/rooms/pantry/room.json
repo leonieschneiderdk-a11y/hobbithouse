@@ -88,9 +88,31 @@
   ]
  },
  "floor": "wood_floor_worn",
- "exposure": 0.9,
- "version": 1,
+ "exposure": 0.75,
+ "version": 3,
  "wallBoost": 1.0,
  "maxFlameLights": 30,
- "flameColor": "#ffb070"
+ "flameColor": "#ffc890",
+ "env": {
+  "oak_wood_planks": 0.2,
+  "oak_wood_planks.001": 0.2,
+  "clay_plaster": 0.2
+ },
+ "webTint": {
+  "oak_wood_planks": [
+   0.88,
+   0.88,
+   0.86
+  ],
+  "oak_wood_planks.001": [
+   0.88,
+   0.88,
+   0.86
+  ],
+  "clay_plaster": [
+   0.75,
+   0.72,
+   0.7
+  ]
+ }
 }
