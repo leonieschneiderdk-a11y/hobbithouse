@@ -9,6 +9,7 @@ Each room is rebuilt as a real 3D room from its image, then saved so they can be
 | Kitchen | `blender/rooms/kitchen.py` (textures: `tools/kitchen_textures.py`) | `assets/rooms/kitchen/kitchen.glb` | [room.html?r=kitchen](room.html?r=kitchen) | ![](docs/rooms/kitchen.png) |
 | Dining room | `blender/rooms/dining.py` (rug: `tools/dining_textures.py`) | `assets/rooms/dining/dining.glb` | [room.html?r=dining](room.html?r=dining) | ![](docs/rooms/dining.png) |
 | Wine & food cellar | `blender/rooms/cellar.py` (rug: `tools/cellar_textures.py`) | `assets/rooms/cellar/cellar.glb` | [room.html?r=cellar](room.html?r=cellar) | ![](docs/rooms/cellar.png) ![](docs/rooms/cellar_food.png) |
+| Pantry | `blender/rooms/pantry.py` | `assets/rooms/pantry/pantry.glb` | [room.html?r=pantry](room.html?r=pantry) | ![](docs/rooms/pantry.png) ![](docs/rooms/pantry_long.png) |
 
 ## Adding the next room
 
