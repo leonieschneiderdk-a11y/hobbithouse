@@ -56,14 +56,14 @@
    0.14
   ],
   "oak_wood_planks": [
-   1.0,
-   0.8,
-   0.58
+   0.6,
+   0.37,
+   0.19
   ],
   "oak_wood_planks.001": [
-   0.95,
-   0.76,
-   0.55
+   0.56,
+   0.34,
+   0.17
   ],
   "plastered_stone_wall": [
    1.35,
@@ -98,7 +98,7 @@
  },
  "floor": "wood_floor_worn",
  "exposure": 0.82,
- "version": 7,
+ "version": 8,
  "wallBoost": 1.0,
  "maxFlameLights": 34,
  "env": {
