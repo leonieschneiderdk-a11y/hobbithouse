@@ -120,7 +120,9 @@ def build():
     cab = pbr('wood_cabinet_worn_long', 'materials', (0.46, 0.36, 0.27), 0.8)
     table_wood = pbr('wood_table_worn', 'materials', (0.66, 0.52, 0.38), 0.6)
     chair_wood = flat('chair wood', (0.13, 0.085, 0.055), 0.62)
-    frame = flat('window frame', (0.22, 0.14, 0.08), 0.55)
+    frame = flat('window frame', (0.42, 0.3, 0.19), 0.55)
+    wtrim = pbr('dark_wooden_planks', 'materials', (0.74, 0.56, 0.4), 0.9)      # light brown wood round the windows
+    ptrim = pbr('rough_wood', 'materials', (0.64, 0.5, 0.36), 0.9)              # light brown posts up the walls
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0); lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85)
     iron = flat('iron', (0.03, 0.028, 0.026), 0.55, 0.35)
     brass = flat('brass', (0.78, 0.55, 0.26), 0.3, 1.0)
@@ -185,7 +187,7 @@ def build():
             model('ceramic_vase_03', (xc, ny, 2.2 - 0.05), 0, height=0.22) if False else None
             light((xc + s * -0.15, ny, 1.95), 45, radius=0.15); light((xc, ny, 1.05), 25, radius=0.1)
         for y in RIBS[1::2] + [RIBS[-1]]:
-            xp = (x0 - 0.12) if s > 0 else (x1 + 0.12); box('wall post', xp - 0.14, xp + 0.14, y - 0.15, y + 0.15, 0.0, WALL_H, beam, 1.2)
+            xp = (x0 - 0.12) if s > 0 else (x1 + 0.12); box('wall post', xp - 0.14, xp + 0.14, y - 0.15, y + 0.15, 0.0, WALL_H, ptrim, 1.2)
         for y in RIBS[1::2]:
             xp = (x0 - 0.3) if s > 0 else (x1 + 0.3); lantern(xp, y, 1.75, 1.0, None, iron, lglass, 80)
             box('sconce arm', min(xp, xp + s * 0.2), max(xp, xp + s * 0.2), y - 0.015, y + 0.015, 2.12, 2.15, iron, 1.0); cyl('sconce drop', 0.008, 0.07, (xp, y, 2.1), (0, 0, 0), iron, 6)
@@ -196,8 +198,8 @@ def build():
     box_uv(back, 2.0)
     for wx in (-0.95, 0.95):
         g = group((wx, 0.22, WZ)); arch_window(g, WW, WRH, 3, 3, frame, glass, 5, ring=False)
-        g2 = group((wx, 0.0, WZ)); stone_arch(g2, WW, WRH, 0.14, timber, 0.15)
-        box('sill', wx - WW / 2 - 0.1, wx + WW / 2 + 0.1, -0.12, 0.25, WZ - 0.06, WZ, timber, 1.0)
+        g2 = group((wx, 0.0, WZ)); stone_arch(g2, WW, WRH, 0.14, wtrim, 0.15)
+        box('sill', wx - WW / 2 - 0.1, wx + WW / 2 + 0.1, -0.12, 0.25, WZ - 0.06, WZ, wtrim, 1.0)
         a = light((wx, 1.5, WZ + 1.1), 520, (0.85, 0.95, 0.85), kind='AREA'); a.data.size = WW; a.rotation_euler = (math.radians(90), 0, 0)
     DW, DRH = 1.15, 1.5
     for sgn in (-1, 1):
@@ -219,8 +221,8 @@ def build():
             cobj.rotation_euler = (cobj.rotation_euler.x, cobj.rotation_euler.y, ang); cobj.location = (mid.x + cobj.location.x * math.cos(ang), mid.y + cobj.location.x * math.sin(ang), cobj.location.z)
         bpy.context.view_layer.update(); cut(dw, cutters); box_uv(dw, 2.0)
         g = group((mid.x + nrm.x * 0.22, mid.y + nrm.y * 0.22, WZ), ang); arch_window(g, DW, DRH, 3, 3, frame, glass, 5, ring=False)
-        g2 = group((mid.x, mid.y, WZ), ang); stone_arch(g2, DW, DRH, 0.14, timber, 0.15)
-        g3 = group((mid.x, mid.y, WZ), ang); kid(box('sill', -DW / 2 - 0.1, DW / 2 + 0.1, -0.12, 0.25, -0.06, 0.0, timber, 1.0), g3)
+        g2 = group((mid.x, mid.y, WZ), ang); stone_arch(g2, DW, DRH, 0.14, wtrim, 0.15)
+        g3 = group((mid.x, mid.y, WZ), ang); kid(box('sill', -DW / 2 - 0.1, DW / 2 + 0.1, -0.12, 0.25, -0.06, 0.0, wtrim, 1.0), g3)
         a = light((mid.x + nrm.x * 1.5, mid.y + nrm.y * 1.5, WZ + 1.0), 450, (0.85, 0.95, 0.85), kind='AREA'); a.data.size = DW; a.rotation_euler = (math.radians(90), 0, ang)
         # clear out everything behind the diagonal wall so its window looks out onto the garden
         def corner_cutter():
@@ -234,7 +236,7 @@ def build():
         for i_, l_ in enumerate(uvl.data): co = vw.data.vertices[vw.data.loops[i_].vertex_index].co; l_.uv = (co.x / 60 + 0.5 + 0.25 * sgn, co.z / 39 + 0.5)
         vw.rotation_euler = (0, 0, ang); vw.location = (mid.x + nrm.x * 20, mid.y + nrm.y * 20, 7.0)
         # timber post in each corner of the bay, where the walls meet
-        for q in (p0, p1): box('bay post', q.x - 0.13, q.x + 0.13, q.y - 0.13, q.y + 0.13, 0.0, vault_z(q.x) - 0.05, beam, 1.2)
+        for q in (p0, p1): box('bay post', q.x - 0.13, q.x + 0.13, q.y - 0.13, q.y + 0.13, 0.0, vault_z(q.x) - 0.05, ptrim, 1.2)
         # a low cabinet under each diagonal window with candles and flowers, a spare chair beside it
         g4 = group((mid.x - nrm.x * 0.3, mid.y - nrm.y * 0.3, 0.0), ang)
         for o in (box('bay cabinet', -0.7, 0.7, -0.24, 0.24, 0.1, 0.74, cab, 1.0, 0.01), box('bay cabinet top', -0.74, 0.74, -0.27, 0.27, 0.74, 0.79, table_wood, 1.0, 0.01),
