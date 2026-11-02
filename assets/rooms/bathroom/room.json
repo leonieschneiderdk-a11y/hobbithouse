@@ -87,7 +87,7 @@
  },
  "floor": "monastery_stone_floor",
  "exposure": 0.95,
- "version": 3,
+ "version": 4,
  "wallBoost": 1.0,
  "maxFlameLights": 24,
  "flameColor": "#ffb877",

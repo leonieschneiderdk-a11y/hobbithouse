@@ -55,9 +55,6 @@ def copper_tub(cx, cy, copper, inner):
     for p in o.data.polygons:
         if (Vector((p.center.x * sx, p.center.y * sy)).length < 0.9 * min(sx, sy) and p.center.z > -h / 2 + 0.05) or (abs(p.normal.z) < 0.5 and math.hypot(p.center.x, p.center.y) < 0.97): p.material_index = 1
     rim = torus('tub rim', 1.0, 0.025, (cx, cy, 0.08 + h), (0, 0, 0), copper); rim.scale = (sx - 0.015, sy - 0.015, 1)
-    # raised back end, like a slipper bath
-    back = cyl('tub back', 1.0, 0.18, (cx, cy + sy * 0.55, 0.08 + h + 0.06), (0, 0, 0), copper, 48); back.scale = (sx, sy * 0.45, 1)
-    c2 = cyl('c', 1.0, 0.3, (cx, cy + sy * 0.55, 0.08 + h + 0.06), (0, 0, 0), inner, 48); c2.scale = (sx - 0.035, sy * 0.45 - 0.035, 1); bpy.context.view_layer.update(); cut(back, [c2])
     box('tub plinth', cx - sx * 0.7, cx + sx * 0.7, cy - sy * 0.8, cy + sy * 0.8, 0.0, 0.08, copper, 1.0, 0.02)
     water = cyl('bath water', 1.0, 0.01, (cx, cy, 0.08 + h * 0.62), (0, 0, 0), flat('bath water', (0.5, 0.42, 0.3), 0.03, transmission=0.6), 48); water.scale = (sx - 0.04, sy - 0.04, 1)
 
@@ -126,7 +123,7 @@ def build():
     box('window seat', WX - 1.1, WX + 1.1, -0.65, -0.0, 0.0, 0.48, stone, 1.2, 0.02)
     pillow(WX, -0.33, 0.56, 2.1, 0.62, 0.14, linen)
     for dx in (-0.8, -0.28, 0.75): pillow(WX + dx, -0.14, 0.8, 0.46, 0.14, 0.4, linen).rotation_euler = (math.radians(12), 0, 0)
-    model('ArmChair_01', (WX - 0.75, -1.25, 0), math.radians(200), width=0.7)
+    model('ArmChair_01', (WX - 0.75, -1.25, 0), 0.35, width=0.7)
     model('potted_plant_01', (WX + 1.4, -0.45, 0), 0.4, height=1.75)
     model('potted_plant_04', (WX + 0.7, -0.12, WZ), 0, height=0.3)
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(34, 14.5, 1), verts=bm.verts)
