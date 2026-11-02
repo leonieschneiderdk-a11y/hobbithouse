@@ -110,14 +110,14 @@ def chandelier(cx, cy, top, z, iron, lglass, r1=0.95, n1=8, r2=0.5, n2=5, s=1.0)
     lantern(cx, cy, z - 0.42, 0.9 * s, z - 0.12, iron, lglass, 45)
 
 def build():
-    floor = pbr('wood_floor_worn', 'materials', (0.74, 0.6, 0.47), 0.55, 1.0)
-    plaster = pbr('clay_plaster', 'materials', (1.02, 0.88, 0.7), 1.0, 1.6)
+    floor = pbr('wood_floor_worn', 'materials', (0.76, 0.56, 0.38), 0.55, 1.0)
+    plaster = pbr('clay_plaster', 'materials', (1.05, 0.86, 0.62), 1.0, 1.6)
     wall = pbr('plastered_stone_wall', 'materials', (1.35, 1.1, 0.8), 1.0, 1.1)
-    boards = pbr('weathered_brown_planks', 'materials', (0.82, 0.66, 0.5), 0.9)
-    beam = pbr('rough_wood', 'materials', (0.55, 0.4, 0.28), 0.9)
-    timber = pbr('dark_wooden_planks', 'materials', (0.5, 0.33, 0.2), 0.9)
-    cab = pbr('wood_cabinet_worn_long', 'materials', (0.66, 0.54, 0.42), 0.8)
-    table_wood = pbr('wood_table_worn', 'materials', (0.82, 0.68, 0.54), 0.6)
+    boards = pbr('weathered_brown_planks', 'materials', (0.6, 0.4, 0.24), 0.9)
+    beam = pbr('rough_wood', 'materials', (0.42, 0.27, 0.16), 0.9)
+    timber = pbr('dark_wooden_planks', 'materials', (0.42, 0.26, 0.15), 0.9)
+    cab = pbr('wood_cabinet_worn_long', 'materials', (0.62, 0.46, 0.32), 0.8)
+    table_wood = pbr('wood_table_worn', 'materials', (0.82, 0.6, 0.4), 0.6)
     chair_wood = flat('chair wood', (0.15, 0.085, 0.05), 0.62)
     frame = flat('window frame', (0.22, 0.14, 0.08), 0.55)
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0); lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85)
@@ -147,19 +147,19 @@ def build():
     back = end_wall('back wall', 0.0, 0.45); front = end_wall('front wall', -L, 0.45)
     # heavy arched ribs, straight tie beams, longitudinal purlins and a ridge, all rough timber
     rib = profile(40, 0.02)[1:-1]; RIBS = [-0.35 - k * 1.6 for k in range(7)]
-    for y in RIBS: sweep_profile('rib', [(prof[1][0] + 0.03, 0.0)] + rib + [(prof[-2][0] - 0.03, 0.0)], y, 0.3, 0.32, beam)
+    for y in RIBS[1:]: sweep_profile('rib', [(prof[1][0] + 0.03, 0.0)] + rib + [(prof[-2][0] - 0.03, 0.0)], y, 0.3, 0.32, beam)
     for y in RIBS[1:-1:2]:
         zt = WALL_H + 0.55; hx = vault_x(zt) - 0.05; box('tie beam', -hx, hx, y - 0.17, y + 0.17, zt - 0.3, zt, beam, 1.2)
         for s in (-1, 1): rod('brace', (s * (HW - INNER), y, WALL_H - 0.4), (s * (hx - 0.6), y, zt - 0.3), 0.08, beam, 8)
     box('ridge', -0.16, 0.16, -L, 0.0, APEX - 0.34, APEX - 0.02, beam, 1.2)
     for s in (-1, 1):
-        xp = s * 2.1; box('purlin', xp - 0.13, xp + 0.13, -L, 0.0, vault_z(xp, 0.25) - 0.26, vault_z(xp, 0.25), beam, 1.2)
-        box('wall plate', s * (HW - INNER) - 0.14, s * (HW - INNER) + 0.14, -L, 0.0, WALL_H - 0.12, WALL_H + 0.12, beam, 1.2)
+        xp = s * 2.1; box('purlin', xp - 0.13, xp + 0.13, -L, -0.3, vault_z(xp, 0.25) - 0.26, vault_z(xp, 0.25), beam, 1.2)
+        box('wall plate', s * (HW - INNER) - 0.14, s * (HW - INNER) + 0.14, -L, -1.6, WALL_H - 0.12, WALL_H + 0.12, beam, 1.2)
     # inner plaster wall layer with arched niches, and timber posts at every other rib
-    NICHES = {-1: (-3.55, -6.75), 1: (-3.55, -9.15)}
+    NICHES = {-1: (-3.55, -6.75), 1: (-3.55, -9.15)}; INNER_WALLS = []
     for s in (-1, 1):
         x0, x1 = (s * HW - INNER, s * HW) if s > 0 else (s * HW, s * HW + INNER)
-        iw = box('inner wall', x0, x1, -L, 0.0, 0.0, WALL_H - 0.1, plaster, 2.0)
+        iw = box('inner wall', x0, x1, -L, 0.0, 0.0, WALL_H - 0.1, plaster, 2.0); INNER_WALLS.append(iw)
         cuts = []
         for ny in NICHES[s]: cuts += arch_cutter_x(ny, 1.1, 1.25, 0.85, (x1 - 0.3) if s < 0 else (x0 - 0.2), (x1 + 0.2) if s < 0 else (x0 + 0.3))
         cut(iw, cuts); box_uv(iw, 2.0)
@@ -174,28 +174,64 @@ def build():
             jars_row(ny - 0.45, ny + 0.45, xc, 1.75, False, 4, jar_glass, fills, brass)
             model('ceramic_vase_03', (xc, ny, 2.2 - 0.05), 0, height=0.22) if False else None
             light((xc + s * -0.15, ny, 1.95), 45, radius=0.15); light((xc, ny, 1.05), 25, radius=0.1)
-        for y in RIBS[1::2] + [RIBS[0], RIBS[-1]]:
+        for y in RIBS[1::2] + [RIBS[-1]]:
             xp = (x0 - 0.12) if s > 0 else (x1 + 0.12); box('wall post', xp - 0.14, xp + 0.14, y - 0.15, y + 0.15, 0.0, WALL_H, beam, 1.2)
         for y in RIBS[1::2]:
             xp = (x0 - 0.3) if s > 0 else (x1 + 0.3); lantern(xp, y, 1.75, 1.0, None, iron, lglass, 80)
             box('sconce arm', min(xp, xp + s * 0.2), max(xp, xp + s * 0.2), y - 0.015, y + 0.015, 2.12, 2.15, iron, 1.0); cyl('sconce drop', 0.008, 0.07, (xp, y, 2.1), (0, 0, 0), iron, 6)
-    # ------------------------------------------------------------ back wall: three arched windows onto the garden
-    WZ = 0.85; WINS = ((0.0, 1.8, 1.85, 4), (-2.3, 1.15, 1.6, 3), (2.3, 1.15, 1.6, 3))
-    cut(back, sum((arch_cutter_y(wx, ww, wrh, WZ, -0.2, 0.8) for wx, ww, wrh, _ in WINS), []))
+    # ------------------------------------------------------------ the bay at the far end: a short straight back wall with two arched windows
+    # and a diagonal wall in each corner with one more window each (four windows, like the image)
+    BA, BD = 1.9, 1.9                    # half width of the straight back wall, depth of the corner cut
+    WZ = 0.85; WW, WRH = 1.15, 1.75
+    cut(back, sum((arch_cutter_y(wx, WW, WRH, WZ, -0.2, 0.8) for wx in (-0.95, 0.95)), []))
     box_uv(back, 2.0)
-    for wx, ww, wrh, cols in WINS:
-        g = group((wx, 0.22, WZ)); arch_window(g, ww, wrh, cols, 3, frame, glass, 5, ring=False)
-        g2 = group((wx, 0.0, WZ)); stone_arch(g2, ww, wrh, 0.14, timber, 0.16)
-        box('sill', wx - ww / 2 - 0.1, wx + ww / 2 + 0.1, -0.12, 0.25, WZ - 0.06, WZ, timber, 1.0)
-        a = light((wx, 1.5, WZ + 1.1), 650, (0.85, 0.95, 0.85), kind='AREA'); a.data.size = ww; a.rotation_euler = (math.radians(90), 0, 0)
-    # sideboards under the side windows, a wall clock and a little lantern between the windows
-    for sx in (-1, 1):
-        cabinet_run(sx * 2.3 - 0.75, sx * 2.3 + 0.75, -0.5, -0.02, '-y', cab, table_wood, brass, 0.57, 0.8)
-        model('brass_candleholders', (sx * 2.3 - 0.4, -0.25, 0.8), 0, width=0.32); model('ceramic_vase_02', (sx * 2.3 + 0.38, -0.25, 0.8), 0, height=0.22)
-        bouquet(sx * 2.3 + 0.38, -0.25, 1.0, petals, ivy, 12, 0.12)
-    model('wall_clock', (1.45, -0.06, 2.95), 0, width=0.42).rotation_euler = (math.radians(90), 0, 0)
-    for sx in (-1.45,): box('sconce arm', sx - 0.015, sx + 0.015, -0.25, 0.0, 2.62, 2.65, iron, 1.0); lantern(sx, -0.25, 2.3, 0.9, 2.63, iron, lglass, 40)
-    for sx in (-1, 1): model('potted_plant_02', (sx * 1.35, -0.45, 0), sx, height=0.85)
+    for wx in (-0.95, 0.95):
+        g = group((wx, 0.22, WZ)); arch_window(g, WW, WRH, 3, 3, frame, glass, 5, ring=False)
+        g2 = group((wx, 0.0, WZ)); stone_arch(g2, WW, WRH, 0.14, timber, 0.15)
+        box('sill', wx - WW / 2 - 0.1, wx + WW / 2 + 0.1, -0.12, 0.25, WZ - 0.06, WZ, timber, 1.0)
+        a = light((wx, 1.5, WZ + 1.1), 520, (0.85, 0.95, 0.85), kind='AREA'); a.data.size = WW; a.rotation_euler = (math.radians(90), 0, 0)
+    DW, DRH = 1.15, 1.5
+    for sgn in (-1, 1):
+        p0 = Vector((sgn * BA, 0.0)); p1 = Vector((sgn * HW, -BD)); d = (p1 - p0); ln = d.length; u = d / ln
+        ang = math.atan2(u.y, u.x) if sgn > 0 else math.atan2(-u.y, -u.x)            # local x along the wall
+        nrm = Vector((-math.sin(ang), math.cos(ang)))                                  # local +y, pointing out of the room
+        # the wall: bottom along the floor, top following the vault, thickened outward
+        bm = bmesh.new(); n = 24; bot = [bm.verts.new((p0.x + d.x * t, p0.y + d.y * t, 0.0)) for t in (0.0, 1.0)]
+        top = [bm.verts.new((p0.x + d.x * (k / n), p0.y + d.y * (k / n), vault_z(p0.x + d.x * (k / n)) + 0.15)) for k in range(n + 1)]
+        bm.faces.new([bot[0], bot[1]] + list(reversed(top)))
+        dw = obj_from_bm('bay wall', bm, plaster); sl = dw.modifiers.new('s', 'SOLIDIFY'); sl.thickness = 0.42
+        bpy.context.view_layer.objects.active = dw; bpy.ops.object.modifier_apply(modifier='s')
+        # make sure the thickness went outward: if the wall centre moved inward, flip it
+        c = sum((v.co for v in dw.data.vertices), Vector()) / len(dw.data.vertices); mid = (p0 + p1) / 2
+        if (Vector((c.x, c.y)) - mid).dot(nrm) < 0: dw.location = (nrm.x * 0.42, nrm.y * 0.42, 0)
+        mid3 = Vector((mid.x, mid.y, 0))
+        cutters = arch_cutter_y(0.0, DW, DRH, WZ, -0.8, 0.8)
+        for cobj in cutters:
+            cobj.rotation_euler = (cobj.rotation_euler.x, cobj.rotation_euler.y, ang); cobj.location = (mid.x + cobj.location.x * math.cos(ang), mid.y + cobj.location.x * math.sin(ang), cobj.location.z)
+        bpy.context.view_layer.update(); cut(dw, cutters); box_uv(dw, 2.0)
+        g = group((mid.x + nrm.x * 0.22, mid.y + nrm.y * 0.22, WZ), ang); arch_window(g, DW, DRH, 3, 3, frame, glass, 5, ring=False)
+        g2 = group((mid.x, mid.y, WZ), ang); stone_arch(g2, DW, DRH, 0.14, timber, 0.15)
+        g3 = group((mid.x, mid.y, WZ), ang); kid(box('sill', -DW / 2 - 0.1, DW / 2 + 0.1, -0.12, 0.25, -0.06, 0.0, timber, 1.0), g3)
+        a = light((mid.x + nrm.x * 1.5, mid.y + nrm.y * 1.5, WZ + 1.0), 450, (0.85, 0.95, 0.85), kind='AREA'); a.data.size = DW; a.rotation_euler = (math.radians(90), 0, ang)
+        # clear out everything behind the diagonal wall so its window looks out onto the garden
+        def corner_cutter():
+            cb = box('c', -5, 5, 0.5, 9, -1, 7, flat('cut', (1, 1, 1))); cb.rotation_euler = (0, 0, ang); cb.location = (mid.x, mid.y, 0); return cb
+        for tgt in [shell, back] + INNER_WALLS:
+            bpy.context.view_layer.update(); cut(tgt, [corner_cutter()])
+        # timber post in each corner of the bay, where the walls meet
+        for q in (p0, p1): box('bay post', q.x - 0.13, q.x + 0.13, q.y - 0.13, q.y + 0.13, 0.0, vault_z(q.x) - 0.05, beam, 1.2)
+        # a low cabinet under each diagonal window with candles and flowers, a spare chair beside it
+        g4 = group((mid.x - nrm.x * 0.3, mid.y - nrm.y * 0.3, 0.0), ang)
+        for o in (box('bay cabinet', -0.7, 0.7, -0.24, 0.24, 0.1, 0.74, cab, 1.0, 0.01), box('bay cabinet top', -0.74, 0.74, -0.27, 0.27, 0.74, 0.79, table_wood, 1.0, 0.01),
+                  box('bay plinth', -0.66, 0.66, -0.2, 0.2, 0.0, 0.1, cab, 1.0)): kid(o, g4)
+        for k in range(2): kid(box('bay door', -0.66 + k * 0.67, -0.02 + k * 0.67, -0.27, -0.245, 0.16, 0.68, cab, 1.0, 0.005), g4)
+        cpos = mid - nrm * 0.3
+        model('brass_candleholders', (cpos.x - u.x * 0.4 * sgn, cpos.y - u.y * 0.4 * sgn, 0.79), ang, width=0.3)
+        model('ceramic_vase_02', (cpos.x + u.x * 0.4 * sgn, cpos.y + u.y * 0.4 * sgn, 0.79), 0, height=0.22); bouquet(cpos.x + u.x * 0.4 * sgn, cpos.y + u.y * 0.4 * sgn, 0.99, petals, ivy, 12, 0.12)
+    # a wall clock above and a lantern between the two back windows, plants either side
+    model('wall_clock', (0.0, -0.06, 3.05), 0, width=0.4).rotation_euler = (math.radians(90), 0, 0)
+    box('sconce arm', -0.015, 0.015, -0.25, 0.0, 2.55, 2.58, iron, 1.0); lantern(0.0, -0.25, 2.2, 0.85, 2.56, iron, lglass, 40)
+    for sx in (-1, 1): model('potted_plant_02', (sx * 1.65, -0.5, 0), sx, height=0.8)
 
     # ------------------------------------------------------------ the long table, chairs, rug, centrepiece and candles
     TL, TWD, TH, TC = 6.3, 1.35, 0.78, -6.1
@@ -290,9 +326,9 @@ def build():
 
 def walk_rects():
     R = [(-2.75, 2.75, -10.6, -9.95),          # front strip
-         (-2.75, -1.5, -10.6, -0.8),            # left aisle
-         (1.5, 2.75, -10.6, -0.8),              # right aisle
-         (-2.75, 2.75, -2.45, -0.8),            # back strip by the windows
+         (-2.75, -1.5, -10.6, -1.1),            # left aisle
+         (1.5, 2.75, -10.6, -1.1),              # right aisle
+         (-2.6, 2.6, -2.45, -0.8),              # back strip by the windows
          (1.85, 2.95, -L - 2.2, -11.4)]         # doorway passage
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 

@@ -16,18 +16,18 @@
   [
    -2.75,
    -1.5,
-   0.8,
+   1.1,
    10.6
   ],
   [
    1.5,
    2.75,
-   0.8,
+   1.1,
    10.6
   ],
   [
-   -2.75,
-   2.75,
+   -2.6,
+   2.6,
    0.8,
    2.45
   ],
@@ -46,14 +46,14 @@
  ],
  "tints": {
   "clay_plaster": [
-   1.02,
-   0.88,
-   0.7
+   1.05,
+   0.86,
+   0.62
   ],
   "dark_wooden_planks": [
-   0.5,
-   0.33,
-   0.2
+   0.42,
+   0.26,
+   0.15
   ],
   "plastered_stone_wall": [
    1.35,
@@ -61,39 +61,42 @@
    0.8
   ],
   "rough_wood": [
-   0.55,
-   0.4,
-   0.28
+   0.42,
+   0.27,
+   0.16
   ],
   "weathered_brown_planks": [
-   0.82,
-   0.66,
-   0.5
+   0.6,
+   0.4,
+   0.24
   ],
   "wood_cabinet_worn_long": [
-   0.66,
-   0.54,
-   0.42
+   0.62,
+   0.46,
+   0.32
   ],
   "wood_floor_worn": [
-   0.74,
-   0.6,
-   0.47
+   0.76,
+   0.56,
+   0.38
   ],
   "wood_table_worn": [
    0.82,
-   0.68,
-   0.54
+   0.6,
+   0.4
   ]
  },
  "floor": "wood_floor_worn",
  "exposure": 0.82,
- "version": 3,
+ "version": 4,
  "wallBoost": 1.0,
  "maxFlameLights": 34,
  "env": {
   "chair wood": 0.3,
-  "wood_table_worn": 0.5
+  "wood_table_worn": 0.5,
+  "weathered_brown_planks": 0.3,
+  "rough_wood": 0.3,
+  "dark_wooden_planks": 0.35
  },
  "webTint": {
   "chair wood": [
@@ -107,5 +110,5 @@
    0.85
   ]
  },
- "flameColor": "#ffc58c"
+ "flameColor": "#ffb877"
 }
