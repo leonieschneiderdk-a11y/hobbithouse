@@ -120,9 +120,9 @@ def build():
     cab = pbr('wood_cabinet_worn_long', 'materials', (0.46, 0.36, 0.27), 0.8)
     table_wood = pbr('wood_table_worn', 'materials', (0.66, 0.52, 0.38), 0.6)
     chair_wood = flat('chair wood', (0.13, 0.085, 0.055), 0.62)
-    frame = flat('window frame', (0.42, 0.3, 0.19), 0.55)
-    wtrim = pbr('dark_wooden_planks', 'materials', (0.74, 0.56, 0.4), 0.9)      # light brown wood round the windows
-    ptrim = pbr('rough_wood', 'materials', (0.64, 0.5, 0.36), 0.9)              # light brown posts up the walls
+    frame = flat('window frame', (0.62, 0.45, 0.29), 0.55)
+    wtrim = pbr('oak_wood_planks', 'materials', (1.0, 0.8, 0.58), 0.9)      # light brown wood round the windows
+    ptrim = pbr('oak_wood_planks', 'materials', (0.95, 0.76, 0.55), 0.9)              # light brown posts up the walls
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0); lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85)
     iron = flat('iron', (0.03, 0.028, 0.026), 0.55, 0.35)
     brass = flat('brass', (0.78, 0.55, 0.26), 0.3, 1.0)
