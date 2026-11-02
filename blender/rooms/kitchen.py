@@ -86,10 +86,13 @@ def arch_window(g, w, rect_h, cols, rows, frame, glass, fan=5, ring=True):
     for i in range(33): a = i / 32 * math.pi; vs.append(bm.verts.new((math.cos(a) * (w / 2 - t), 0, rect_h + math.sin(a) * (w / 2 - t))))
     bm.faces.new([vs[0], vs[1]] + vs[2:]); kid(obj_from_bm('glass', bm, glass), g)
 
-def stone_arch(g, w, rect_h, depth, mat, t=0.22):
-    """Stone surround (jambs and voussoir ring) around an arched opening, local space like arch_window."""
+def stone_arch(g, w, rect_h, depth, mat, t=0.22, half=False):
+    """Stone surround (jambs and voussoir ring) around an arched opening, local space like arch_window.
+    half=True keeps only the upper half of the ring, so it does not cross the opening below the springing line."""
     bpy.ops.mesh.primitive_torus_add(major_radius=w / 2 + t / 2, minor_radius=t / 2, major_segments=48, minor_segments=8, location=(0, 0, rect_h), rotation=(math.pi / 2, 0, 0))
     o = bpy.context.active_object; o.scale = (1, 1, depth / t); o.data.materials.append(mat); kid(o, g)
+    if half:
+        bm = bmesh.new(); bm.from_mesh(o.data); bmesh.ops.delete(bm, geom=[v for v in bm.verts if v.co.y < -t * 0.6], context='VERTS'); bm.to_mesh(o.data); bm.free()
     for s in (-1, 1): kid(box('jamb', s * (w / 2 + t / 2) - t / 2, s * (w / 2 + t / 2) + t / 2, -depth / 2, depth / 2, 0, rect_h, mat, 0.9), g)
 
 def lantern(x, y, z, s=1.0, top=None, iron=None, glass=None, power=45):

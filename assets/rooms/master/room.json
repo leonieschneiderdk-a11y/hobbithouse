@@ -1,0 +1,143 @@
+{
+ "name": "Master Bathroom",
+ "glb": "assets/rooms/master/master.glb",
+ "spawn": {
+  "x": 0.6,
+  "z": 5.8999999999999995,
+  "yaw": 0.15
+ },
+ "walk": [
+  [
+   -2.25,
+   2.25,
+   2.35,
+   6.199999999999999
+  ],
+  [
+   -2.25,
+   0.55,
+   1.95,
+   2.35
+  ],
+  [
+   1.2000000000000002,
+   1.75,
+   1.6,
+   2.5
+  ],
+  [
+   1.05,
+   2.7,
+   0.35,
+   1.7
+  ],
+  [
+   -1.85,
+   -0.95,
+   6.1,
+   6.8
+  ]
+ ],
+ "probe": [
+  0.2,
+  1.4,
+  3.5
+ ],
+ "tints": {
+  "dark_wooden_planks": [
+   0.55,
+   0.38,
+   0.24
+  ],
+  "monastery_stone_floor": [
+   0.66,
+   0.56,
+   0.46
+  ],
+  "old_stone_wall": [
+   0.86,
+   0.72,
+   0.56
+  ],
+  "rough_wood": [
+   0.4,
+   0.28,
+   0.18
+  ],
+  "rug": [
+   1.0,
+   0.9,
+   0.85
+  ],
+  "stone top": [
+   0.95,
+   0.85,
+   0.72
+  ],
+  "wood_cabinet_worn_long": [
+   0.55,
+   0.4,
+   0.26
+  ],
+  "yellow_stone_wall": [
+   0.62,
+   0.56,
+   0.5
+  ],
+  "yellow_stone_wall.001": [
+   0.8,
+   0.72,
+   0.62
+  ]
+ },
+ "floor": "monastery_stone_floor",
+ "lights": [
+  {
+   "x": -1.35,
+   "y": 2.2,
+   "z": 1.3,
+   "color": "#ffe8d0",
+   "power": 12,
+   "range": 7
+  },
+  {
+   "x": 1.9,
+   "y": 2.4,
+   "z": 1.0,
+   "color": "#ffd0a0",
+   "power": 6,
+   "range": 4
+  },
+  {
+   "x": 0.5,
+   "y": 2.8,
+   "z": 4.0,
+   "color": "#ffb877",
+   "power": 8,
+   "range": 6
+  }
+ ],
+ "exposure": 0.85,
+ "version": 1,
+ "wallBoost": 1.0,
+ "maxFlameLights": 26,
+ "flameColor": "#ffb877",
+ "env": {
+  "copper": 0.3,
+  "copper inside": 0.25,
+  "dark_wooden_planks": 0.2,
+  "rough_wood": 0.2
+ },
+ "webTint": {
+  "copper": [
+   0.8,
+   0.65,
+   0.58
+  ],
+  "copper inside": [
+   0.8,
+   0.62,
+   0.52
+  ]
+ }
+}
