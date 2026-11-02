@@ -156,9 +156,34 @@ def build():
     for (x, y, s) in ((-HW + 0.45, -7.4, 1.0), (-HW + 0.7, -7.8, 0.75), (-HW + 0.45, -1.4, 0.9)): floor_lantern(x, y, iron, lglass, s)
     candles_cluster(-HW + 0.5, -8.3, 0.0, wax, 4, 1.2); candles_cluster(-HW + 0.85, -1.6, 0.0, wax, 3, 1.1)
     model('potted_plant_02', (-HW + 0.5, -0.6, 0), 2.1, height=0.9)
-    model('painted_wooden_bench', (-1.2, -7.6, 0), 0.0, width=1.5)
-    for k in range(3): box('rolled towel', -1.65 + k * 0.32, -1.38 + k * 0.32, -7.75, -7.45, 0.45, 0.55, towel, 1.0, 0.04)
-    model('potted_plant_02', (-2.6, -8.4, 0), 1.2, height=0.9)
+    # two massage beds in the middle of the room, a little table of candles and oils between them, on a round rug
+    leather = flat('massage pad', (0.36, 0.24, 0.16), 0.55)
+    bm = bmesh.new(); bmesh.ops.create_circle(bm, cap_ends=True, segments=96, radius=2.0); uv = bm.loops.layers.uv.new()
+    for f in bm.faces:
+        for l in f.loops: l[uv].uv = (l.vert.co.x / 4.0 + 0.5, l.vert.co.y / 4.0 + 0.5)
+    obj_from_bm('rug', bm, mat_alpha('rug', A('assets', 'rooms', 'entrance', 'rug_diff.png'), 0.95)).location = (0.5, -5.6, 0.006)
+    for bx in (-0.55, 1.55):
+        by = -5.6
+        box('massage frame', bx - 0.36, bx + 0.36, by - 0.95, by + 0.95, 0.56, 0.64, cedar_dark, 1.0, 0.01)
+        for sx in (-1, 1):
+            for sy in (-1, 1): box('massage leg', bx + sx * 0.3 - 0.035, bx + sx * 0.3 + 0.035, by + sy * 0.86 - 0.035, by + sy * 0.86 + 0.035, 0.0, 0.56, cedar_dark, 1.0)
+            box('massage rail', bx + sx * 0.3 - 0.02, bx + sx * 0.3 + 0.02, by - 0.86, by + 0.86, 0.15, 0.19, cedar_dark, 1.0)
+        pillow(bx, by, 0.7, 0.72, 1.9, 0.12, leather)
+        cyl('face rest', 0.16, 0.08, (bx, by + 1.12, 0.66), (0, 0, 0), leather, 32).scale = (1, 0.7, 1)
+        box('face rest arm', bx - 0.04, bx + 0.04, by + 0.9, by + 1.05, 0.58, 0.63, cedar_dark, 1.0)
+        box('folded towel', bx - 0.3, bx + 0.3, by - 0.85, by - 0.45, 0.76, 0.84, towel, 1.0, 0.02)
+        box('folded towel', bx - 0.26, bx + 0.26, by - 0.82, by - 0.5, 0.84, 0.9, flat('towel sage', (0.55, 0.58, 0.45), 0.95), 1.0, 0.02)
+        model('wicker_basket_02', (bx, by - 0.2, 0.19), math.pi / 2, width=0.4)
+    tx, ty = 0.5, -5.2
+    cyl('oil table top', 0.32, 0.04, (tx, ty, 0.62), (0, 0, 0), cedar_dark, 32); cyl('oil table post', 0.05, 0.6, (tx, ty, 0.3), (0, 0, 0), cedar_dark, 16)
+    cyl('oil table foot', 0.24, 0.03, (tx, ty, 0.015), (0, 0, 0), cedar_dark, 32)
+    candles_cluster(tx + 0.08, ty - 0.08, 0.64, wax, 3, 0.9)
+    model('ceramic_vase_04', (tx - 0.14, ty + 0.1, 0.64), 0, height=0.18); model('brass_vase_02', (tx + 0.12, ty + 0.14, 0.64), 0, height=0.14)
+    model('wooden_bowl_02', (tx - 0.12, ty - 0.14, 0.64), 0, width=0.14)
+    for (x, y) in ((-1.5, -4.2), (2.5, -4.2), (-1.5, -7.0), (2.5, -7.0)): floor_lantern(x, y, iron, lglass, 0.7)
+    model('painted_wooden_bench', (-2.6, -8.2, 0), 0.0, width=1.5)
+    for k in range(3): box('rolled towel', -3.05 + k * 0.32, -2.78 + k * 0.32, -8.35, -8.05, 0.45, 0.55, towel, 1.0, 0.04)
+    model('potted_plant_02', (-3.6, -8.7, 0), 1.2, height=0.9)
     # front wall: the entrance door
     cut(front, arch_cutter_y(2.0, 1.2, 1.6, 0.0, -LA - 1, -LA + 1)); box_uv(front, 1.6)
     g = group((2.0, -LA, 0.0)); stone_arch(g, 1.2, 1.6, 0.5, vaultA, 0.2)
@@ -238,7 +263,9 @@ def build():
         f = light((x, y, PH - 0.4), 90, (1.0, 0.68, 0.4), kind='AREA'); f.data.size = 3.0; f.rotation_euler = (math.pi, 0, 0)
 
 def walk_rects():
-    R = [(-HW + 0.5, HW - 0.6, -LA + 0.4, TY0_W),            # hot-tub room, in front of the tub
+    R = [(-HW + 0.5, HW - 0.6, -LA + 0.4, -7.15),           # hot-tub room, by the entrance
+         (-HW + 0.5, HW - 0.6, -4.05, TY0_W),                 # in front of the tub
+         (-HW + 0.5, -1.25, -7.15, -4.05), (2.25, HW - 0.6, -7.15, -4.05), (0.2, 0.8, -6.6, -5.65),   # round the massage beds
          (-HW + 0.5, -1.6, TY0_W, -0.7),                      # beside the tub
          (SX0 - 0.4, SX1 + 0.55, DOOR_Y - 0.4, DOOR_Y + 0.4),  # through the sauna
          (PX1 - 1.5, PX1 - 0.15, PY0 + 0.4, PY1 - 0.6),        # east side of the pool room
