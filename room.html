@@ -53,9 +53,11 @@ loader.load(cfg.glb,g=>{const room=g.scene;const flames=[];
       if(m&&m.name==='glass'){m.transparent=true;m.opacity=0.15;m.depthWrite=false;}
       if(m&&/ivy|rug/.test(m.name||'')){m.transparent=false;m.alphaTest=0.5;m.side=THREE.DoubleSide;m.depthWrite=true;m.needsUpdate=true;}
       if(m&&m.envMapIntensity!==undefined)m.envMapIntensity=0.4;
-      if(m&&/stonetile|octotile/.test(m.name||''))m.color.setRGB(0.78,0.7,0.62);}});
+      if(m&&/stonetile|octotile/.test(m.name||''))m.color.setRGB(1,0.96,0.9);
+      if(m&&/lanternglow/.test(m.name||'')){m.emissive=new THREE.Color(1,0.66,0.32);m.emissiveIntensity=5;}}});
   scene.add(room);room.updateMatrixWorld(true);
-  for(const f of flames){const p=new THREE.Vector3();f.getWorldPosition(p);const l=new THREE.PointLight(0xffa64d,3.2,5,2);l.position.copy(p).add(new THREE.Vector3(0,0.05,0));scene.add(l);}
+  const pts=[];for(const f of flames){const p=new THREE.Vector3();f.getWorldPosition(p);if(!pts.some(q=>q.distanceTo(p)<0.8))pts.push(p);}
+  for(const p of pts.slice(0,20)){const l=new THREE.PointLight(0xffa64d,3.2,5,2);l.position.copy(p).add(new THREE.Vector3(0,0.05,0));scene.add(l);}
   document.getElementById('load').hidden=true;},
   e=>{document.getElementById('load').textContent='Loading the room… '+(e.total?Math.round(e.loaded/e.total*100)+'%':'');},
   e=>{document.getElementById('load').textContent='The room could not load.';console.error(e);});});

@@ -149,7 +149,10 @@ def build():
     for s in (-1, 1):
         for y in (0 - 1.3, -5.25, -8.75, -L + 1.3):
             box('pilaster', s * HX - (0.3 if s > 0 else -0.3) - 0.22, s * HX - (0.3 if s > 0 else -0.3) + 0.22, y - 0.35, y + 0.35, 0.0, H, stone, 1.2)
-            model('wooden_lantern_01', (s * (HX - 0.62), y, 2.2), -s * math.pi / 2, height=0.42); light((s * (HX - 0.8), y, 2.45), 70)
+            model('wooden_lantern_01', (s * (HX - 0.62), y, 2.2), -s * math.pi / 2, height=0.42)
+            candle((s * (HX - 0.62), y, 2.24), 0.11, 0)                                 # a lit candle inside each lantern
+            g = cyl('lantern glow', 0.05, 0.16, (s * (HX - 0.62), y, 2.32), (0, 0, 0), flat('lanternglow', (1, 0.7, 0.4), 1, emit=(1.0, 0.66, 0.32), strength=25), 12)
+            light((s * (HX - 0.85), y, 2.4), 320, radius=0.12); light((s * (HX - 1.3), y, 2.8), 140, radius=0.4)
             ivy_cluster(ivy, s * (HX - 0.5), y, 3.6, 10, 0.25, 1.5)
     # the big round rug
     bm = bmesh.new(); bmesh.ops.create_circle(bm, cap_ends=True, segments=96, radius=3.3); uv = bm.loops.layers.uv.new()
@@ -196,7 +199,7 @@ def main():
     for o in bpy.context.scene.objects:
         if o.type == 'LIGHT' and hasattr(o, 'visible_camera'): o.visible_camera = False
     sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = a.samples; sc.cycles.use_denoising = True; sc.cycles.max_bounces = 8
-    sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = 0.6
+    sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = 0.75
     w, h = map(int, a.res.split('x')); sc.render.resolution_x, sc.render.resolution_y = w, h
     x, y, z, tilt, head, lens = map(float, a.cam.split(',')); cam = bpy.data.objects.new('camera', bpy.data.cameras.new('camera')); sc.collection.objects.link(cam); sc.camera = cam
     cam.location = (x, y, z); cam.rotation_euler = (math.radians(tilt), 0, math.radians(head)); cam.data.lens = lens
