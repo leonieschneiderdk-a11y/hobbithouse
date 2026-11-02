@@ -17,6 +17,7 @@ from kitchen import (lantern, cabinet_run, shelf, plates_row, jars_row, leaf_clu
 W, L = 7.6, 11.0
 HW = W / 2
 WALL_H, APEX = 2.5, 4.1
+BA, BD = 1.75, 2.35             # bay: half width of the straight back wall, depth of the corner cut
 INNER = 0.42                      # thickness of the plastered inner wall layer that holds the arched niches
 rnd = random.Random(31)
 LIGHTS = []
@@ -110,15 +111,15 @@ def chandelier(cx, cy, top, z, iron, lglass, r1=0.95, n1=8, r2=0.5, n2=5, s=1.0)
     lantern(cx, cy, z - 0.42, 0.9 * s, z - 0.12, iron, lglass, 45)
 
 def build():
-    floor = pbr('wood_floor_worn', 'materials', (0.76, 0.56, 0.38), 0.55, 1.0)
-    plaster = pbr('clay_plaster', 'materials', (1.05, 0.86, 0.62), 1.0, 1.6)
+    floor = pbr('wood_floor_worn', 'materials', (0.6, 0.47, 0.35), 0.55, 1.0)
+    plaster = pbr('clay_plaster', 'materials', (0.92, 0.8, 0.64), 1.0, 1.6)
     wall = pbr('plastered_stone_wall', 'materials', (1.35, 1.1, 0.8), 1.0, 1.1)
-    boards = pbr('weathered_brown_planks', 'materials', (0.6, 0.4, 0.24), 0.9)
-    beam = pbr('rough_wood', 'materials', (0.42, 0.27, 0.16), 0.9)
-    timber = pbr('dark_wooden_planks', 'materials', (0.42, 0.26, 0.15), 0.9)
-    cab = pbr('wood_cabinet_worn_long', 'materials', (0.62, 0.46, 0.32), 0.8)
-    table_wood = pbr('wood_table_worn', 'materials', (0.82, 0.6, 0.4), 0.6)
-    chair_wood = flat('chair wood', (0.15, 0.085, 0.05), 0.62)
+    boards = pbr('weathered_brown_planks', 'materials', (0.44, 0.33, 0.23), 0.9)
+    beam = pbr('rough_wood', 'materials', (0.31, 0.23, 0.16), 0.9)
+    timber = pbr('dark_wooden_planks', 'materials', (0.3, 0.21, 0.14), 0.9)
+    cab = pbr('wood_cabinet_worn_long', 'materials', (0.46, 0.36, 0.27), 0.8)
+    table_wood = pbr('wood_table_worn', 'materials', (0.66, 0.52, 0.38), 0.6)
+    chair_wood = flat('chair wood', (0.13, 0.085, 0.055), 0.62)
     frame = flat('window frame', (0.22, 0.14, 0.08), 0.55)
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0); lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85)
     iron = flat('iron', (0.03, 0.028, 0.026), 0.55, 0.35)
@@ -135,8 +136,15 @@ def build():
     # ------------------------------------------------------------ shell: plank floor, arched plank ceiling, end walls
     box('floor', -HW - 0.3, HW + 0.3, -L - 0.3, 0.3, -0.12, 0.0, floor, 2.4)
     prof = profile()
-    bm = bmesh.new(); r0 = [bm.verts.new((x, 0.0, z)) for x, z in prof]; r1 = [bm.verts.new((x, -L, z)) for x, z in prof]
-    for i in range(len(prof) - 1): bm.faces.new((r0[i + 1], r0[i], r1[i], r1[i + 1]))
+    # the vault is built in short sections so the pieces behind the bay's diagonal walls can simply be left out
+    ys = [0.0] + [-0.15 * k for k in range(1, int(BD / 0.15) + 3)] + [-L]
+    bm = bmesh.new(); rings = [[bm.verts.new((x, y, z)) for x, z in prof] for y in ys]
+    for j in range(len(ys) - 1):
+        ym = (ys[j] + ys[j + 1]) / 2
+        for i in range(len(prof) - 1):
+            xm = (prof[i][0] + prof[i + 1][0]) / 2
+            if ym > -BD and abs(xm) > BA + (-ym) * (HW - BA) / BD + 0.05: continue
+            bm.faces.new((rings[j][i + 1], rings[j][i], rings[j + 1][i], rings[j + 1][i + 1]))
     shell = obj_from_bm('vault', bm, boards, True); shell.data.materials.append(plaster)
     for p in shell.data.polygons: p.material_index = 1 if p.center.z < WALL_H - 0.01 else 0
     box_uv(shell, 2.0); sol = shell.modifiers.new('s', 'SOLIDIFY'); sol.thickness = 0.3; sol.offset = 1
@@ -147,14 +155,16 @@ def build():
     back = end_wall('back wall', 0.0, 0.45); front = end_wall('front wall', -L, 0.45)
     # heavy arched ribs, straight tie beams, longitudinal purlins and a ridge, all rough timber
     rib = profile(40, 0.02)[1:-1]; RIBS = [-0.35 - k * 1.6 for k in range(7)]
-    for y in RIBS[1:]: sweep_profile('rib', [(prof[1][0] + 0.03, 0.0)] + rib + [(prof[-2][0] - 0.03, 0.0)], y, 0.3, 0.32, beam)
+    BAY_TRIM = []
+    for y in RIBS[1:]: (BAY_TRIM.append if y > -2.6 else (lambda o: None))(sweep_profile('rib', [(prof[1][0] + 0.03, 0.0)] + rib + [(prof[-2][0] - 0.03, 0.0)], y, 0.3, 0.32, beam))
     for y in RIBS[1:-1:2]:
-        zt = WALL_H + 0.55; hx = vault_x(zt) - 0.05; box('tie beam', -hx, hx, y - 0.17, y + 0.17, zt - 0.3, zt, beam, 1.2)
+        zt = WALL_H + 0.55; hx = vault_x(zt) - 0.05; tb = box('tie beam', -hx, hx, y - 0.17, y + 0.17, zt - 0.3, zt, beam, 1.2)
+        if y > -2.6: BAY_TRIM.append(tb)
         for s in (-1, 1): rod('brace', (s * (HW - INNER), y, WALL_H - 0.4), (s * (hx - 0.6), y, zt - 0.3), 0.08, beam, 8)
     box('ridge', -0.16, 0.16, -L, 0.0, APEX - 0.34, APEX - 0.02, beam, 1.2)
     for s in (-1, 1):
-        xp = s * 2.1; box('purlin', xp - 0.13, xp + 0.13, -L, -0.3, vault_z(xp, 0.25) - 0.26, vault_z(xp, 0.25), beam, 1.2)
-        box('wall plate', s * (HW - INNER) - 0.14, s * (HW - INNER) + 0.14, -L, -1.6, WALL_H - 0.12, WALL_H + 0.12, beam, 1.2)
+        xp = s * 2.1; box('purlin', xp - 0.13, xp + 0.13, -L, -0.5, vault_z(xp, 0.25) - 0.26, vault_z(xp, 0.25), beam, 1.2)
+        box('wall plate', s * (HW - INNER) - 0.14, s * (HW - INNER) + 0.14, -L, -1.9, WALL_H - 0.12, WALL_H + 0.12, beam, 1.2)
     # inner plaster wall layer with arched niches, and timber posts at every other rib
     NICHES = {-1: (-3.55, -6.75), 1: (-3.55, -9.15)}; INNER_WALLS = []
     for s in (-1, 1):
@@ -181,7 +191,6 @@ def build():
             box('sconce arm', min(xp, xp + s * 0.2), max(xp, xp + s * 0.2), y - 0.015, y + 0.015, 2.12, 2.15, iron, 1.0); cyl('sconce drop', 0.008, 0.07, (xp, y, 2.1), (0, 0, 0), iron, 6)
     # ------------------------------------------------------------ the bay at the far end: a short straight back wall with two arched windows
     # and a diagonal wall in each corner with one more window each (four windows, like the image)
-    BA, BD = 1.9, 1.9                    # half width of the straight back wall, depth of the corner cut
     WZ = 0.85; WW, WRH = 1.15, 1.75
     cut(back, sum((arch_cutter_y(wx, WW, WRH, WZ, -0.2, 0.8) for wx in (-0.95, 0.95)), []))
     box_uv(back, 2.0)
@@ -216,8 +225,14 @@ def build():
         # clear out everything behind the diagonal wall so its window looks out onto the garden
         def corner_cutter():
             cb = box('c', -5, 5, 0.5, 9, -1, 7, flat('cut', (1, 1, 1))); cb.rotation_euler = (0, 0, ang); cb.location = (mid.x, mid.y, 0); return cb
-        for tgt in [shell, back] + INNER_WALLS:
+        for tgt in [back] + INNER_WALLS + BAY_TRIM:
             bpy.context.view_layer.update(); cut(tgt, [corner_cutter()])
+        # its own garden backdrop, facing the window
+        bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(60, 39, 1), verts=bm.verts)
+        bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
+        vw = obj_from_bm('garden view', bm, image_mat('view', K('view.jpg'), 1.0)); uvl = vw.data.uv_layers.new()
+        for i_, l_ in enumerate(uvl.data): co = vw.data.vertices[vw.data.loops[i_].vertex_index].co; l_.uv = (co.x / 60 + 0.5 + 0.25 * sgn, co.z / 39 + 0.5)
+        vw.rotation_euler = (0, 0, ang); vw.location = (mid.x + nrm.x * 20, mid.y + nrm.y * 20, 7.0)
         # timber post in each corner of the bay, where the walls meet
         for q in (p0, p1): box('bay post', q.x - 0.13, q.x + 0.13, q.y - 0.13, q.y + 0.13, 0.0, vault_z(q.x) - 0.05, beam, 1.2)
         # a low cabinet under each diagonal window with candles and flowers, a spare chair beside it
@@ -272,8 +287,8 @@ def build():
     shelf(RX - 0.3, RX, -8.2, -4.4, 1.85 - 0.0, cab) if False else None
     jars_row(-8.1, -4.5, RX - 0.16, 2.05, False, 0, jar_glass, fills, brass) if False else None
     model('ceramic_pot', (RX - 0.3, -7.2, 0.86), 0, width=0.32); model('brass_candleholders', (RX - 0.3, -6.3, 0.86), math.pi / 2, width=0.34)
-    model('ArmChair_01', (RX - 0.8, -1.3, 0), -math.pi / 2 - 0.5, width=0.85); model('WoodenTable_02', (RX - 0.45, -2.25, 0), 0, height=0.6)
-    candle((RX - 0.45, -2.25, 0.62), 0.14, 6); model('potted_plant_01', (-RX + 0.5, -1.2, 0), 0.3, height=1.3)
+    model('ArmChair_01', (RX - 0.75, -2.75, 0), -math.pi / 2 - 0.35, width=0.82); model('WoodenTable_02', (RX - 0.4, -3.0 + 0.0, 0), 0, height=0.6) if False else model('WoodenTable_02', (RX - 0.35, -2.05, 0), 0, height=0.6)
+    candle((RX - 0.35, -2.05, 0.62), 0.14, 6); model('potted_plant_01', (-RX + 0.45, -2.0, 0), 0.3, height=1.3)
     model('vintage_cabinet_01', (-RX + 0.3, -1.2 - 1.3, 0), math.pi / 2, width=1.0) if False else None
     model('potted_plant_01', (RX - 0.45, -L + 0.5, 0), 1.0, height=1.4); model('potted_plant_01', (-RX + 0.45, -L + 0.55, 0), 2.0, height=1.3)
     # ------------------------------------------------------------ fuller room: cabinets under the niches, place settings, spare chairs, greenery
@@ -297,7 +312,7 @@ def build():
         for k, (nm, hh) in enumerate((('food_apple_01', 0.08), ('food_pomegranate_01', 0.09), ('lemon', 0.08), ('food_pears_asian_01', 0.09), ('food_apple_01', 0.08))):
             a_ = k / 5 * 6.28; model(nm, (0.08 * math.cos(a_), TC + dy + 0.08 * math.sin(a_), TH + 0.05), k, height=hh)
     model('brass_candleholders', (0, TC + 2.6, TH), math.pi / 2, width=0.4); model('brass_candleholders', (0, TC - 2.6, TH), math.pi / 2, width=0.4)
-    for x, y, r in ((-2.4, -0.9, 0.4), (2.6, -9.9, 2.5), (-2.6, -2.2, 1.2)): spindle_chair(x, y, r, chair_wood)
+    for x, y, r in ((-2.95, -2.6, 1.3), (2.6, -9.9, 2.5)): spindle_chair(x, y, r, chair_wood)
     for y in RIBS[1:-1:2]:
         for k in range(5): leaf_cluster(ivy, -1.6 + k * 0.8, y, WALL_H + 0.6, 7, 0.22, 0.45 if k % 2 else 0.15)
     for s in (-1, 1):
@@ -326,9 +341,9 @@ def build():
 
 def walk_rects():
     R = [(-2.75, 2.75, -10.6, -9.95),          # front strip
-         (-2.75, -1.5, -10.6, -1.1),            # left aisle
-         (1.5, 2.75, -10.6, -1.1),              # right aisle
-         (-2.6, 2.6, -2.45, -0.8),              # back strip by the windows
+         (-2.75, -1.5, -10.6, -1.6),            # left aisle
+         (1.5, 2.75, -10.6, -1.6),              # right aisle
+         (-2.25, 2.25, -2.45, -0.8),            # back strip by the windows
          (1.85, 2.95, -L - 2.2, -11.4)]         # doorway passage
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 
@@ -337,6 +352,8 @@ def main():
     ap.add_argument('--glb', default=''); ap.add_argument('--blend', default=''); ap.add_argument('--cam', default=f'0,{-L + 0.55},1.62,88,0,17')
     a = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:])
     bpy.ops.wm.read_factory_settings(use_empty=True); build()
+    for l in bpy.data.lights:
+        if tuple(round(c, 2) for c in l.color) == (1.0, 0.68, 0.38): l.color = (1.0, 0.76, 0.52)
     for o in bpy.context.scene.objects:
         if o.type == 'LIGHT' and hasattr(o, 'visible_camera'): o.visible_camera = False
     sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = a.samples; sc.cycles.use_denoising = True; sc.cycles.max_bounces = 8
