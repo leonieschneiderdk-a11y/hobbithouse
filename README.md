@@ -37,6 +37,12 @@ python3 -m http.server 8000
 
 Then open http://localhost:8000.
 
+## Round-door hall (fully 3D room)
+
+`hall.html` is a complete 3D room you can walk all the way around with WASD, rebuilt from the round-door reference image: timber-ribbed vault, the round door standing open onto the lake, round windows over shelves, octagon tile floor, candle chandelier, desk, chest and an arch into the passage. It is built by `blender/hero_room.py`, which also renders the photoreal still below.
+
+![Round-door hall](docs/hero_hall.png)
+
 ## Your room images in 3D
 
 Every room with a picture on the Canva board shows that picture as a 3D scene, standing at the room's entrance wall and facing in. Walk in with WASD: from the doorway it matches the image, and as you move the furniture, lamps and beams shift in depth against the walls behind them.
