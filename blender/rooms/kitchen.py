@@ -68,7 +68,7 @@ def arch_cutter_x(cy, w, rect_h, z0, x0, x1):
     c = cyl('c', w / 2, x1 - x0, ((x0 + x1) / 2, cy, z0 + rect_h), (0, math.pi / 2, 0), flat('cut', (1, 1, 1)), 48)
     return [b, c]
 
-def arch_window(g, w, rect_h, cols, rows, frame, glass, fan=5):
+def arch_window(g, w, rect_h, cols, rows, frame, glass, fan=5, ring=True):
     """Arched window in local space: x across, z up, glass in the plane y = 0. Frame, glazing bars and a fan of bars in the arch."""
     t = 0.08
     for x0, x1, z0, z1 in ((-w / 2, -w / 2 + t, 0, rect_h), (w / 2 - t, w / 2, 0, rect_h), (-w / 2, w / 2, 0, t)):
@@ -77,8 +77,9 @@ def arch_window(g, w, rect_h, cols, rows, frame, glass, fan=5):
     o = bpy.context.active_object; o.scale = (1, 1, 1.25); o.data.materials.append(frame); kid(o, g)
     for i in range(1, cols): x = -w / 2 + i * w / cols; kid(box('bar', x - 0.018, x + 0.018, -0.03, 0.03, t, rect_h + math.sqrt(max(0, (w / 2) ** 2 - x * x)) - 0.05, frame, 1.0), g)
     for k in range(1, rows + 1): z = k * rect_h / (rows + 0.0001) if k < rows + 1 else rect_h; kid(box('bar', -w / 2 + t, w / 2 - t, -0.03, 0.03, min(z, rect_h) - 0.018, min(z, rect_h) + 0.018, frame, 1.0), g)
-    bpy.ops.mesh.primitive_torus_add(major_radius=w / 4, minor_radius=0.018, major_segments=36, minor_segments=6, location=(0, 0, rect_h), rotation=(math.pi / 2, 0, 0))
-    o = bpy.context.active_object; o.data.materials.append(frame); kid(o, g)
+    if ring:
+        bpy.ops.mesh.primitive_torus_add(major_radius=w / 4, minor_radius=0.018, major_segments=36, minor_segments=6, location=(0, 0, rect_h), rotation=(math.pi / 2, 0, 0))
+        o = bpy.context.active_object; o.data.materials.append(frame); kid(o, g)
     for k in range(fan):
         a = (k + 1) / (fan + 1) * math.pi; bb = kid(box('fan bar', -0.016, 0.016, -0.03, 0.03, 0, w / 2 - 0.06, frame, 1.0), g); bb.location = (0, 0, rect_h); bb.rotation_euler = (0, a - math.pi / 2, 0)
     bm = bmesh.new(); vs = [bm.verts.new((-w / 2 + t, 0, 0.05)), bm.verts.new((w / 2 - t, 0, 0.05))]

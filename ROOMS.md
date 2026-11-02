@@ -7,6 +7,7 @@ Each room is rebuilt as a real 3D room from its image, then saved so they can be
 | Round-door hall | `blender/hero_room.py` | `assets/hero/hall.glb` | [hall.html](hall.html) | ![](docs/hero_hall.png) |
 | Main entrance | `blender/rooms/entrance.py` | `assets/rooms/entrance/entrance.glb` | [room.html?r=entrance](room.html?r=entrance) | ![](docs/rooms/entrance.png) |
 | Kitchen | `blender/rooms/kitchen.py` (textures: `tools/kitchen_textures.py`) | `assets/rooms/kitchen/kitchen.glb` | [room.html?r=kitchen](room.html?r=kitchen) | ![](docs/rooms/kitchen.png) |
+| Dining room | `blender/rooms/dining.py` (rug: `tools/dining_textures.py`) | `assets/rooms/dining/dining.glb` | [room.html?r=dining](room.html?r=dining) | ![](docs/rooms/dining.png) |
 
 ## Adding the next room
 
