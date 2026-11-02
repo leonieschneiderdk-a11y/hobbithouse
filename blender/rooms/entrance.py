@@ -71,11 +71,11 @@ def half_disc(name, r, cx, cy, cz, mat, seg=32):
     bm.faces.new(vs); return obj_from_bm(name, bm, mat)
 
 def build():
-    wall = pbr('plastered_stone_wall', 'materials', (1.0, 0.93, 0.82), 1.0, 1.2)
-    stone = pbr('rustic_stone_wall', 'materials', (0.95, 0.88, 0.78), 1.0, 1.2)
+    wall = pbr('plastered_stone_wall', 'materials', (1.3, 1.2, 1.04), 1.0, 1.2)
+    stone = pbr('rustic_stone_wall', 'materials', (1.15, 1.06, 0.94), 1.0, 1.2)
     timber = pbr('dark_wooden_planks', 'materials', (0.5, 0.34, 0.22), 0.9)
     ceil_boards = pbr('dark_wooden_planks', 'materials', (0.42, 0.3, 0.2), 0.9)
-    floor = pbr('stonetile', os.path.join('rooms', 'entrance'), (1, 1, 1), 1.0, 0.5)
+    floor = pbr('stonetile', os.path.join('rooms', 'entrance'), (0.84, 0.76, 0.66), 1.0, 0.5)
     frame = pbr('dark_wooden_planks', 'materials', (0.36, 0.23, 0.15), 0.8)
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0)
     iron = flat('iron', (0.06, 0.055, 0.05), 0.45, 0.85)

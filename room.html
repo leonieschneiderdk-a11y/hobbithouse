@@ -54,6 +54,7 @@ loader.load(cfg.glb+'?v='+(cfg.version||1),g=>{const room=g.scene;const flames=[
       if(m&&/ivy|rug/.test(m.name||'')){m.transparent=false;m.alphaTest=0.5;m.side=THREE.DoubleSide;m.depthWrite=true;m.needsUpdate=true;}
       if(m&&m.envMapIntensity!==undefined)m.envMapIntensity=0.4;
       if(m&&/stonetile|octotile/.test(m.name||'')){m.color.setRGB(0.6,0.51,0.4);m.userData.floor=true;}
+      if(m&&/plastered_stone_wall|rustic_stone_wall/.test(m.name||'')&&!m.userData.lit){m.color.multiplyScalar(CFG.wallBoost||1);m.userData.lit=true;}
       if(m&&/lanternglow/.test(m.name||'')){m.emissive=new THREE.Color(1,0.66,0.32);m.emissiveIntensity=5;}}});
   scene.add(room);room.updateMatrixWorld(true);
   const pts=[];for(const f of flames){const p=new THREE.Vector3();f.getWorldPosition(p);if(!pts.some(q=>q.distanceTo(p)<0.8))pts.push(p);}
