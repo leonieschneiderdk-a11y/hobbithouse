@@ -155,7 +155,9 @@ def build():
         model('potted_plant_01', (s * 1.4, -0.45, 0), s, height=1.25)
     model('fancy_picture_frame_01', (0, -0.04, 2.55), 0, width=0.75)
     # two armchairs and a little table near the door, like the image
-    model('ArmChair_01', (-1.15, -2.3, 0), -math.pi / 2 - 0.5, width=0.8); model('ArmChair_01', (1.15, -2.3, 0), math.pi / 2 + 0.5, width=0.8)
+    model('ArmChair_01', (-0.95, -2.75, 0), math.pi / 2 - 0.55, width=0.78); model('ArmChair_01', (0.95, -2.75, 0), -math.pi / 2 + 0.55, width=0.78)
+    cyl('chair table', 0.26, 0.04, (0, -2.35, 0.55), (0, 0, 0), wood, 32); cyl('chair table post', 0.04, 0.53, (0, -2.35, 0.27), (0, 0, 0), wood, 12)
+    candle((0.05, -2.35, 0.57), 0.14, 10); model('ceramic_vase_04', (-0.1, -2.3, 0.57), 0, height=0.2)
     model('WoodenTable_02', (0, -2.9, 0), 0, height=0.5) if False else None
     # ------------------------------------------------------------ left wall: round windows with a window seat, arched bookcases
     view = image_mat('view', A('assets', 'rooms', 'dining', 'view.jpg'), 0.6)
@@ -186,8 +188,8 @@ def build():
     for yc in (BAYS[4], BAYS[3], BAYS[1]): bookcase(yc - 0.72, yc + 0.72, wood, trim)
     # plants and lanterns along the left wall between the bookcases
     model('potted_plant_01', (-HW + 0.45, -L + 0.8, 0), 1.0, height=1.2)
-    for y in ARCHES[1:]:
-        box('sconce arm', -HW + 0.4, -HW + 0.62, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(-HW + 0.62, y, 1.7, 0.9, 2.06, iron, lglass, 50)
+    for y in ARCHES[1::2]:
+        box('sconce arm', -HW + 0.4, -HW + 0.62, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(-HW + 0.62, y, 1.7, 0.9, 2.06, iron, lglass, 28)
     # ------------------------------------------------------------ right wall: console tables with plants, pictures, lanterns, potted plants
     RX = HW - 0.3
     for k, y in enumerate((BAYS[5], BAYS[4], BAYS[3], BAYS[2], BAYS[1])):
@@ -201,8 +203,8 @@ def build():
         model('wicker_basket_02', (RX - 0.18, y, 0.22), math.pi / 2, width=0.4)
         model('hanging_picture_frame_02' if k % 2 else 'fancy_picture_frame_01', (HW - 0.06, y, 1.65), -math.pi / 2, width=0.7)
         model('potted_plant_04', (RX - 0.2, y + 0.82, 0), rnd.uniform(0, 6), height=0.5) if k % 2 else None
-    for y in ARCHES[1:]:
-        box('sconce arm', HW - 0.62, HW - 0.4, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(HW - 0.62, y, 1.7, 0.9, 2.06, iron, lglass, 50)
+    for y in ARCHES[2::2]:
+        box('sconce arm', HW - 0.62, HW - 0.4, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(HW - 0.62, y, 1.7, 0.9, 2.06, iron, lglass, 28)
     for y in BAYS[1:]: model('hanging_picture_frame_01', (HW - 0.06, y + 0.85, 1.75), -math.pi / 2, width=0.4)
     for y in ARCHES[::2]:
         for s in (-1, 1): leaf_cluster(ivy, s * (HW - 0.3), y, 1.6 + rnd.uniform(0, 0.8), 10, 0.2, 1.0)
@@ -214,7 +216,7 @@ def build():
             for l in f.loops: l[uvl].uv = (l.vert.co.x + 0.5, l.vert.co.y + 0.5)
         o = obj_from_bm('runner', bm, runner); o.scale = (1.3, 2.9, 1); o.location = (0.1, yc, 0.006)
     for y in ARCHES[::1]:
-        lantern(0.0, y + 1.25, 2.55, 1.15, vault_z(0, 0.1) - 0.05, iron, lglass, 70)
+        lantern(0.0, y + 1.25, 2.55, 1.15, vault_z(0, 0.1) - 0.05, iron, lglass, 45)
     w = bpy.data.worlds.new('w'); bpy.context.scene.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.3, 0.22, 0.15, 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.05
     for k in range(6):
         f = light((0, -1.5 - k * 3.2, WALL_H), 160, (1.0, 0.7, 0.42), kind='AREA'); f.data.size = 2.4; f.rotation_euler = (math.pi, 0, 0)
@@ -222,8 +224,9 @@ def build():
     blocks('books', BOOKS, bookm)
 
 def walk_rects():
-    R = [(-0.95, 1.05, -L + 0.45, -0.75),             # the hallway between the furniture
-         (-1.4, 1.4, -1.9, -0.6)]                      # in front of the door
+    R = [(-0.95, 1.05, -L + 0.45, -3.25),             # the hallway between the furniture
+         (-0.55, -0.32, -3.3, -1.85), (0.32, 0.55, -3.3, -1.85),   # either side of the little table
+         (-1.4, 1.4, -1.95, -0.6)]                     # in front of the door
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 
 def main():

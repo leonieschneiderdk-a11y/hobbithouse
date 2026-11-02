@@ -10,14 +10,26 @@
   [
    -0.95,
    1.05,
-   0.75,
+   3.25,
    18.55
+  ],
+  [
+   -0.55,
+   -0.32,
+   1.85,
+   3.3
+  ],
+  [
+   0.32,
+   0.55,
+   1.85,
+   3.3
   ],
   [
    -1.4,
    1.4,
    0.6,
-   1.9
+   1.95
   ]
  ],
  "lights": [],
@@ -74,9 +86,29 @@
   ]
  },
  "floor": "stonetile",
- "exposure": 0.9,
- "version": 1,
+ "exposure": 0.7,
+ "version": 3,
  "wallBoost": 1.0,
  "maxFlameLights": 34,
- "flameColor": "#ffb877"
+ "flameColor": "#ffb877",
+ "webTint": {
+  "Armchair_01": [
+   0.7,
+   0.62,
+   0.52
+  ],
+  "cushion linen": [
+   0.7,
+   0.64,
+   0.56
+  ],
+  "cushion oat": [
+   0.8,
+   0.74,
+   0.66
+  ]
+ },
+ "env": {
+  "stonetile": 0.45
+ }
 }
