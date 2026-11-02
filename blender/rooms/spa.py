@@ -18,14 +18,14 @@ from kitchen import lantern, leaf_cluster, group, kid, tex_mat, mat_alpha, arch_
 from hallway import pillow
 from dining import rod
 
-HW, LA = 3.0, 7.0                       # hot-tub room half width and length
-WALL_H, APEX = 2.6, 4.1
-SX0, SX1, SY0, SY1, SH = -6.2, -3.0, -5.5, -1.5, 2.3      # sauna box
-PX0, PX1, PY0, PY1, PH = -14.0, -6.2, -7.6, 0.4, 3.0       # pool room box
-QX0, QX1, QY0, QY1 = -11.8, -8.2, -5.6, -1.6               # the pool
-DOOR_Y = -3.9                                              # sauna door centre (both glass walls)
+HW, LA = 4.1, 9.2                       # hot-tub room half width and length
+WALL_H, APEX = 3.0, 5.0
+SX0, SX1, SY0, SY1, SH = -8.4, -4.1, -6.9, -2.1, 2.45      # sauna box
+PX0, PX1, PY0, PY1, PH = -19.6, -8.4, -10.2, 0.8, 3.7       # pool room box
+QX0, QX1, QY0, QY1 = -16.4, -11.0, -7.4, -2.0               # the pool
+DOOR_Y = -4.5                                              # sauna door centre (both glass walls)
 rnd = random.Random(81)
-CAMS = {'tub': (1.9, -6.55, 1.6, 87, 22, 16), 'pool': (-13.4, -7.0, 1.75, 80, -48, 15), 'sauna': (-4.6, -5.0, 1.5, 88, 0, 15)}
+CAMS = {'tub': (2.6, -8.7, 1.65, 87, 22, 16), 'pool': (-19.0, -9.6, 1.8, 82, -50, 15), 'sauna': (-6.2, -6.5, 1.5, 88, 0, 15)}
 
 def K(*p): return A('assets', 'rooms', 'spa', *p)
 
@@ -106,15 +106,15 @@ def build():
         bpy.context.view_layer.objects.active = w; bpy.ops.object.modifier_apply(modifier='s'); return w
     back = end_wall('back wall', 0.0, 0.45, 1); front = end_wall('front wall', -LA, 0.4, -1)
     rp = profile(40, 0.02)[1:-1]
-    for k in range(6): sweep_profile('rib', rp, -0.5 - k * 1.2, 0.24, 0.26, rib)
+    for k in range(8): sweep_profile('rib', rp, -0.5 - k * 1.18, 0.26, 0.28, rib)
     box('ridge', -0.12, 0.12, -LA, 0.0, APEX - 0.26, APEX - 0.02, rib, 1.2)
     bulb = flat('bulb', (1, 0.8, 0.5), 1, emit=(1.0, 0.75, 0.45), strength=15)
     for k in range(5):
-        y = -1.1 - k * 1.2
-        for x in (-1.0, 1.0):
+        y = -1.1 - k * 1.65
+        for x in (-1.4, 1.4):
             z = vault_z(x, 0.05) - 0.02; bpy.ops.mesh.primitive_uv_sphere_add(radius=0.025, location=(x, y, z)); bpy.context.active_object.data.materials.append(bulb); light((x, y, z - 0.08), 12, radius=0.03)
     # back wall: arched window onto the mountains, the stone hot tub in front of it
-    WX, WW, WRH, WZ = 0.75, 1.9, 1.35, 1.05
+    WX, WW, WRH, WZ = 1.0, 2.3, 1.6, 1.05
     cut(back, arch_cutter_y(WX, WW, WRH, WZ, -0.2, 0.8)); box_uv(back, 1.6)
     g = group((WX, 0.22, WZ)); arch_window(g, WW, WRH, 3, 2, wframe, glass, 0, ring=False)
     g2 = group((WX, 0.0, WZ)); stone_arch(g2, WW, WRH, 0.2, vaultA, 0.2)
@@ -123,7 +123,7 @@ def build():
     bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X')); bmesh.ops.translate(bm, vec=(WX, 14, 2.1), verts=bm.verts)
     view = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'kitchen', 'view.jpg'), 1.2)); uvl = view.data.uv_layers.new()
     for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = ((co.x - WX) / 34 + 0.3, (co.z - 2.1) / 14.5 + 0.5)
-    TX0, TX1, TY0, TY1 = -1.1, 2.6, -2.5, -0.05
+    TX0, TX1, TY0, TY1 = -1.2, 3.2, -2.9, -0.05
     tub = box('hot tub', TX0, TX1, TY0, TY1, 0.0, 0.62, tub_stone, 0.9, 0.02)
     cut(tub, [box('c', TX0 + 0.22, TX1 - 0.22, TY0 + 0.22, TY1 - 0.22, 0.12, 1.0, tub_stone)]); box_uv(tub, 0.9)
     box('tub ledge', TX0 - 0.04, TX1 + 0.04, TY0 - 0.04, TY0 + 0.24, 0.62, 0.68, coping, 1.0, 0.01)
@@ -136,16 +136,16 @@ def build():
     leaf_cluster(ivy, WX, -0.2, WZ + WRH + WW / 2 + 0.2, 26, 0.9, 0.6)
     # right wall: a console of candles and towels, a lantern, a plant; ivy climbing the wall
     CX = HW - 0.3
-    box('console', CX - 0.25, CX + 0.15, -5.4, -3.2, 0.75, 0.8, cedar_dark, 1.0, 0.01)
-    for y in (-5.35, -3.25):
+    box('console', CX - 0.25, CX + 0.15, -6.6, -4.4, 0.75, 0.8, cedar_dark, 1.0, 0.01)
+    for y in (-6.55, -4.45):
         for dx in (-0.2, 0.1): box('console leg', CX + dx - 0.025, CX + dx + 0.025, y - 0.025, y + 0.025, 0.0, 0.75, cedar_dark, 1.0)
-    box('console shelf', CX - 0.22, CX + 0.12, -5.35, -3.25, 0.2, 0.24, cedar_dark, 1.0)
-    for k in range(4): box('rolled towel', CX - 0.2, CX + 0.1, -5.25 + k * 0.17, -5.12 + k * 0.17, 0.24, 0.34, towel, 1.0, 0.04)
-    candles_cluster(CX - 0.05, -4.6, 0.8, wax, 4, 1.1); candles_cluster(CX - 0.05, -3.6, 0.8, wax, 3, 1.0)
-    model('ceramic_vase_04', (CX - 0.05, -4.1, 0.8), 0, height=0.28)
-    for y in (-5.9, -2.8): box('sconce arm', HW - 0.25, HW, y - 0.015, y + 0.015, 1.95, 1.98, iron, 1.0); lantern(HW - 0.25, y, 1.62, 0.9, 1.96, iron, lglass, 40)
-    model('potted_plant_02', (HW - 0.45, -6.5, 0), 0.6, height=0.85)
-    for k in range(6): leaf_cluster(ivy, HW - 0.2, -0.8 - k * 1.1, WALL_H + 0.15, 10, 0.25, 0.9)
+    box('console shelf', CX - 0.22, CX + 0.12, -6.55, -4.45, 0.2, 0.24, cedar_dark, 1.0)
+    for k in range(4): box('rolled towel', CX - 0.2, CX + 0.1, -6.45 + k * 0.17, -6.32 + k * 0.17, 0.24, 0.34, towel, 1.0, 0.04)
+    candles_cluster(CX - 0.05, -5.8, 0.8, wax, 4, 1.1); candles_cluster(CX - 0.05, -4.8, 0.8, wax, 3, 1.0)
+    model('ceramic_vase_04', (CX - 0.05, -5.3, 0.8), 0, height=0.28)
+    for y in (-7.4, -3.6): box('sconce arm', HW - 0.25, HW, y - 0.015, y + 0.015, 1.95, 1.98, iron, 1.0); lantern(HW - 0.25, y, 1.62, 0.9, 1.96, iron, lglass, 40)
+    model('potted_plant_02', (HW - 0.45, -8.4, 0), 0.6, height=0.95); model('potted_plant_01', (HW - 0.5, -3.3, 0), 2.0, height=1.5)
+    for k in range(8): leaf_cluster(ivy, HW - 0.2, -0.8 - k * 1.1, WALL_H + 0.15, 10, 0.25, 0.9)
     # left wall: the sauna front, lanterns and candles on the floor, towels on hooks
     glass_wall(-HW, SY0, SY1, SH, frame, glass)
     for y in (SY1 + 0.25, SY0 - 0.3): box('sauna post', -HW - 0.1, -HW + 0.12, y - 0.12, y + 0.12, 0.0, SH + 0.1, cedar_dark, 1.0)
@@ -153,14 +153,17 @@ def build():
     for y in (SY0 - 0.25, SY0 - 0.05):
         cyl('towel hook', 0.012, 0.08, (-HW + 0.06, y, 1.75), (0, math.pi / 2, 0), brass, 8)
         box('hanging towel', -HW + 0.06, -HW + 0.12, y - 0.09, y + 0.09, 0.9, 1.75, towel, 1.0, 0.02)
-    for (x, y, s) in ((-HW + 0.45, -5.95, 1.0), (-HW + 0.65, -6.3, 0.75), (-HW + 0.45, -1.05, 0.9)): floor_lantern(x, y, iron, lglass, s)
-    candles_cluster(-HW + 0.5, -6.6, 0.0, wax, 4, 1.2); candles_cluster(-HW + 0.85, -1.2, 0.0, wax, 3, 1.1)
+    for (x, y, s) in ((-HW + 0.45, -7.4, 1.0), (-HW + 0.7, -7.8, 0.75), (-HW + 0.45, -1.4, 0.9)): floor_lantern(x, y, iron, lglass, s)
+    candles_cluster(-HW + 0.5, -8.3, 0.0, wax, 4, 1.2); candles_cluster(-HW + 0.85, -1.6, 0.0, wax, 3, 1.1)
     model('potted_plant_02', (-HW + 0.5, -0.6, 0), 2.1, height=0.9)
+    model('painted_wooden_bench', (-1.2, -7.6, 0), 0.0, width=1.5)
+    for k in range(3): box('rolled towel', -1.65 + k * 0.32, -1.38 + k * 0.32, -7.75, -7.45, 0.45, 0.55, towel, 1.0, 0.04)
+    model('potted_plant_02', (-2.6, -8.4, 0), 1.2, height=0.9)
     # front wall: the entrance door
-    cut(front, arch_cutter_y(1.4, 1.2, 1.6, 0.0, -LA - 1, -LA + 1)); box_uv(front, 1.6)
-    g = group((1.4, -LA, 0.0)); stone_arch(g, 1.2, 1.6, 0.5, vaultA, 0.2)
-    box('door', 0.8, 2.0, -LA - 0.25, -LA - 0.18, 0.0, 2.2, cedar_dark, 0.8)
-    for y in (-2.0, -5.0):
+    cut(front, arch_cutter_y(2.0, 1.2, 1.6, 0.0, -LA - 1, -LA + 1)); box_uv(front, 1.6)
+    g = group((2.0, -LA, 0.0)); stone_arch(g, 1.2, 1.6, 0.5, vaultA, 0.2)
+    box('door', 1.4, 2.6, -LA - 0.25, -LA - 0.18, 0.0, 2.2, cedar_dark, 0.8)
+    for y in (-2.2, -5.2, -8.0):
         f = light((0.3, y, WALL_H), 120, (1.0, 0.7, 0.42), kind='AREA'); f.data.size = 2.2; f.rotation_euler = (math.pi, 0, 0)
 
     # ============================================================ THE SAUNA: cedar box with tiered benches, glass on both ends
@@ -168,8 +171,8 @@ def build():
     box('sauna ceiling', SX0 - 0.1, SX1 + 0.1, SY0 - 0.1, SY1 + 0.1, SH, SH + 0.12, cedar, 0.8)
     box('sauna wall', SX0 - 0.1, SX1 + 0.1, SY1, SY1 + 0.12, 0.0, SH + 0.12, cedar, 0.8)
     box('sauna wall', SX0 - 0.1, SX1 + 0.1, SY0 - 0.12, SY0, 0.0, SH + 0.12, cedar, 0.8)
-    box('sauna roof block', SX0 - 0.1, SX1 + 0.1, SY0 - 0.12, SY1 + 0.12, SH + 0.12, 4.2, wallA, 1.6)
-    for y0, y1 in ((PY0, SY0 - 0.12), (SY1 + 0.12, PY1)): box('party wall', SX0, SX1, y0, y1, 0.0, 4.2, wallA, 1.6)
+    box('sauna roof block', SX0 - 0.1, SX1 + 0.1, SY0 - 0.12, SY1 + 0.12, SH + 0.12, 5.2, wallA, 1.6)
+    for y0, y1 in ((PY0, SY0 - 0.12), (SY1 + 0.12, PY1)): box('party wall', SX0, SX1, y0, y1, 0.0, 5.2, wallA, 1.6)
     glass_wall(SX0, SY0, SY1, SH, frame, glass)
     for z, d in ((0.45, 0.62), (0.9, 0.5), (1.3, 0.42)):
         y0 = SY1 - (0.62 + 0.5 + 0.42) + {0.45: 0, 0.9: 0.62, 1.3: 1.12}[z]
@@ -207,30 +210,31 @@ def build():
     for x0, x1, y0, y1 in ((PX0 - 0.3, PX0, PY0, PY1), (PX0 - 0.3, PX1, PY1, PY1 + 0.3), (PX0 - 0.3, PX1, PY0 - 0.3, PY0)):
         box('pool room wall', x0, x1, y0, y1, 0.0, PH, wallB, 1.6)
     box('pool room ceiling', PX0 - 0.3, PX1, PY0 - 0.3, PY1 + 0.3, PH, PH + 0.15, ceilB, 1.4)
-    for k in range(5): x = PX0 + 0.8 + k * (PX1 - PX0 - 1.6) / 4; box('ceiling beam', x - 0.13, x + 0.13, PY0, PY1, PH - 0.26, PH, rib, 1.2)
+    for k in range(7): x = PX0 + 0.8 + k * (PX1 - PX0 - 1.6) / 6; box('ceiling beam', x - 0.13, x + 0.13, PY0, PY1, PH - 0.26, PH, rib, 1.2)
     for y in (PY0 + 1.5, (PY0 + PY1) / 2, PY1 - 1.5): box('ceiling beam', PX0, PX1, y - 0.1, y + 0.1, PH - 0.2, PH - 0.0, rib, 1.2)
-    for k in range(4):
-        for y in (PY0 + 2.4, PY1 - 2.4):
-            x = PX0 + 1.4 + k * 1.7; bpy.ops.mesh.primitive_uv_sphere_add(radius=0.025, location=(x, y, PH - 0.03)); bpy.context.active_object.data.materials.append(bulb); light((x, y, PH - 0.1), 14, radius=0.03)
-    for x in [PX0 + 0.6 + k * 1.1 for k in range(7)]:
+    for k in range(6):
+        for y in (PY0 + 2.6, PY1 - 2.6):
+            x = PX0 + 1.4 + k * 1.75; bpy.ops.mesh.primitive_uv_sphere_add(radius=0.025, location=(x, y, PH - 0.03)); bpy.context.active_object.data.materials.append(bulb); light((x, y, PH - 0.1), 14, radius=0.03)
+    for x in [PX0 + 0.6 + k * 1.2 for k in range(10)]:
         light((x, PY1 - 0.18, 0.15), 30, (1.0, 0.65, 0.35), radius=0.05)                    # uplights washing the back wall
-    for y in [PY0 + 0.6 + k * 1.2 for k in range(7)]: light((PX0 + 0.18, y, 0.15), 30, (1.0, 0.65, 0.35), radius=0.05)
-    for k in range(6): leaf_cluster(ivy, PX0 + 0.2, PY0 + 1.0 + k * 1.2, PH - 0.3, 10, 0.3, 1.2)
+    for y in [PY0 + 0.6 + k * 1.2 for k in range(9)]: light((PX0 + 0.18, y, 0.15), 30, (1.0, 0.65, 0.35), radius=0.05)
+    for k in range(8): leaf_cluster(ivy, PX0 + 0.2, PY0 + 1.0 + k * 1.2, PH - 0.3, 10, 0.3, 1.2)
     # the sauna's glass side (east wall) and stone walls either side of it
     for y0, y1 in ((PY0, SY0 - 0.12), (SY1 + 0.12, PY1)): box('pool room wall', PX1 - 0.02, PX1 + 0.3, y0, y1, 0.0, PH, wallB, 1.6)
     box('pool room wall', PX1 - 0.02, PX1 + 0.3, SY0 - 0.12, SY1 + 0.12, SH + 0.12, PH, wallB, 1.6)
     # loungers along the west side, candles and lanterns round the pool, a stone console with a basin, plants
-    for y in (-5.4, -3.4, -1.4): lounger(-13.15, y, math.pi, cedar_dark, cushion)
+    for y in (-7.6, -5.6, -3.6, -1.6): lounger(PX0 + 1.0, y, math.pi, cedar_dark, cushion)
     for (x, y) in ((QX0 - 0.15, QY0 - 0.15), (QX1 + 0.15, QY0 - 0.15), (QX0 - 0.15, QY1 + 0.15), (QX1 + 0.15, QY1 + 0.15)): candles_cluster(x, y, 0.06, wax, 3, 1.0)
-    for (x, y) in ((-7.0, -6.9), (-13.5, -6.9), (-7.0, -0.3)): floor_lantern(x, y, iron, lglass, 1.0)
-    box('stone console', -10.8, -8.8, PY1 - 0.5, PY1 - 0.02, 0.0, 0.85, coping, 0.8, 0.02)
-    cyl('stone basin', 0.25, 0.14, (-9.8, PY1 - 0.26, 0.92), (0, 0, 0), coping, 32)
-    candles_cluster(-10.4, PY1 - 0.26, 0.85, wax, 3, 1.0); candles_cluster(-9.2, PY1 - 0.26, 0.85, wax, 3, 1.0)
-    model('potted_plant_01', (-11.6, PY1 - 0.45, 0), 0.3, height=1.6); model('potted_plant_01', (-7.9, PY1 - 0.45, 0), 1.1, height=1.4)
-    model('potted_plant_02', (-13.5, PY1 - 0.5, 0), 0.5, height=0.9); model('potted_plant_02', (-6.9, PY0 + 0.5, 0), 2.4, height=0.85)
-    for x in (-12.5, -8.0): box('sconce arm', x - 0.015, x + 0.015, PY1 - 0.25, PY1, 1.95, 1.98, iron, 1.0); lantern(x, PY1 - 0.25, 1.62, 0.9, 1.96, iron, lglass, 35)
+    for (x, y) in ((PX1 - 0.6, PY0 + 0.5), (PX0 + 0.5, PY0 + 0.5), (PX1 - 0.6, PY1 - 0.6)): floor_lantern(x, y, iron, lglass, 1.0)
+    box('stone console', -14.7, -12.7, PY1 - 0.5, PY1 - 0.02, 0.0, 0.85, coping, 0.8, 0.02)
+    cyl('stone basin', 0.25, 0.14, (-13.7, PY1 - 0.26, 0.92), (0, 0, 0), coping, 32)
+    candles_cluster(-14.3, PY1 - 0.26, 0.85, wax, 3, 1.0); candles_cluster(-13.1, PY1 - 0.26, 0.85, wax, 3, 1.0)
+    model('potted_plant_01', (-15.5, PY1 - 0.45, 0), 0.3, height=1.8); model('potted_plant_01', (-11.9, PY1 - 0.45, 0), 1.1, height=1.6)
+    model('potted_plant_02', (PX0 + 0.5, PY1 - 0.5, 0), 0.5, height=1.0); model('potted_plant_02', (PX1 - 0.6, PY0 + 1.3, 0), 2.4, height=0.95)
+    model('potted_plant_01', (PX0 + 0.5, PY0 + 1.4, 0), 1.7, height=1.6)
+    for x in (-17.5, -10.0): box('sconce arm', x - 0.015, x + 0.015, PY1 - 0.25, PY1, 1.95, 1.98, iron, 1.0); lantern(x, PY1 - 0.25, 1.62, 0.9, 1.96, iron, lglass, 35)
     w = bpy.data.worlds.new('w'); bpy.context.scene.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.4, 0.45, 0.5, 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.05
-    for (x, y) in ((-10.0, -6.6), (-10.0, 0.0)):
+    for (x, y) in ((-16.5, -8.6), (-11.5, -8.6), (-16.5, -0.4), (-11.5, -0.4)):
         f = light((x, y, PH - 0.4), 90, (1.0, 0.68, 0.4), kind='AREA'); f.data.size = 3.0; f.rotation_euler = (math.pi, 0, 0)
 
 def walk_rects():
@@ -238,11 +242,11 @@ def walk_rects():
          (-HW + 0.5, -1.6, TY0_W, -0.7),                      # beside the tub
          (SX0 - 0.4, SX1 + 0.55, DOOR_Y - 0.4, DOOR_Y + 0.4),  # through the sauna
          (PX1 - 1.5, PX1 - 0.15, PY0 + 0.4, PY1 - 0.6),        # east side of the pool room
-         (PX0 + 1.9, PX1 - 0.15, PY0 + 0.4, QY0 - 0.35),       # south side
-         (PX0 + 1.9, PX1 - 0.15, QY1 + 0.35, PY1 - 0.6),       # north side
-         (PX0 + 1.85, QX0 - 0.35, PY0 + 0.4, PY1 - 0.6)]       # west side, in front of the loungers
+         (PX0 + 1.5, PX1 - 0.15, PY0 + 0.4, QY0 - 0.35),       # south side
+         (PX0 + 1.5, PX1 - 0.15, QY1 + 0.35, PY1 - 0.6),       # north side
+         (PX0 + 1.5, QX0 - 0.35, PY0 + 0.4, PY1 - 0.6)]        # west side, in front of the loungers
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
-TY0_W = -2.75
+TY0_W = -3.15
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--render', default=''); ap.add_argument('--samples', type=int, default=96); ap.add_argument('--res', default='1600x900')
@@ -264,7 +268,7 @@ def main():
         if m.use_nodes:
             for n in m.node_tree.nodes:
                 if n.type == 'MIX_RGB' and n.blend_type == 'MULTIPLY': tints[m.name] = [round(v, 3) for v in n.inputs[2].default_value[:3]]
-    cfg.update(name='Spa & Sauna', glb='assets/rooms/spa/spa.glb', spawn=dict(x=1.4, z=LA - 0.7, yaw=0.35), walk=walk_rects(), probe=[0.3, 1.4, 4.0], tints=tints, floor='monastery_stone_floor')
+    cfg.update(name='Spa & Sauna', glb='assets/rooms/spa/spa.glb', spawn=dict(x=2.0, z=LA - 0.7, yaw=0.35), walk=walk_rects(), probe=[0.3, 1.4, 4.0], tints=tints, floor='monastery_stone_floor')
     cfg.setdefault('lights', [{'x': 0.75, 'y': 2.0, 'z': 1.2, 'color': '#ffe2c0', 'power': 10, 'range': 6}, {'x': -4.6, 'y': 1.6, 'z': 3.5, 'color': '#ff9a4a', 'power': 10, 'range': 4},
                               {'x': -10.0, 'y': -0.6, 'z': 3.6, 'color': '#5fd6d0', 'power': 10, 'range': 5}, {'x': -10.0, 'y': 2.4, 'z': 1.6, 'color': '#ffb877', 'power': 8, 'range': 7}])
     cfg.setdefault('exposure', 0.85); cfg.setdefault('version', 1); cfg.setdefault('wallBoost', 1.0); cfg.setdefault('maxFlameLights', 30); cfg.setdefault('flameColor', '#ffb877')
