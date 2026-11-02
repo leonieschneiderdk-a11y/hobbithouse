@@ -14,7 +14,7 @@ from hero_room import A, pbr, flat, image_mat, obj_from_bm, box_uv, box, cyl, to
 from kitchen import (lantern, cabinet_run, shelf, plates_row, jars_row, leaf_cluster, bouquet, arch_window, stone_arch, group, kid,
                      tex_mat, mat_alpha, arch_cutter_x, arch_cutter_y)
 
-W, L = 9.0, 12.0
+W, L = 7.6, 11.0
 HW = W / 2
 WALL_H, APEX = 2.5, 4.1
 INNER = 0.42                      # thickness of the plastered inner wall layer that holds the arched niches
@@ -110,14 +110,14 @@ def chandelier(cx, cy, top, z, iron, lglass, r1=0.95, n1=8, r2=0.5, n2=5, s=1.0)
     lantern(cx, cy, z - 0.42, 0.9 * s, z - 0.12, iron, lglass, 45)
 
 def build():
-    floor = pbr('wood_floor_worn', 'materials', (0.86, 0.62, 0.44), 0.55, 1.0)
-    plaster = pbr('clay_plaster', 'materials', (1.05, 0.86, 0.64), 1.0, 1.6)
+    floor = pbr('wood_floor_worn', 'materials', (0.74, 0.6, 0.47), 0.55, 1.0)
+    plaster = pbr('clay_plaster', 'materials', (1.02, 0.88, 0.7), 1.0, 1.6)
     wall = pbr('plastered_stone_wall', 'materials', (1.35, 1.1, 0.8), 1.0, 1.1)
-    boards = pbr('weathered_brown_planks', 'materials', (0.95, 0.68, 0.46), 0.9)
+    boards = pbr('weathered_brown_planks', 'materials', (0.82, 0.66, 0.5), 0.9)
     beam = pbr('rough_wood', 'materials', (0.55, 0.4, 0.28), 0.9)
     timber = pbr('dark_wooden_planks', 'materials', (0.5, 0.33, 0.2), 0.9)
-    cab = pbr('wood_cabinet_worn_long', 'materials', (0.72, 0.52, 0.36), 0.8)
-    table_wood = pbr('wood_table_worn', 'materials', (0.9, 0.68, 0.48), 0.6)
+    cab = pbr('wood_cabinet_worn_long', 'materials', (0.66, 0.54, 0.42), 0.8)
+    table_wood = pbr('wood_table_worn', 'materials', (0.82, 0.68, 0.54), 0.6)
     chair_wood = flat('chair wood', (0.15, 0.085, 0.05), 0.62)
     frame = flat('window frame', (0.22, 0.14, 0.08), 0.55)
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0); lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85)
@@ -146,7 +146,7 @@ def build():
         bpy.context.view_layer.objects.active = w; bpy.ops.object.modifier_apply(modifier='s'); return w
     back = end_wall('back wall', 0.0, 0.45); front = end_wall('front wall', -L, 0.45)
     # heavy arched ribs, straight tie beams, longitudinal purlins and a ridge, all rough timber
-    rib = profile(40, 0.02)[1:-1]; RIBS = [-0.35 - k * 1.6 for k in range(8)]
+    rib = profile(40, 0.02)[1:-1]; RIBS = [-0.35 - k * 1.6 for k in range(7)]
     for y in RIBS: sweep_profile('rib', [(prof[1][0] + 0.03, 0.0)] + rib + [(prof[-2][0] - 0.03, 0.0)], y, 0.3, 0.32, beam)
     for y in RIBS[1:-1:2]:
         zt = WALL_H + 0.55; hx = vault_x(zt) - 0.05; box('tie beam', -hx, hx, y - 0.17, y + 0.17, zt - 0.3, zt, beam, 1.2)
@@ -156,7 +156,7 @@ def build():
         xp = s * 2.1; box('purlin', xp - 0.13, xp + 0.13, -L, 0.0, vault_z(xp, 0.25) - 0.26, vault_z(xp, 0.25), beam, 1.2)
         box('wall plate', s * (HW - INNER) - 0.14, s * (HW - INNER) + 0.14, -L, 0.0, WALL_H - 0.12, WALL_H + 0.12, beam, 1.2)
     # inner plaster wall layer with arched niches, and timber posts at every other rib
-    NICHES = {-1: (-3.55, -6.75), 1: (-3.55, -10.0)}
+    NICHES = {-1: (-3.55, -6.75), 1: (-3.55, -9.15)}
     for s in (-1, 1):
         x0, x1 = (s * HW - INNER, s * HW) if s > 0 else (s * HW, s * HW + INNER)
         iw = box('inner wall', x0, x1, -L, 0.0, 0.0, WALL_H - 0.1, plaster, 2.0)
@@ -180,7 +180,7 @@ def build():
             xp = (x0 - 0.3) if s > 0 else (x1 + 0.3); lantern(xp, y, 1.75, 1.0, None, iron, lglass, 80)
             box('sconce arm', min(xp, xp + s * 0.2), max(xp, xp + s * 0.2), y - 0.015, y + 0.015, 2.12, 2.15, iron, 1.0); cyl('sconce drop', 0.008, 0.07, (xp, y, 2.1), (0, 0, 0), iron, 6)
     # ------------------------------------------------------------ back wall: three arched windows onto the garden
-    WZ = 0.85; WINS = ((0.0, 1.9, 1.85, 4), (-2.65, 1.35, 1.6, 3), (2.65, 1.35, 1.6, 3))
+    WZ = 0.85; WINS = ((0.0, 1.8, 1.85, 4), (-2.3, 1.15, 1.6, 3), (2.3, 1.15, 1.6, 3))
     cut(back, sum((arch_cutter_y(wx, ww, wrh, WZ, -0.2, 0.8) for wx, ww, wrh, _ in WINS), []))
     box_uv(back, 2.0)
     for wx, ww, wrh, cols in WINS:
@@ -190,15 +190,15 @@ def build():
         a = light((wx, 1.5, WZ + 1.1), 650, (0.85, 0.95, 0.85), kind='AREA'); a.data.size = ww; a.rotation_euler = (math.radians(90), 0, 0)
     # sideboards under the side windows, a wall clock and a little lantern between the windows
     for sx in (-1, 1):
-        cabinet_run(sx * 2.65 - 0.85, sx * 2.65 + 0.85, -0.5, -0.02, '-y', cab, table_wood, brass, 0.57, 0.8)
-        model('brass_candleholders', (sx * 2.65 - 0.45, -0.25, 0.8), 0, width=0.32); model('ceramic_vase_02', (sx * 2.65 + 0.4, -0.25, 0.8), 0, height=0.22)
-        bouquet(sx * 2.65 + 0.4, -0.25, 1.0, petals, ivy, 12, 0.12)
+        cabinet_run(sx * 2.3 - 0.75, sx * 2.3 + 0.75, -0.5, -0.02, '-y', cab, table_wood, brass, 0.57, 0.8)
+        model('brass_candleholders', (sx * 2.3 - 0.4, -0.25, 0.8), 0, width=0.32); model('ceramic_vase_02', (sx * 2.3 + 0.38, -0.25, 0.8), 0, height=0.22)
+        bouquet(sx * 2.3 + 0.38, -0.25, 1.0, petals, ivy, 12, 0.12)
     model('wall_clock', (1.45, -0.06, 2.95), 0, width=0.42).rotation_euler = (math.radians(90), 0, 0)
     for sx in (-1.45,): box('sconce arm', sx - 0.015, sx + 0.015, -0.25, 0.0, 2.62, 2.65, iron, 1.0); lantern(sx, -0.25, 2.3, 0.9, 2.63, iron, lglass, 40)
     for sx in (-1, 1): model('potted_plant_02', (sx * 1.35, -0.45, 0), sx, height=0.85)
 
     # ------------------------------------------------------------ the long table, chairs, rug, centrepiece and candles
-    TL, TWD, TH, TC = 5.9, 1.35, 0.78, -6.7
+    TL, TWD, TH, TC = 6.3, 1.35, 0.78, -6.1
     stadium('table top', TL, TWD, TH - 0.08, TH, table_wood).location.y = TC
     stadium('table apron', TL - 0.35, TWD - 0.3, TH - 0.18, TH - 0.08, table_wood).location.y = TC
     for dy in (-2.0, 0.0, 2.0): pedestal(0, TC + dy, table_wood, TH - 0.08)
@@ -212,7 +212,7 @@ def build():
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=0.5); uvl = bm.loops.layers.uv.new()
     for f in bm.faces:
         for l in f.loops: l[uvl].uv = (l.vert.co.y + 0.5, l.vert.co.x + 0.5)
-    o = obj_from_bm('rug', bm, rug); o.scale = (4.1, 8.0, 1); o.location = (0, TC, 0.007)
+    o = obj_from_bm('rug', bm, rug); o.scale = (3.9, 8.2, 1); o.location = (0, TC, 0.007)
     # centrepiece: a low bowl overflowing with flowers, a pillar candle in a glass hurricane, candlesticks
     model('wooden_bowl_01', (0, TC + 0.1, TH), 0, width=0.5); bouquet(0, TC + 0.1, TH + 0.08, petals, ivy, 46, 0.32)
     leaf_cluster(ivy, 0, TC + 0.1, TH + 0.1, 16, 0.42, 0.0, (0.12, 0.22))
@@ -222,24 +222,53 @@ def build():
         model('wooden_candlestick', (0, TC + dy, TH), 0, height=0.22); candle((0, TC + dy, TH + 0.2), 0.18, 10)
     # ------------------------------------------------------------ left wall front: built-in hutch with plates; right wall: sideboard, armchair
     LX = -HW + INNER
-    cabinet_run(LX, LX + 0.55, -10.9, -8.9, '+x', cab, table_wood, brass, 0.5, 0.9)
-    box('hutch back', LX, LX + 0.06, -10.9, -8.9, 0.9, WALL_H - 0.15, cab, 1.0)
-    for z in (1.35, 1.8, 2.2): shelf(LX, LX + 0.34, -10.9, -8.9, z, cab)
-    for yy in (-10.9, -8.9): box('hutch side', LX, LX + 0.36, yy - 0.03, yy + 0.03, 0.9, WALL_H - 0.15, cab, 1.0)
-    box('hutch crown', LX, LX + 0.42, -10.95, -8.85, WALL_H - 0.18, WALL_H - 0.08, cab, 1.0, 0.01)
-    plates_row(-10.8, -9.0, LX + 0.17, 1.35, False, 7, ceramic); plates_row(-10.8, -9.0, LX + 0.17, 1.8, False, 6, ceramic2); jars_row(-10.8, -9.0, LX + 0.18, 2.2, False, 6, jar_glass, fills, brass)
-    model('brass_candleholders', (LX + 0.3, -9.9, 0.9), math.pi / 2, width=0.4); light((LX + 0.5, -9.9, 2.0), 40, radius=0.2)
+    cabinet_run(LX, LX + 0.55, -9.85, -8.45, '+x', cab, table_wood, brass, 0.5, 0.9)
+    box('hutch back', LX, LX + 0.06, -9.85, -8.45, 0.9, WALL_H - 0.15, cab, 1.0)
+    for z in (1.35, 1.8, 2.2): shelf(LX, LX + 0.34, -9.85, -8.45, z, cab)
+    for yy in (-9.85, -8.45): box('hutch side', LX, LX + 0.36, yy - 0.03, yy + 0.03, 0.9, WALL_H - 0.15, cab, 1.0)
+    box('hutch crown', LX, LX + 0.42, -9.9, -8.4, WALL_H - 0.18, WALL_H - 0.08, cab, 1.0, 0.01)
+    plates_row(-9.75, -8.55, LX + 0.17, 1.35, False, 7, ceramic); plates_row(-9.75, -8.55, LX + 0.17, 1.8, False, 6, ceramic2); jars_row(-9.75, -8.55, LX + 0.18, 2.2, False, 6, jar_glass, fills, brass)
+    model('brass_candleholders', (LX + 0.3, -9.15, 0.9), math.pi / 2, width=0.4); light((LX + 0.5, -9.15, 2.0), 40, radius=0.2)
     RX = HW - INNER
-    cabinet_run(RX - 0.55, RX, -7.55, -5.95, '-x', cab, table_wood, brass, 0.53, 0.86)
-    model('fancy_picture_frame_01', (RX - 0.05, -6.75, 1.65), -math.pi / 2, width=0.9)
+    cabinet_run(RX - 0.55, RX, -7.45, -5.95, '-x', cab, table_wood, brass, 0.53, 0.86)
+    model('fancy_picture_frame_01', (RX - 0.05, -6.7, 1.35), -math.pi / 2, width=0.75)
+    shelf(RX - 0.3, RX, -8.2, -4.4, 2.05, cab); plates_row(-8.1, -4.5, RX - 0.15, 2.05, False, 10, ceramic)
+    shelf(RX - 0.3, RX, -8.2, -4.4, 1.85 - 0.0, cab) if False else None
+    jars_row(-8.1, -4.5, RX - 0.16, 2.05, False, 0, jar_glass, fills, brass) if False else None
     model('ceramic_pot', (RX - 0.3, -7.2, 0.86), 0, width=0.32); model('brass_candleholders', (RX - 0.3, -6.3, 0.86), math.pi / 2, width=0.34)
     model('ArmChair_01', (RX - 0.8, -1.3, 0), -math.pi / 2 - 0.5, width=0.85); model('WoodenTable_02', (RX - 0.45, -2.25, 0), 0, height=0.6)
     candle((RX - 0.45, -2.25, 0.62), 0.14, 6); model('potted_plant_01', (-RX + 0.5, -1.2, 0), 0.3, height=1.3)
     model('vintage_cabinet_01', (-RX + 0.3, -1.2 - 1.3, 0), math.pi / 2, width=1.0) if False else None
-    model('potted_plant_02', (RX - 0.5, -11.4, 0), 1.0, height=0.9)
+    model('potted_plant_01', (RX - 0.45, -L + 0.5, 0), 1.0, height=1.4); model('potted_plant_01', (-RX + 0.45, -L + 0.55, 0), 2.0, height=1.3)
+    # ------------------------------------------------------------ fuller room: cabinets under the niches, place settings, spare chairs, greenery
+    for s in (-1, 1):
+        xi = (-HW + INNER) if s < 0 else (HW - INNER)
+        for ny in NICHES[s]:
+            cabinet_run(min(xi, xi - s * 0.45), max(xi, xi - s * 0.45), ny - 0.62, ny + 0.62, '+x' if s < 0 else '-x', cab, table_wood, brass, 0.62, 0.78)
+            model('wooden_bowl_02', (xi - s * 0.22, ny - 0.35, 0.78), 0, width=0.2); model('ceramic_vase_04', (xi - s * 0.22, ny + 0.35, 0.78), 0, height=0.26)
+            candle((xi - s * 0.22, ny, 0.78), 0.2, 6)
+    goblet_glass = flat('goblet glass', (0.95, 0.9, 0.85), 0.05, transmission=0.9)
+    for i in range(n):
+        y = TC - span / 2 + i * span / (n - 1)
+        for s in (-1, 1):
+            cyl('plate', 0.13, 0.015, (s * (TWD / 2 - 0.22), y, TH + 0.008), (0, 0, 0), ceramic, 32)
+            cyl('plate rim', 0.1, 0.017, (s * (TWD / 2 - 0.22), y, TH + 0.01), (0, 0, 0), flat('plate centre', (0.82, 0.76, 0.66), 0.25), 32)
+            gx, gy = s * (TWD / 2 - 0.4), y + 0.17
+            cyl('goblet base', 0.035, 0.008, (gx, gy, TH + 0.004), (0, 0, 0), brass, 16); cyl('goblet stem', 0.007, 0.09, (gx, gy, TH + 0.05), (0, 0, 0), brass, 8)
+            bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=False, segments=16, radius1=0.022, radius2=0.042, depth=0.09); gob = obj_from_bm('goblet', bm, goblet_glass, True); gob.location = (gx, gy, TH + 0.14)
+    for dy in (-1.55, 1.55): fruit = model('wooden_bowl_01', (0.0, TC + dy, TH), 0, width=0.36)
+    for dy in (-1.55, 1.55):
+        for k, (nm, hh) in enumerate((('food_apple_01', 0.08), ('food_pomegranate_01', 0.09), ('lemon', 0.08), ('food_pears_asian_01', 0.09), ('food_apple_01', 0.08))):
+            a_ = k / 5 * 6.28; model(nm, (0.08 * math.cos(a_), TC + dy + 0.08 * math.sin(a_), TH + 0.05), k, height=hh)
+    model('brass_candleholders', (0, TC + 2.6, TH), math.pi / 2, width=0.4); model('brass_candleholders', (0, TC - 2.6, TH), math.pi / 2, width=0.4)
+    for x, y, r in ((-2.4, -0.9, 0.4), (2.6, -9.9, 2.5), (-2.6, -2.2, 1.2)): spindle_chair(x, y, r, chair_wood)
+    for y in RIBS[1:-1:2]:
+        for k in range(5): leaf_cluster(ivy, -1.6 + k * 0.8, y, WALL_H + 0.6, 7, 0.22, 0.45 if k % 2 else 0.15)
+    for s in (-1, 1):
+        for y in RIBS[1::2]: leaf_cluster(ivy, s * (HW - INNER - 0.15), y, WALL_H + 0.05, 10, 0.25, 0.8)
     # ------------------------------------------------------------ chandeliers
     chandelier(0, TC + 0.4, APEX - 0.3, 2.55, iron, lglass)
-    chandelier(0, -1.8, APEX - 0.3, 2.75, iron, lglass, 0.55, 5, 0.3, 0, 0.85)
+    chandelier(0, -1.6, APEX - 0.3, 2.75, iron, lglass, 0.55, 5, 0.3, 0, 0.85)
     # ------------------------------------------------------------ front wall with the doorway to the rest of the house
     cut(front, arch_cutter_y(2.4, 1.4, 1.6, 0.0, -L - 1, -L + 1)); box_uv(front, 2.0)
     g = group((2.4, -L, 0.0)); stone_arch(g, 1.4, 1.6, 0.6, timber, 0.18)
@@ -260,10 +289,10 @@ def build():
         f = light((0, y, APEX - 0.9), 90, (1.0, 0.72, 0.45), kind='AREA'); f.data.size = 3.0
 
 def walk_rects():
-    R = [(-3.45, 3.45, -11.55, -10.35),         # front strip
-         (-3.45, -1.5, -11.55, -0.85),          # left aisle
-         (1.5, 3.45, -11.55, -0.85),            # right aisle
-         (-3.45, 3.45, -2.95, -0.85),           # back strip by the windows
+    R = [(-2.75, 2.75, -10.6, -9.95),          # front strip
+         (-2.75, -1.5, -10.6, -0.8),            # left aisle
+         (1.5, 2.75, -10.6, -0.8),              # right aisle
+         (-2.75, 2.75, -2.45, -0.8),            # back strip by the windows
          (1.85, 2.95, -L - 2.2, -11.4)]         # doorway passage
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 
@@ -285,7 +314,7 @@ def main():
         if m.use_nodes:
             for n in m.node_tree.nodes:
                 if n.type == 'MIX_RGB' and n.blend_type == 'MULTIPLY': tints[m.name] = [round(v, 3) for v in n.inputs[2].default_value[:3]]
-    cfg.update(name='Dining Room', glb='assets/rooms/dining/dining.glb', spawn=dict(x=0, z=L - 0.9, yaw=0), walk=walk_rects(), lights=LIGHTS, probe=[0, 1.4, 6.7], tints=tints, floor='wood_floor_worn')
+    cfg.update(name='Dining Room', glb='assets/rooms/dining/dining.glb', spawn=dict(x=0, z=L - 0.65, yaw=0), walk=walk_rects(), lights=LIGHTS, probe=[0, 1.4, 6.1], tints=tints, floor='wood_floor_worn')
     cfg.setdefault('exposure', 1.0); cfg.setdefault('version', 1); cfg.setdefault('wallBoost', 1.25); cfg.setdefault('maxFlameLights', 34)
     json.dump(cfg, open(cfgp, 'w'), indent=1)
     if a.blend: bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(a.blend))

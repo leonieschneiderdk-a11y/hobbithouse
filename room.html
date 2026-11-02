@@ -64,7 +64,7 @@ loader.load(cfg.glb+'?v='+(cfg.version||1),g=>{const room=g.scene;const flames=[
       if(m&&/lanternglow/.test(m.name||'')){m.emissive=new THREE.Color(1,0.66,0.32);m.emissiveIntensity=5;}}});
   scene.add(room);room.updateMatrixWorld(true);
   const pts=[];for(const f of flames){const p=new THREE.Vector3();f.getWorldPosition(p);if(!pts.some(q=>q.distanceTo(p)<0.8))pts.push(p);}
-  for(const p of pts.slice(0,CFG.maxFlameLights||20)){const l=new THREE.PointLight(0xffa64d,3.2,5,2);l.position.copy(p).add(new THREE.Vector3(0,0.05,0));scene.add(l);}
+  for(const p of pts.slice(0,CFG.maxFlameLights||20)){const l=new THREE.PointLight(CFG.flameColor||0xffa64d,3.2,5,2);l.position.copy(p).add(new THREE.Vector3(0,0.05,0));scene.add(l);}
   roomReady=true;tryProbe();document.getElementById('load').hidden=true;},
   e=>{document.getElementById('load').textContent='Loading the room… '+(e.total?Math.round(e.loaded/e.total*100)+'%':'');},
   e=>{document.getElementById('load').textContent='The room could not load.';console.error(e);});});
