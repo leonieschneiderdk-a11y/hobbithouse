@@ -120,9 +120,9 @@ def build():
     cab = pbr('wood_cabinet_worn_long', 'materials', (0.46, 0.36, 0.27), 0.8)
     table_wood = pbr('wood_table_worn', 'materials', (0.66, 0.52, 0.38), 0.6)
     chair_wood = flat('chair wood', (0.13, 0.085, 0.055), 0.62)
-    frame = flat('window frame', (0.45, 0.27, 0.14), 0.55)
-    wtrim = pbr('oak_wood_planks', 'materials', (0.6, 0.37, 0.19), 0.9)      # light brown wood round the windows
-    ptrim = pbr('oak_wood_planks', 'materials', (0.56, 0.34, 0.17), 0.9)              # light brown posts up the walls
+    frame = flat('window frame', (0.2, 0.09, 0.035), 0.55)
+    wtrim = pbr('oak_wood_planks', 'materials', (0.48, 0.3, 0.16), 0.9)      # light brown wood round the windows
+    ptrim = pbr('oak_wood_planks', 'materials', (0.45, 0.28, 0.14), 0.9)              # light brown posts up the walls
     glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0); lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85)
     iron = flat('iron', (0.03, 0.028, 0.026), 0.55, 0.35)
     brass = flat('brass', (0.78, 0.55, 0.26), 0.3, 1.0)
@@ -232,7 +232,7 @@ def build():
         # its own garden backdrop, facing the window
         bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(60, 39, 1), verts=bm.verts)
         bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
-        vw = obj_from_bm('garden view', bm, image_mat('view', K('view.jpg'), 1.0)); uvl = vw.data.uv_layers.new()
+        vw = obj_from_bm('garden view', bm, image_mat('view', K('view.jpg'), 1.5)); uvl = vw.data.uv_layers.new()
         for i_, l_ in enumerate(uvl.data): co = vw.data.vertices[vw.data.loops[i_].vertex_index].co; l_.uv = (co.x / 60 + 0.5 + 0.25 * sgn, co.z / 39 + 0.5)
         vw.rotation_euler = (0, 0, ang); vw.location = (mid.x + nrm.x * 20, mid.y + nrm.y * 20, 7.0)
         # timber post in each corner of the bay, where the walls meet
@@ -335,7 +335,7 @@ def build():
     # ------------------------------------------------------------ outside: the garden behind the windows
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(60, 39, 1), verts=bm.verts)
     bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X')); bmesh.ops.translate(bm, vec=(0, 22, 7.0), verts=bm.verts)
-    view = obj_from_bm('garden view', bm, image_mat('view', K('view.jpg'), 1.0)); uvl = view.data.uv_layers.new()
+    view = obj_from_bm('garden view', bm, image_mat('view', K('view.jpg'), 1.5)); uvl = view.data.uv_layers.new()
     for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 60 + 0.5, (co.z - 7.0) / 39 + 0.5)
     w = bpy.data.worlds.new('w'); bpy.context.scene.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.6, 0.68, 0.6, 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.3
     for y in (-3.5, -8.5):
@@ -359,7 +359,7 @@ def main():
     for o in bpy.context.scene.objects:
         if o.type == 'LIGHT' and hasattr(o, 'visible_camera'): o.visible_camera = False
     sc = bpy.context.scene; sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = a.samples; sc.cycles.use_denoising = True; sc.cycles.max_bounces = 8
-    sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = 0.95
+    sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'; sc.view_settings.exposure = 1.15
     w, h = map(int, a.res.split('x')); sc.render.resolution_x, sc.render.resolution_y = w, h
     x, y, z, tilt, head, lens = map(float, a.cam.split(',')); cam = bpy.data.objects.new('camera', bpy.data.cameras.new('camera')); sc.collection.objects.link(cam); sc.camera = cam
     cam.location = (x, y, z); cam.rotation_euler = (math.radians(tilt), 0, math.radians(head)); cam.data.lens = lens

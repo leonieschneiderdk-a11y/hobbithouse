@@ -49,7 +49,7 @@ fetch('assets/rooms/'+ROOM+'/room.json?t='+Date.now(),{cache:'no-store'}).then(r
 loader.load(cfg.glb+'?v='+(cfg.version||1),g=>{const room=g.scene;const flames=[];
   room.traverse(o=>{if(o.isLight){o.visible=false;}if(o.isMesh){o.castShadow=true;o.receiveShadow=true;const m=o.material;
       if(m&&m.name==='flame'){m.emissive=new THREE.Color(1,0.62,0.25);m.emissiveIntensity=6;flames.push(o);}
-      if(m&&m.name==='view'){o.material=new THREE.MeshBasicMaterial({map:m.emissiveMap||m.map,toneMapped:false});}
+      if(m&&m.name==='view'){o.material=new THREE.MeshBasicMaterial({map:m.emissiveMap||m.map,toneMapped:false});if(CFG.viewBoost)o.material.color.setScalar(CFG.viewBoost);}
       if(m&&m.name==='glass'){m.transparent=true;m.opacity=0.15;m.depthWrite=false;}
       if(m&&/ivy|rug/.test(m.name||'')){m.transparent=false;m.alphaTest=0.5;m.side=THREE.DoubleSide;m.depthWrite=true;m.needsUpdate=true;}
       if(m&&m.envMapIntensity!==undefined)m.envMapIntensity=0.4;
