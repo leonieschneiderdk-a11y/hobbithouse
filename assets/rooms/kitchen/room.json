@@ -1,0 +1,134 @@
+{
+ "name": "Kitchen",
+ "glb": "assets/rooms/kitchen/kitchen.glb",
+ "spawn": {
+  "x": 0.75,
+  "z": 12.0,
+  "yaw": 0.22
+ },
+ "walk": [
+  [
+   -4.15,
+   4.55,
+   11.15,
+   12.2
+  ],
+  [
+   -4.15,
+   -1.55,
+   0.85,
+   12.2
+  ],
+  [
+   0.95,
+   2.3,
+   0.85,
+   12.2
+  ],
+  [
+   -4.15,
+   4.4,
+   0.85,
+   3.6
+  ],
+  [
+   -3.2,
+   -2.0,
+   11.9,
+   15.2
+  ]
+ ],
+ "lights": [
+  {
+   "x": -4.1,
+   "y": 0.7,
+   "z": 5.95,
+   "color": "#ff7a2e",
+   "power": 9,
+   "range": 6
+  }
+ ],
+ "probe": [
+  0.4,
+  1.4,
+  7.0
+ ],
+ "exposure": 1.0,
+ "version": 3,
+ "wallBoost": 1.6,
+ "maxFlameLights": 30,
+ "tints": {
+  "dark_wooden_planks": [
+   0.46,
+   0.3,
+   0.19
+  ],
+  "marble": [
+   0.78,
+   0.74,
+   0.7
+  ],
+  "monastery_stone_floor": [
+   0.72,
+   0.54,
+   0.4
+  ],
+  "old_stone_wall": [
+   0.9,
+   0.78,
+   0.64
+  ],
+  "plastered_stone_wall": [
+   1.12,
+   0.96,
+   0.78
+  ],
+  "runner": [
+   0.78,
+   0.64,
+   0.56
+  ],
+  "rush": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "sandstone_blocks_08": [
+   0.72,
+   0.58,
+   0.44
+  ],
+  "wood_cabinet_worn_long": [
+   0.78,
+   0.6,
+   0.45
+  ],
+  "wood_cabinet_worn_long.001": [
+   0.62,
+   0.46,
+   0.34
+  ],
+  "wood_table_worn": [
+   0.95,
+   0.78,
+   0.6
+  ],
+  "yellow_stone_wall": [
+   0.78,
+   0.63,
+   0.48
+  ]
+ },
+ "floor": "monastery_stone_floor",
+ "env": {
+  "marble": 0.55,
+  "copper": 0.6
+ },
+ "webTint": {
+  "runner": [
+   0.78,
+   0.7,
+   0.7
+  ]
+ }
+}
