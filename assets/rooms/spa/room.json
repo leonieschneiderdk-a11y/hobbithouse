@@ -180,7 +180,7 @@
   }
  ],
  "exposure": 0.85,
- "version": 4,
+ "version": 5,
  "wallBoost": 1.0,
  "maxFlameLights": 30,
  "flameColor": "#ffb877",
@@ -194,6 +194,11 @@
    0.7,
    0.9,
    0.9
+  ],
+  "massage pad": [
+   0.45,
+   0.38,
+   0.34
   ]
  },
  "env": {
