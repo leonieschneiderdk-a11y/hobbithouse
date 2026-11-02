@@ -37,6 +37,10 @@ python3 -m http.server 8000
 
 Then open http://localhost:8000.
 
+## Rooms, one at a time
+
+Rooms are being rebuilt one by one as real 3D rooms from their images. See [ROOMS.md](ROOMS.md) for the list, renders and walkable links.
+
 ## Round-door hall (fully 3D room)
 
 `hall.html` is a complete 3D room you can walk all the way around with WASD, rebuilt from the round-door reference image: timber-ribbed vault, the round door standing open onto the lake, round windows over shelves, octagon tile floor, candle chandelier, desk, chest and an arch into the passage. It is built by `blender/hero_room.py`, which also renders the photoreal still below.

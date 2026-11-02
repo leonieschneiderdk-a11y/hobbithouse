@@ -1,0 +1,16 @@
+# Rooms, built one at a time
+
+Each room is rebuilt as a real 3D room from its image, then saved so they can be joined into the full house at the end.
+
+| Room | Build script | 3D model | Walk it | Render |
+| --- | --- | --- | --- | --- |
+| Round-door hall | `blender/hero_room.py` | `assets/hero/hall.glb` | [hall.html](hall.html) | ![](docs/hero_hall.png) |
+| Main entrance | `blender/rooms/entrance.py` | `assets/rooms/entrance/entrance.glb` | [room.html?r=entrance](room.html?r=entrance) | ![](docs/rooms/entrance.png) |
+
+## Adding the next room
+
+1. Copy `blender/rooms/entrance.py` to `blender/rooms/<room>.py` and change `build()` to match the room's image.
+2. Render and export: `python blender/rooms/<room>.py --render docs/rooms/<room>.png --samples 128 --res 1600x900 --glb assets/rooms/<room>/<room>.glb`
+3. Add `assets/rooms/<room>/room.json` (model path, spawn point, walkable areas) and open `room.html?r=<room>`.
+
+When every room is done, the saved models are placed at their positions on the floor plan and connected through their doorways.
