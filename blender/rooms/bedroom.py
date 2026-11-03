@@ -20,12 +20,12 @@ from cellar import candle_chandelier
 from nursery import curtain
 from dining import rod
 
-W, L = 14.0, 10.5
+W, L = 20.0, 9.5
 HW = W / 2
 WALL_H, APEX = 2.7, 4.0
 rnd = random.Random(111)
-CAMS = {'main': (0.0, -L + 0.45, 1.7, 84, 0, 13), 'bed': (2.5, -8.0, 1.6, 86, 35, 17), 'sofa': (-1.0, -8.5, 1.6, 86, -30, 17)}
-AX0, AX1, AD = 2.6, 5.8, 2.8                              # alcove behind the back wall (x range, depth)
+CAMS = {'main': (0.3, -L + 0.3, 1.75, 84, 0, 9), 'bed': (2.5, -8.0, 1.6, 86, 35, 17), 'sofa': (-1.0, -8.5, 1.6, 86, -30, 17)}
+AX0, AX1, AD = 5.1, 8.3, 2.8                              # alcove behind the back wall (x range, depth)
 BIGW = (-4.6, 2.4, 1.6, 0.55)                             # right-wall arched window: centre y, width, straight height, sill z
 
 def K(*p): return A('assets', 'rooms', 'bedroom', *p)
@@ -97,16 +97,16 @@ def build():
     back = end_wall('back wall', 0.0, 0.45, 1); front = end_wall('front wall', -L, 0.4, -1)
     # the beams: heavy cross ribs, longitudinal purlins and short joists between, like the image's grid
     rp = profile(48, 0.03)[1:-1]
-    RIBS = [-0.3 - k * 1.65 for k in range(7)]
+    RIBS = [-0.3 - k * 1.8 for k in range(6)]
     for y in RIBS: sweep_profile('rib', rp, y, 0.3, 0.32, beam)
-    for x in (-4.5, -2.2, 0.0, 2.2, 4.5):
+    for x in (-7.6, -5.0, -2.5, 0.0, 2.5, 5.0, 7.6):
         box('purlin', x - 0.14, x + 0.14, -L, 0.0, vault_z(x, 0.3) - 0.28, vault_z(x, 0.3), beam, 1.2)
     for s in (-1, 1): box('wall plate', s * HW - (0.15 if s > 0 else -0.15) - 0.15, s * HW - (0.15 if s > 0 else -0.15) + 0.15, -L, 0.0, WALL_H - 0.15, WALL_H + 0.1, beam, 1.2)
     for y in RIBS[1:]:
         for s in (-1, 1): box('wall post', s * HW - (0.14 if s > 0 else -0.14) - 0.14, s * HW - (0.14 if s > 0 else -0.14) + 0.14, y - 0.15, y + 0.15, 0.0, WALL_H, beam, 1.2)
     bulb = flat('bulb', (1, 0.8, 0.5), 1, emit=(1.0, 0.75, 0.45), strength=15)
-    for y in [(RIBS[k] + RIBS[k + 1]) / 2 for k in range(6)]:
-        for x in (-3.3, 3.3):
+    for y in [(RIBS[k] + RIBS[k + 1]) / 2 for k in range(len(RIBS) - 1)]:
+        for x in (-6.8, -3.3, 3.3, 6.8):
             z = vault_z(x, 0.05) - 0.02; bpy.ops.mesh.primitive_uv_sphere_add(radius=0.025, location=(x, y, z)); bpy.context.active_object.data.materials.append(bulb); light((x, y, z - 0.08), 14, radius=0.03)
     # ------------------------------------------------------------ back wall: the stone fireplace with bookcases either side, pictures, the alcove
     FX = -0.8
@@ -146,13 +146,13 @@ def build():
     back_bookcase(FX - 2.55, FX - 1.3); back_bookcase(FX + 1.3, FX + 2.4)
     for x in (FX - 1.9, FX + 1.85): light((x, -0.7, 2.2), 30, radius=0.2)
     # left part of the back wall: pictures, a console with a lamp and plants
-    model('hanging_picture_frame_02', (-4.6, -0.06, 1.75), 0, width=0.9); model('hanging_picture_frame_01', (-5.9, -0.06, 1.85), 0, width=0.55)
+    model('hanging_picture_frame_02', (-6.2, -0.06, 1.75), 0, width=0.9); model('hanging_picture_frame_01', (-4.7, -0.06, 1.85), 0, width=0.55)
     box('console', -5.8, -3.8, -0.5, -0.05, 0.78, 0.83, wood, 1.0, 0.01)
     for x in (-5.75, -3.85):
         for y in (-0.45, -0.1): box('console leg', x - 0.03, x + 0.03, y - 0.03, y + 0.03, 0.0, 0.78, wood, 1.0)
     lamp(-5.3, -0.28, 0.83, brass, shade_m, 0.45, 50); model('potted_plant_02', (-4.2, -0.3, 0.83), 0.3, height=0.55); bouquet(-4.8, -0.28, 1.0, petals, ivy, 16, 0.14)
     model('ceramic_vase_02', (-4.8, -0.28, 0.83), 0, height=0.2)
-    model('potted_plant_01', (-6.5, -0.5, 0), 0.4, height=1.6)
+    model('potted_plant_01', (-8.9, -0.5, 0), 0.4, height=1.6); model('potted_plant_01', (-3.6, -0.5, 0), 1.4, height=1.4)
     # the arched alcove to the right of the fireplace, with a round window and a cushioned bench
     cut(back, arch_cutter_y((AX0 + AX1) / 2, AX1 - AX0, 1.5, 0.0, -0.2, 0.8)); box_uv(back, 2.0)
     g = group(((AX0 + AX1) / 2, 0.0, 0.0)); stone_arch(g, AX1 - AX0, 1.5, 0.5, trim, 0.22, half=True)
@@ -218,22 +218,22 @@ def build():
             else:
                 c = y0 + (i + 0.5) * (y1 - y0) / n; pillow((x0 + x1) / 2 - 0.1, c, 0.5, (x1 - x0) - 0.3, (y1 - y0) / n - 0.03, 0.14, sofa_m)
                 pillow(x1 - 0.38, c, 0.75, 0.18, (y1 - y0) / n - 0.1, 0.42, rnd.choice((p1, p2, p3))).rotation_euler = (0, math.radians(-14), 0)
-    sofa_run(1.7, 5.6, SY - 0.95, SY, '-y'); sofa_run(5.6, 6.55, SY - 3.2, SY, '+x')
-    box('sofa arm', 1.45, 1.7, SY - 0.95, SY, 0.0, 0.62, sofa_m, 1.0, 0.06)
-    throw(5.65, 6.4, SY - 0.9, SY - 0.2, 0.58, knit, 0.25)
-    CT = (3.7, -4.1)
+    sofa_run(4.7, 8.6, SY - 0.95, SY, '-y'); sofa_run(8.6, 9.55, SY - 3.2, SY, '+x')
+    box('sofa arm', 4.45, 4.7, SY - 0.95, SY, 0.0, 0.62, sofa_m, 1.0, 0.06)
+    throw(8.65, 9.4, SY - 0.9, SY - 0.2, 0.58, knit, 0.25)
+    CT = (6.7, -4.1)
     cyl('coffee table top', 0.75, 0.08, (CT[0], CT[1], 0.46), (0, 0, 0), wood, 48).scale = (1.15, 0.85, 1)
     for k in range(4): a_ = k * math.pi / 2 + math.pi / 4; box('coffee table leg', CT[0] + math.cos(a_) * 0.55 - 0.05, CT[0] + math.cos(a_) * 0.55 + 0.05, CT[1] + math.sin(a_) * 0.4 - 0.05, CT[1] + math.sin(a_) * 0.4 + 0.05, 0.0, 0.42, wood, 1.0)
     box('coffee table shelf', CT[0] - 0.6, CT[0] + 0.6, CT[1] - 0.35, CT[1] + 0.35, 0.1, 0.14, wood, 1.0)
     candles_cluster(CT[0] - 0.2, CT[1], 0.5, wax, 3, 1.0); model('tea_set_01', (CT[0] + 0.3, CT[1] + 0.05, 0.5), 0, width=0.45) if os.path.exists(A('assets', 'models', 'tea_set_01.glb')) else model('wooden_bowl_01', (CT[0] + 0.3, CT[1], 0.5), 0, width=0.35)
     model('decorative_book_set_01', (CT[0], CT[1] - 0.25, 0.5), 0.2, width=0.3) if os.path.exists(A('assets', 'models', 'decorative_book_set_01.glb')) else None
-    OT = (4.6, -6.0)
+    OT = (7.6, -6.0)
     box('ottoman base', OT[0] - 0.6, OT[0] + 0.6, OT[1] - 0.45, OT[1] + 0.45, 0.1, 0.3, wood, 1.0, 0.01)
     pillow(OT[0], OT[1], 0.42, 1.24, 0.94, 0.24, sofa_m)
     throw(OT[0] - 0.5, OT[0] + 0.45, OT[1] - 0.47, OT[1] + 0.47, 0.55, knit, 0.4)
-    model('ArmChair_01', (1.15, -3.4, 0), math.radians(-60), width=0.85)
-    lamp(1.2, -2.35, 0.0, brass, shade_m, 1.45, 60)                                         # floor lamp by the armchair
-    model('potted_plant_01', (6.4, -1.4, 0), 1.2, height=1.5)
+    model('ArmChair_01', (4.15, -3.4, 0), math.radians(-60), width=0.85)
+    lamp(4.2, -2.35, 0.0, brass, shade_m, 1.45, 60)                                         # floor lamp by the armchair
+    model('potted_plant_01', (9.4, -1.4, 0), 1.2, height=1.5)
     # ------------------------------------------------------------ the great arched window in the right wall, the window seat, drapes, the view
     wy, ww, wrh, wz = BIGW
     cut(shell, arch_cutter_x(wy, ww, wrh, wz, HW - 0.6, HW + 0.6))
@@ -273,28 +273,32 @@ def build():
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=0.5); uvl = bm.loops.layers.uv.new()
     for f in bm.faces:
         for l in f.loops: l[uvl].uv = (l.vert.co.y + 0.5, l.vert.co.x + 0.5)
-    o = obj_from_bm('rug', bm, rug); o.scale = (8.5, 5.6, 1); o.location = (0.4, -5.3, 0.007); o.rotation_euler = (0, 0, math.radians(-4))
+    o = obj_from_bm('rug', bm, rug); o.scale = (13.0, 5.4, 1); o.location = (0.6, -5.0, 0.007); o.rotation_euler = (0, 0, math.radians(-4))
     candle_chandelier(0.4, -4.6, 2.75, vault_z(0.4) - 0.15, iron, 0.75, 10)
-    candle_chandelier(-4.0, -4.6, 2.85, vault_z(-4.0) - 0.15, iron, 0.4, 6)
+    candle_chandelier(-5.6, -4.6, 2.8, vault_z(-5.6) - 0.15, iron, 0.55, 8); candle_chandelier(6.6, -4.4, 2.8, vault_z(6.6) - 0.15, iron, 0.55, 8)
     cut(front, arch_cutter_y(-1.2, 1.3, 1.7, 0.0, -L - 1, -L + 1)); box_uv(front, 2.0)
     g = group((-1.2, -L, 0.0)); stone_arch(g, 1.3, 1.7, 0.5, trim, 0.2, half=True)
     box('door', -1.85, -0.55, -L - 0.25, -L - 0.18, 0.0, 2.4, trim, 0.8)
-    for x in (-4.5, 3.0): model('potted_plant_01', (x, -L + 0.5, 0), rnd.uniform(0, 6), height=1.4)
-    for x in (-3.0, 1.0, 5.0): box('sconce arm', x - 0.015, x + 0.015, -L, -L + 0.25, 2.1, 2.13, iron, 1.0); lantern(x, -L + 0.25, 1.78, 0.9, 2.11, iron, lglass, 40)
+    for x in (-7.5, -4.5, 3.0, 6.5): model('potted_plant_01', (x, -L + 0.5, 0), rnd.uniform(0, 6), height=1.4)
+    for x in (-8.5, -3.0, 1.0, 5.0, 8.5): box('sconce arm', x - 0.015, x + 0.015, -L, -L + 0.25, 2.1, 2.13, iron, 1.0); lantern(x, -L + 0.25, 1.78, 0.9, 2.11, iron, lglass, 40)
     model('ArmChair_01', (-0.6, -2.6, 0), math.radians(160), width=0.85)
-    for (x, y, h) in ((-6.4, -8.3, 1.3), (6.3, -8.6, 1.5), (1.4, -1.0, 0.9)): model('potted_plant_01' if h > 1 else 'potted_plant_02', (x, y, 0), rnd.uniform(0, 6), height=h)
+    for (x, y, h) in ((-9.4, -7.8, 1.3), (9.3, -8.0, 1.5), (2.4, -0.7, 0.9)): model('potted_plant_01' if h > 1 else 'potted_plant_02', (x, y, 0), rnd.uniform(0, 6), height=h)
+    model('vintage_cabinet_01', (3.0, -0.35, 0), 0, width=1.3); lamp(2.7, -0.35, 1.05, brass, shade_m, 0.4, 40); model('ceramic_vase_04', (3.35, -0.35, 1.05), 0, height=0.25)
+    model('fancy_picture_frame_01', (3.0, -0.06, 2.05), 0, width=0.8)
+    model('painted_wooden_bench', (-4.7, -0.55, 0), 0, width=1.4) if False else None
+    for x in (-2.0, 1.4): candles_cluster(x + (-0.6 if x < 0 else 0.6), -0.9, 0.0, wax, 3, 1.1)
     blocks('books', BOOKS, bookm)
     w = bpy.data.worlds.new('w'); bpy.context.scene.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.45, 0.5, 0.6, 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.08
-    for (x, y) in ((-3.5, -3.0), (3.5, -3.0), (-3.5, -7.5), (3.5, -7.5)):
+    for (x, y) in ((-7, -3.0), (0, -3.0), (7, -3.0), (-7, -7.0), (0, -7.0), (7, -7.0)):
         f = light((x, y, WALL_H), 45, (1.0, 0.72, 0.45), kind='AREA'); f.data.size = 3.0; f.rotation_euler = (math.pi, 0, 0)
 
 def walk_rects():
     R = [(-HW + 0.6, HW - 0.8, -L + 0.4, -7.0),           # front band
-         (-1.9, 1.05, -7.0, -1.55),                         # between the bed and the sitting area, up to the hearth
+         (-1.9, 3.65, -7.0, -1.55),                         # between the bed and the sitting area, up to the hearth
          (-HW + 0.6, -1.9, -7.0, -6.35),                    # past the foot of the bed
          (-HW + 0.6, -3.4, -2.25, -1.0),                    # behind the bed, by the console
-         (1.05, 3.9, -7.0, -4.95), (5.3, HW - 0.8, -7.0, -5.55),    # round the ottoman
-         (2.85, 5.25, -2.2, 0.5), (AX0 + 0.3, AX1 - 0.3, 0.5, AD - 0.75)]   # into the alcove
+         (3.65, 6.95, -7.0, -4.95), (8.3, HW - 0.8, -7.0, -5.55),    # round the ottoman
+         (3.65, 4.4, -2.2, -0.05), (3.65, AX1 - 0.3, -2.2, -0.05) if False else (4.4, AX1 - 0.3, -2.2, -0.05), (AX0 + 0.3, AX1 - 0.3, -0.1, AD - 0.75)]   # behind the sofa, into the alcove
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 
 def main():
@@ -316,7 +320,7 @@ def main():
         if m.use_nodes:
             for n in m.node_tree.nodes:
                 if n.type == 'MIX_RGB' and n.blend_type == 'MULTIPLY': tints[m.name] = [round(v, 3) for v in n.inputs[2].default_value[:3]]
-    cfg.update(name="Parents' Bedroom", glb='assets/rooms/bedroom/bedroom.glb', spawn=dict(x=0.0, z=L - 0.7, yaw=0), walk=walk_rects(), probe=[0.0, 1.5, 5.0], tints=tints, floor='wood_floor_worn')
+    cfg.update(name="Parents' Bedroom", glb='assets/rooms/bedroom/bedroom.glb', spawn=dict(x=0.0, z=L - 0.6, yaw=0), walk=walk_rects(), probe=[0.0, 1.5, 5.0], tints=tints, floor='wood_floor_worn')
     cfg.setdefault('lights', [{'x': HW - 0.5, 'y': 1.6, 'z': 4.6, 'color': '#ffe8d0', 'power': 12, 'range': 7}, {'x': -0.8, 'y': 0.6, 'z': 1.3, 'color': '#ff7a2e', 'power': 10, 'range': 6},
                               {'x': 0.4, 'y': 2.6, 'z': 4.6, 'color': '#ffb877', 'power': 10, 'range': 8}, {'x': -4.0, 'y': 2.2, 'z': 4.6, 'color': '#ffb877', 'power': 8, 'range': 6}])
     cfg.setdefault('exposure', 0.85); cfg.setdefault('version', 1); cfg.setdefault('wallBoost', 1.0); cfg.setdefault('maxFlameLights', 30); cfg.setdefault('flameColor', '#ffb877')
