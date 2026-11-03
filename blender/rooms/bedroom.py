@@ -26,7 +26,7 @@ WALL_H, APEX = 2.7, 4.0
 rnd = random.Random(111)
 CAMS = {'main': (0.3, -L + 0.4, 1.7, 85, 0, 14), 'bed': (2.5, -8.0, 1.6, 86, 35, 17), 'sofa': (-1.0, -8.5, 1.6, 86, -30, 17)}
 AX0, AX1, AD = 2.3, 5.3, 2.8                              # alcove behind the back wall (x range, depth)
-BIGW = (-10.6, 2.4, 1.6, 0.55)                             # right-wall arched window: centre y, width, straight height, sill z
+BIGW = (-4.6, 2.4, 1.6, 0.55)                             # right-wall arched window: centre y, width, straight height, sill z
 
 def K(*p): return A('assets', 'rooms', 'bedroom', *p)
 
@@ -205,7 +205,7 @@ def build():
     for y in (BY - 2.2, BY + 2.2): model('potted_plant_04', (-HW + 0.14, y, 1.75), 0.3, height=0.3); leaf_cluster(ivy, -HW + 0.15, y, 1.95, 10, 0.25, 0.5)
     for y in (BY - 3.3, BY + 3.3): box('sconce arm', -HW, -HW + 0.25, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(-HW + 0.25, y, 1.72, 0.9, 2.06, iron, lglass, 45)
     # ------------------------------------------------------------ the right side: sectional sofa, coffee table, ottoman with throw, armchair
-    SY = -3.3                                  # back of the long sofa
+    SY = -7.7                                  # back of the long sofa
     def sofa_run(x0, x1, y0, y1, facing):
         box('sofa base', x0, x1, y0, y1, 0.0, 0.42, sofa_m, 1.0, 0.04)
         if facing == '-y': box('sofa back', x0, x1, y1 - 0.25, y1, 0.42, 0.85, sofa_m, 1.0, 0.06)
@@ -218,22 +218,22 @@ def build():
             else:
                 c = y0 + (i + 0.5) * (y1 - y0) / n; pillow((x0 + x1) / 2 - 0.1, c, 0.5, (x1 - x0) - 0.3, (y1 - y0) / n - 0.03, 0.14, sofa_m)
                 pillow(x1 - 0.38, c, 0.75, 0.18, (y1 - y0) / n - 0.1, 0.42, rnd.choice((p1, p2, p3))).rotation_euler = (0, math.radians(-14), 0)
-    sofa_run(1.2, 4.6, SY - 0.95, SY, '-y'); sofa_run(4.6, 5.55, SY - 3.2, SY, '+x')
-    box('sofa arm', 0.95, 1.2, SY - 0.95, SY, 0.0, 0.62, sofa_m, 1.0, 0.06)
-    throw(4.65, 5.4, SY - 0.9, SY - 0.2, 0.58, knit, 0.25)
-    CT = (2.9, -5.2)
+    sofa_run(0.25, 4.85, SY - 1.1, SY, '-y'); sofa_run(4.85, 5.75, SY - 3.6, SY, '+x')
+    box('sofa arm', 0.0, 0.25, SY - 1.1, SY, 0.0, 0.62, sofa_m, 1.0, 0.06)
+    throw(4.9, 5.65, SY - 1.0, SY - 0.2, 0.58, knit, 0.25)
+    CT = (2.5, -10.0)
     cyl('coffee table top', 0.75, 0.08, (CT[0], CT[1], 0.46), (0, 0, 0), wood, 48).scale = (1.15, 0.85, 1)
     for k in range(4): a_ = k * math.pi / 2 + math.pi / 4; box('coffee table leg', CT[0] + math.cos(a_) * 0.55 - 0.05, CT[0] + math.cos(a_) * 0.55 + 0.05, CT[1] + math.sin(a_) * 0.4 - 0.05, CT[1] + math.sin(a_) * 0.4 + 0.05, 0.0, 0.42, wood, 1.0)
     box('coffee table shelf', CT[0] - 0.6, CT[0] + 0.6, CT[1] - 0.35, CT[1] + 0.35, 0.1, 0.14, wood, 1.0)
     candles_cluster(CT[0] - 0.2, CT[1], 0.5, wax, 3, 1.0); model('tea_set_01', (CT[0] + 0.3, CT[1] + 0.05, 0.5), 0, width=0.45) if os.path.exists(A('assets', 'models', 'tea_set_01.glb')) else model('wooden_bowl_01', (CT[0] + 0.3, CT[1], 0.5), 0, width=0.35)
     model('decorative_book_set_01', (CT[0], CT[1] - 0.25, 0.5), 0.2, width=0.3) if os.path.exists(A('assets', 'models', 'decorative_book_set_01.glb')) else None
-    OT = (3.3, -7.4)
+    OT = (2.5, -11.75)
     box('ottoman base', OT[0] - 0.6, OT[0] + 0.6, OT[1] - 0.45, OT[1] + 0.45, 0.1, 0.3, wood, 1.0, 0.01)
     pillow(OT[0], OT[1], 0.42, 1.24, 0.94, 0.24, sofa_m)
     throw(OT[0] - 0.5, OT[0] + 0.45, OT[1] - 0.47, OT[1] + 0.47, 0.55, knit, 0.4)
-    model('ArmChair_01', (0.55, -4.5, 0), math.radians(-60), width=0.85)
-    lamp(0.6, -3.4, 0.0, brass, shade_m, 1.45, 60)                                         # floor lamp by the armchair
-    model('potted_plant_01', (5.4, -2.5, 0), 1.2, height=1.5)
+    model('ArmChair_01', (0.15, -10.3, 0), math.radians(-90), width=0.85); model('side_table_01', (0.1, -11.3, 0), 0, height=0.55); candles_cluster(0.1, -11.3, 0.55, wax, 2, 0.8)
+    lamp(-0.15, -7.75, 0.0, brass, shade_m, 1.45, 60)                                         # floor lamp by the armchair
+    model('potted_plant_01', (5.4, -11.9, 0), 1.2, height=1.5)
     # ------------------------------------------------------------ the great arched window in the right wall, the window seat, drapes, the view
     wy, ww, wrh, wz = BIGW
     cut(shell, arch_cutter_x(wy, ww, wrh, wz, HW - 0.6, HW + 0.6))
@@ -287,18 +287,28 @@ def build():
     model('fancy_picture_frame_01', (-HW + 0.05, -3.6, 2.05), math.pi / 2, width=0.8)
     model('painted_wooden_bench', (-4.7, -0.55, 0), 0, width=1.4) if False else None
     for x in (-2.0, 1.4): candles_cluster(x + (-0.6 if x < 0 else 0.6), -0.9, 0.0, wax, 3, 1.1)
+    # more furniture, like the image: a daybed at the back, a rocking chair by the window seat, a commode, consoles, a reading corner
+    model('vintage_day_bed', (-3.7, -2.45, 0), 0, width=2.0); pillow(-3.3, -2.3, 0.62, 0.5, 0.16, 0.42, p1).rotation_euler = (math.radians(70), 0, 0)
+    throw(-4.3, -3.6, -2.95, -1.95, 0.55, knit, 0.3)
+    model('Rockingchair_01', (4.3, -3.1, 0), math.radians(-120), height=1.05); model('side_table_01', (4.3, -2.1, 0), 0, height=0.55); lamp(4.3, -2.1, 0.55, brass, shade_m, 0.4, 35)
+    model('GothicCommode_01', (HW - 0.32, -6.75, 0), -math.pi / 2, width=1.2); candles_cluster(HW - 0.3, -6.5, 1.21, wax, 3, 0.9); model('ceramic_vase_02', (HW - 0.3, -7.05, 1.21), 0, height=0.22); bouquet(HW - 0.3, -7.05, 1.4, petals, ivy, 14, 0.13)
+    model('hanging_picture_frame_02', (HW - 0.05, -6.75, 2.0), -math.pi / 2, width=0.75)
+    model('ClassicConsole_01', (-3.4, -L + 0.35, 0), 0, width=1.5); lamp(-3.8, -L + 0.35, 0.95, brass, shade_m, 0.4, 40); model('brass_vase_02', (-3.0, -L + 0.35, 0.95), 0, height=0.3)
+    model('ClassicConsole_01', (3.2, -L + 0.35, 0), 0, width=1.5); candles_cluster(3.2, -L + 0.35, 0.95, wax, 3, 1.0); model('fancy_picture_frame_01', (3.2, -L + 0.06, 1.9), math.pi, width=0.75)
+    model('ArmChair_01', (-HW + 0.7, -13.4, 0), math.radians(-40), width=0.8); model('side_table_01', (-HW + 0.5, -14.4, 0), 0, height=0.55); lamp(-HW + 0.5, -14.4, 0.55, brass, shade_m, 0.4, 35)
+    model('wooden_bookshelf_worn', (HW - 0.3, -14.2, 0), -math.pi / 2, height=2.1)
+    model('treasure_chest', (-HW + 0.55, -6.15, 0), math.pi / 2, width=0.85) if False else None
     blocks('books', BOOKS, bookm)
     w = bpy.data.worlds.new('w'); bpy.context.scene.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.45, 0.5, 0.6, 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.08
     for (x, y) in ((-3, -3.0), (3, -3.0), (-3, -8.0), (3, -8.0), (-3, -13.0), (3, -13.0)):
         f = light((x, y, WALL_H), 45, (1.0, 0.72, 0.45), kind='AREA'); f.data.size = 3.0; f.rotation_euler = (math.pi, 0, 0)
 
 def walk_rects():
-    R = [(-2.3, 0.7, -L + 0.4, -1.55),                      # the long aisle down the middle to the hearth
-         (-HW + 0.6, HW - 0.8, -L + 0.4, -12.0),             # the front, past the foot of the bed and the window seat
-         (0.7, HW - 0.8, -12.0, -7.95),                      # in front of the sitting area
-         (0.7, 1.95, -7.95, -5.0),                           # beside the coffee table
-         (-HW + 0.6, -2.3, -6.6, -1.3),                      # behind the bed, by the console
-         (1.0, HW - 0.8, -3.25, -0.05), (AX0 + 0.3, AX1 - 0.3, -0.1, AD - 0.75)]   # behind the sofa, into the alcove
+    R = [(-2.3, 0.0, -L + 0.4, -1.55),                      # the long aisle down the middle to the hearth
+         (-HW + 0.6, HW - 1.0, -L + 0.9, -12.35),            # the front, past the foot of the bed and the sitting area
+         (-0.4, 4.2, -7.5, -1.55),                           # the back right, between the sofa and the alcove
+         (1.7, 4.2, -1.6, -0.05), (AX0 + 0.3, AX1 - 0.3, -0.1, AD - 0.75),   # into the alcove
+         (-HW + 0.6, -2.3, -6.6, -3.1)]                      # behind the bed
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 
 def main():
