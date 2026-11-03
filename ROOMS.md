@@ -15,6 +15,7 @@ Each room is rebuilt as a real 3D room from its image, then saved so they can be
 | Spa & sauna | `blender/rooms/spa.py` | `assets/rooms/spa/spa.glb` | [room.html?r=spa](room.html?r=spa) | ![](docs/rooms/spa.png) ![](docs/rooms/spa_pool.png) |
 | Master bathroom | `blender/rooms/master.py` | `assets/rooms/master/master.glb` | [room.html?r=master](room.html?r=master) | ![](docs/rooms/master.png) |
 | Baby room | `blender/rooms/nursery.py` (sheepskin: `tools/nursery_textures.py`) | `assets/rooms/nursery/nursery.glb` | [room.html?r=nursery](room.html?r=nursery) | ![](docs/rooms/nursery.png) |
+| Master bedroom | `blender/rooms/bedroom.py` (rug: `tools/bedroom_textures.py`) | `assets/rooms/bedroom/bedroom.glb` | [room.html?r=bedroom](room.html?r=bedroom) | ![](docs/rooms/bedroom.png) |
 
 ## Adding the next room
 

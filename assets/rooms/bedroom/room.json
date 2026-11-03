@@ -1,0 +1,166 @@
+{
+ "name": "Parents' Bedroom",
+ "glb": "assets/rooms/bedroom/bedroom.glb",
+ "spawn": {
+  "x": 0.0,
+  "z": 9.8,
+  "yaw": 0
+ },
+ "walk": [
+  [
+   -6.4,
+   6.2,
+   7.0,
+   10.1
+  ],
+  [
+   -1.9,
+   1.05,
+   1.55,
+   7.0
+  ],
+  [
+   -6.4,
+   -1.9,
+   6.35,
+   7.0
+  ],
+  [
+   -6.4,
+   -3.4,
+   1.0,
+   2.25
+  ],
+  [
+   1.05,
+   3.9,
+   4.95,
+   7.0
+  ],
+  [
+   5.3,
+   6.2,
+   5.55,
+   7.0
+  ],
+  [
+   2.85,
+   5.25,
+   -0.5,
+   2.2
+  ],
+  [
+   2.9,
+   5.5,
+   -2.05,
+   -0.5
+  ]
+ ],
+ "probe": [
+  0.0,
+  1.5,
+  5.0
+ ],
+ "tints": {
+  "clay_plaster": [
+   1.0,
+   0.86,
+   0.66
+  ],
+  "dark_wooden_planks": [
+   0.46,
+   0.31,
+   0.2
+  ],
+  "rough_wood": [
+   0.27,
+   0.18,
+   0.11
+  ],
+  "rug": [
+   1.05,
+   1.0,
+   0.95
+  ],
+  "rustic_stone_wall": [
+   0.78,
+   0.7,
+   0.6
+  ],
+  "weathered_brown_planks": [
+   0.5,
+   0.36,
+   0.24
+  ],
+  "wood_cabinet_worn_long": [
+   0.55,
+   0.38,
+   0.24
+  ],
+  "wood_floor_worn": [
+   0.62,
+   0.44,
+   0.3
+  ]
+ },
+ "floor": "wood_floor_worn",
+ "lights": [
+  {
+   "x": 6.5,
+   "y": 1.6,
+   "z": 4.6,
+   "color": "#ffe8d0",
+   "power": 12,
+   "range": 7
+  },
+  {
+   "x": -0.8,
+   "y": 0.6,
+   "z": 1.3,
+   "color": "#ff7a2e",
+   "power": 10,
+   "range": 6
+  },
+  {
+   "x": 0.4,
+   "y": 2.6,
+   "z": 4.6,
+   "color": "#ffb877",
+   "power": 10,
+   "range": 8
+  },
+  {
+   "x": -4.0,
+   "y": 2.2,
+   "z": 4.6,
+   "color": "#ffb877",
+   "power": 8,
+   "range": 6
+  }
+ ],
+ "exposure": 0.78,
+ "version": 2,
+ "wallBoost": 1.0,
+ "maxFlameLights": 30,
+ "flameColor": "#ffb877",
+ "webTint": {
+  "clay_plaster": [
+   0.86,
+   0.84,
+   0.82
+  ],
+  "rug": [
+   0.88,
+   0.86,
+   0.84
+  ],
+  "ArmChair_01": [
+   0.75,
+   0.68,
+   0.6
+  ]
+ },
+ "env": {
+  "wood_floor_worn": 0.4
+ }
+}
