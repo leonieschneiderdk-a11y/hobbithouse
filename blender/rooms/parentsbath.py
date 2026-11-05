@@ -119,8 +119,47 @@ def build():
     for k in range(3): cyl('rolled towel', 0.06, 0.3, (TX + 1.45, TY - 0.42 + k * 0.12, 0.51), (0, math.pi / 2, 0), towel, 16)
     model('potted_plant_02', (TX + 1.4, -0.7, 0), 0.6, height=0.9)
     # a cushioned chair in the front-left corner with a throw, like the image
-    model('ArmChair_01', (-HW + 0.75, -5.6, 0), math.radians(-60), width=0.8)
-    model('potted_plant_01', (-HW + 0.45, -4.4, 0), 2.2, height=1.3)
+    model('ArmChair_01', (-HW + 0.75, -6.45, 0), math.radians(-60), width=0.8)
+    model('potted_plant_01', (-HW + 0.45, -3.55, 0), 2.2, height=1.3)
+    # ------------------------------------------------------------ a round cedar hot tub with steps, lit water, candles and a towel bench
+    cedar = pbr('oak_wood_planks', 'materials', (0.82, 0.52, 0.3), 0.7)
+    hx, hy, hr = 0.55, -5.0, 0.85
+    ht = cyl('hot tub', hr, 0.85, (hx, hy, 0.425), (0, 0, 0), cedar, 48); box_uv(ht, 0.6)
+    cut(ht, [cyl('c', hr - 0.08, 0.9, (hx, hy, 0.6), (0, 0, 0), cedar, 48)])
+    for z in (0.15, 0.72): torus('tub hoop', hr + 0.01, 0.015, (hx, hy, z), (0, 0, 0), iron)
+    for k in range(int(2 * math.pi * hr / 0.12)):
+        a_ = k / int(2 * math.pi * hr / 0.12) * 2 * math.pi
+        box('stave line', hx + math.cos(a_) * (hr + 0.002) - 0.004, hx + math.cos(a_) * (hr + 0.002) + 0.004, hy + math.sin(a_) * (hr + 0.002) - 0.004, hy + math.sin(a_) * (hr + 0.002) + 0.004, 0.02, 0.84, beam, 1.0)
+    cyl('hot tub water', hr - 0.08, 0.02, (hx, hy, 0.7), (0, 0, 0), flat('tub water', (0.25, 0.62, 0.6), 0.02, transmission=0.55), 48)
+    light((hx, hy, 0.4), 40, (0.4, 0.9, 1.0), radius=0.2)
+    for k in range(2): box('tub step', hx - 0.35, hx + 0.35, hy - hr - 0.3 - k * 0.0, hy - hr + 0.02, 0.0, 0.22 * (k + 1), cedar, 1.0, 0.01) if k == 0 else box('tub step', hx - 0.35, hx + 0.35, hy - hr - 0.15, hy - hr + 0.02, 0.22, 0.44, cedar, 1.0, 0.01)
+    candles_cluster(hx - hr - 0.25, hy + 0.3, 0.0, wax, 3, 1.0); candles_cluster(hx + hr + 0.25, hy - 0.4, 0.0, wax, 3, 1.0)
+    for a_ in (0.6, 2.4): bpy.ops.mesh.primitive_uv_sphere_add(radius=0.02, location=(hx + math.cos(a_) * (hr - 0.04), hy + math.sin(a_) * (hr - 0.04), 0.87)); candle((hx + math.cos(a_) * (hr - 0.04), hy + math.sin(a_) * (hr - 0.04), 0.85), 0.1, 6)
+    model('painted_wooden_bench', (hx, -6.55, 0), 0, width=1.3)
+    for k in range(3): cyl('rolled towel', 0.065, 0.36, (hx - 0.35 + k * 0.35, -6.55, 0.52), (math.pi / 2, 0, 0), towel, 16)
+    model('potted_plant_02', (hx + 1.3, -6.5, 0), 0.4, height=0.9)
+    # ------------------------------------------------------------ a makeup table on the left wall: round lit mirror, stool, lamp, brushes and jars
+    mx, my = -HW, -4.9
+    model('wooden_table_02', (mx + 0.38, my, 0), math.pi / 2, width=1.3)
+    box('makeup drawer', mx + 0.68, mx + 0.7, my - 0.3, my + 0.3, 0.58, 0.7, cab, 1.0, 0.005)
+    cyl('makeup mirror', 0.5, 0.02, (mx + 0.03, my, 1.55), (0, math.pi / 2, 0), mirror, 48)
+    torus('makeup mirror frame', 0.52, 0.035, (mx + 0.05, my, 1.55), (0, math.pi / 2, 0), brass)
+    bulb = flat('vanity bulb', (1, 0.85, 0.6), 1, emit=(1.0, 0.8, 0.5), strength=12)
+    for k in range(12):
+        a_ = k / 12 * 2 * math.pi; bpy.ops.mesh.primitive_uv_sphere_add(radius=0.03, location=(mx + 0.08, my + math.cos(a_) * 0.6, 1.55 + math.sin(a_) * 0.6)); bpy.context.active_object.data.materials.append(bulb)
+    light((mx + 0.4, my, 1.55), 45, (1.0, 0.82, 0.6), radius=0.4)
+    stool = cyl('makeup stool', 0.22, 0.12, (mx + 0.95, my, 0.48), (0, 0, 0), flat('stool velvet', (0.45, 0.28, 0.22), 0.8), 32)
+    for k in range(4): a_ = k / 4 * 2 * math.pi + 0.4; rod('stool leg', (mx + 0.95 + math.cos(a_) * 0.2, my + math.sin(a_) * 0.2, 0), (mx + 0.95 + math.cos(a_) * 0.14, my + math.sin(a_) * 0.14, 0.42), 0.018, brass, 8)
+    tz = 0.8
+    lamp_m = flat('lamp shade', (0.95, 0.82, 0.6), 0.8, emit=(1.0, 0.75, 0.45), strength=3)
+    cyl('lamp base', 0.05, 0.25, (mx + 0.3, my + 0.5, tz + 0.12), (0, 0, 0), brass, 16)
+    bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=False, segments=20, radius1=0.13, radius2=0.08, depth=0.16); obj_from_bm('lamp shade', bm, lamp_m, True).location = (mx + 0.3, my + 0.5, tz + 0.33)
+    for k, c in enumerate(((0.75, 0.55, 0.5), (0.4, 0.12, 0.15), (0.85, 0.78, 0.7), (0.2, 0.15, 0.12))):
+        cyl('makeup jar', 0.03, 0.07 + 0.03 * (k % 2), (mx + 0.25 + 0.07 * k, my - 0.3, tz + 0.05), (0, 0, 0), flat('makeup %d' % k, c, 0.3), 16)
+    cyl('brush cup', 0.04, 0.12, (mx + 0.25, my - 0.05, tz + 0.06), (0, 0, 0), brass, 16)
+    for k in range(5): rod('brush', (mx + 0.25 + 0.01 * (k - 2), my - 0.05 + 0.008 * (k - 2), tz + 0.1), (mx + 0.25 + 0.03 * (k - 2), my - 0.05 + 0.02 * (k - 2), tz + 0.26), 0.006, flat('brush wood', (0.2, 0.12, 0.08), 0.5), 6)
+    model('ceramic_vase_04', (mx + 0.3, my + 0.15, tz), 0, height=0.18); bouquet(mx + 0.3, my + 0.15, tz + 0.16, petals, ivy, 10, 0.1)
+    model('wicker_basket_02', (mx + 0.35, my - 0.4, 0.0), 0, width=0.34)
     # ------------------------------------------------------------ right wall: double vanity, two arched mirrors, lantern shelf
     VY0, VY1, VH = -3.4, -0.45, 0.88; RX = HW
     box('vanity top', RX - 0.66, RX, VY0, VY1, VH - 0.07, VH, top, 1.0, 0.012)
@@ -167,7 +206,10 @@ def build():
         f = light((0.4, y, H - 0.6), 160, (1.0, 0.75, 0.5), kind='AREA'); f.data.size = 2.5
 
 def walk_rects():
-    R = [(-HW + 0.6, HW - 0.8, -L + 0.4, -3.7),            # the front, between the chair, tub and vanity
+    R = [(-0.4, -0.05, -6.15, -3.7), (-0.4, 2.0, -6.15, -5.95) if False else (-0.4, 1.55, -6.2, -6.05),
+         (-2.45, -0.4, -6.0, -3.7),                          # in front of the makeup table
+         (1.55, 2.0, -6.2, -3.7),                            # right of the hot tub
+         (-2.45, 2.0, -6.5, -6.15), (-1.0, 0.2, -L + 0.4, -6.15),   # the front, to the door
          (-0.05, HW - 0.8, -3.7, -0.6),                     # beside the tub, in front of the vanity
          (-HW + 0.6, -2.0, -3.7, -0.6),                     # the left of the tub, to the window
          (HW - 1.25, HW - 0.25, -6.6, -4.7) if False else (-0.7, -0.1, -L - 0.4, -L + 0.5)]   # the doorway
