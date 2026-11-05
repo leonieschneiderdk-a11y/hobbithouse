@@ -38,11 +38,7 @@
    3.7
   ]
  ],
- "probe": [
-  0.0,
-  1.4,
-  4.0
- ],
+ "probe": false,
  "tints": {
   "dark_wooden_planks": [
    0.5,
@@ -113,9 +109,9 @@
   }
  ],
  "exposure": 0.9,
- "version": 3,
+ "version": 6,
  "wallBoost": 1.0,
- "maxFlameLights": 24,
+ "maxFlameLights": 16,
  "flameColor": "#ffb877",
  "env": {
   "copper": 0.35,
