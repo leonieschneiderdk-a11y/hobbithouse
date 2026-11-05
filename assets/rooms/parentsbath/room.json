@@ -1,0 +1,127 @@
+{
+ "name": "Parents' Bathroom",
+ "glb": "assets/rooms/parentsbath/parentsbath.glb",
+ "spawn": {
+  "x": -0.4,
+  "z": 6.6000000000000005,
+  "yaw": 0.1
+ },
+ "walk": [
+  [
+   -3.0,
+   2.8,
+   3.7,
+   6.8
+  ],
+  [
+   -0.05,
+   2.8,
+   0.6,
+   3.7
+  ],
+  [
+   -3.0,
+   -2.0,
+   0.6,
+   3.7
+  ],
+  [
+   -0.7,
+   -0.1,
+   6.7,
+   7.6000000000000005
+  ]
+ ],
+ "probe": [
+  0.0,
+  1.4,
+  4.0
+ ],
+ "tints": {
+  "dark_wooden_planks": [
+   0.5,
+   0.34,
+   0.22
+  ],
+  "monastery_stone_floor": [
+   0.72,
+   0.62,
+   0.5
+  ],
+  "old_stone_wall": [
+   0.9,
+   0.76,
+   0.58
+  ],
+  "rough_wood": [
+   0.42,
+   0.29,
+   0.18
+  ],
+  "stone top": [
+   0.72,
+   0.68,
+   0.64
+  ],
+  "wood_cabinet_worn_long": [
+   0.62,
+   0.45,
+   0.3
+  ],
+  "yellow_stone_wall": [
+   0.85,
+   0.8,
+   0.72
+  ]
+ },
+ "floor": "monastery_stone_floor",
+ "lights": [
+  {
+   "x": -1.2,
+   "y": 2.4,
+   "z": 1.4,
+   "color": "#ffe8d0",
+   "power": 14,
+   "range": 8
+  },
+  {
+   "x": 2.8,
+   "y": 2.0,
+   "z": 2.0,
+   "color": "#ffb877",
+   "power": 7,
+   "range": 5
+  },
+  {
+   "x": 0.4,
+   "y": 3.2,
+   "z": 4.5,
+   "color": "#ffb877",
+   "power": 8,
+   "range": 6
+  }
+ ],
+ "exposure": 0.9,
+ "version": 1,
+ "wallBoost": 1.0,
+ "maxFlameLights": 24,
+ "flameColor": "#ffb877",
+ "env": {
+  "copper": 0.35,
+  "copper inside": 0.3,
+  "dark_wooden_planks": 0.2,
+  "rough_wood": 0.2
+ },
+ "webTint": {
+  "copper": [
+   0.85,
+   0.7,
+   0.6
+  ],
+  "copper inside": [
+   0.85,
+   0.65,
+   0.55
+  ]
+ }
+}
