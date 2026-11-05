@@ -72,11 +72,11 @@ def build():
     frame = flat('window frame', (0.14, 0.08, 0.04), 0.55); glass = flat('glass', (0.95, 0.97, 0.98), 0.02, transmission=1.0)
     lglass = flat('lantern glass', (1.0, 0.86, 0.66), 0.08, transmission=0.85); wax = flat('wax', (0.92, 0.88, 0.78), 0.45)
     log = flat('log', (0.22, 0.13, 0.07), 0.9); ember = flat('ember', (1, 0.4, 0.1), 1, emit=(1.0, 0.4, 0.1), strength=30)
-    sheer = flat('sheer curtain', (0.9, 0.84, 0.74), 0.8); sheer.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value = 0.6
+    sheer = flat('sheer curtain', (0.5, 0.34, 0.2), 0.85); sheer.node_tree.nodes['Principled BSDF'].inputs['Alpha'].default_value = 0.6
     for attr, val in (('blend_method', 'BLEND'), ('surface_render_method', 'BLENDED')):
         try: setattr(sheer, attr, val)
         except Exception: pass
-    drape = flat('drape', (0.36, 0.3, 0.24), 0.9)
+    drape = flat('drape', (0.2, 0.11, 0.055), 0.9)
     ivy = mat_alpha('ivy', A('assets', 'rooms', 'kitchen', 'ivy.png'))
     petals = [flat('petal white', (0.95, 0.92, 0.88), 0.6), flat('petal cream', (0.95, 0.85, 0.65), 0.6), flat('petal rust', (0.7, 0.3, 0.15), 0.6)]
     bookm = [flat('book ' + n, c, 0.6) for n, c in (('red', (0.3, 0.05, 0.03)), ('brown', (0.22, 0.12, 0.06)), ('green', (0.08, 0.14, 0.07)), ('tan', (0.45, 0.32, 0.18)),

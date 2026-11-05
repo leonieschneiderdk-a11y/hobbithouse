@@ -183,7 +183,7 @@
   }
  ],
  "exposure": 0.9,
- "version": 8,
+ "version": 9,
  "wallBoost": 1.0,
  "maxFlameLights": 30,
  "flameColor": "#ffb877",
@@ -202,9 +202,21 @@
    0.75,
    0.68,
    0.6
+  ],
+  "drape": [
+   0.75,
+   0.7,
+   0.66
+  ],
+  "sheer curtain": [
+   0.8,
+   0.72,
+   0.64
   ]
  },
  "env": {
-  "wood_floor_worn": 0.4
+  "wood_floor_worn": 0.4,
+  "drape": 0.1,
+  "sheer curtain": 0.1
  }
 }
