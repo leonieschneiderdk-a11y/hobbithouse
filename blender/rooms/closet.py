@@ -162,7 +162,7 @@ def build():
     shaft = cyl('skylight shaft', 1.06, 0.55, (0, SKY_Y, zc + 0.15), (0, 0, 0), ceil, 64); shaft.scale = (SKY_RX, SKY_RY, 1)
     sc_ = cyl('c', 1.0, 0.8, (0, SKY_Y, zc + 0.15), (0, 0, 0), ceil, 64); sc_.scale = (SKY_RX - 0.04, SKY_RY - 0.04, 1); bpy.context.view_layer.update(); cut(shaft, [sc_])
     a = light((0, SKY_Y, zc + 0.6), 700, (0.85, 0.92, 1.0), kind='AREA'); a.data.shape = 'ELLIPSE'; a.data.size = SKY_RX * 2; a.data.size_y = SKY_RY * 2
-    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(30, 13, 1), verts=bm.verts)
+    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(15, 6.5, 1), verts=bm.verts)
     bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
     view = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'kitchen', 'view.jpg'), 1.1)); uvl = view.data.uv_layers.new()
     for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 30 + 0.5, 0.42 + (co.z / 13 + 0.5) * 0.58)
