@@ -118,14 +118,6 @@
  "floor": "wood_floor_worn",
  "lights": [
   {
-   "x": 5.5,
-   "y": 1.6,
-   "z": 4.6,
-   "color": "#ffe8d0",
-   "power": 12,
-   "range": 8
-  },
-  {
    "x": -0.8,
    "y": 0.6,
    "z": 1.3,
@@ -156,10 +148,42 @@
    "color": "#ffb877",
    "power": 9,
    "range": 7
+  },
+  {
+   "x": 5.5,
+   "y": 1.8,
+   "z": 4.2,
+   "color": "#ffe8d0",
+   "power": 9,
+   "range": 6
+  },
+  {
+   "x": 5.5,
+   "y": 1.8,
+   "z": 9.5,
+   "color": "#ffe8d0",
+   "power": 9,
+   "range": 6
+  },
+  {
+   "x": 5.5,
+   "y": 1.8,
+   "z": 14.0,
+   "color": "#ffe8d0",
+   "power": 9,
+   "range": 6
+  },
+  {
+   "x": -5.5,
+   "y": 1.8,
+   "z": 13.0,
+   "color": "#ffe8d0",
+   "power": 8,
+   "range": 5
   }
  ],
  "exposure": 0.9,
- "version": 7,
+ "version": 8,
  "wallBoost": 1.0,
  "maxFlameLights": 30,
  "flameColor": "#ffb877",

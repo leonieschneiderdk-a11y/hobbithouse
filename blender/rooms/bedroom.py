@@ -203,7 +203,7 @@ def build():
     model('fancy_picture_frame_01', (-HW + 0.05, BY, 2.1), math.pi / 2, width=1.2)
     shelf(-HW, -HW + 0.28, BY - 2.6, BY - 1.75, 1.75, trim); shelf(-HW, -HW + 0.28, BY + 1.75, BY + 2.6, 1.75, trim)
     for y in (BY - 2.2, BY + 2.2): model('potted_plant_04', (-HW + 0.14, y, 1.75), 0.3, height=0.3); leaf_cluster(ivy, -HW + 0.15, y, 1.95, 10, 0.25, 0.5)
-    for y in (BY - 3.3, BY + 3.3): box('sconce arm', -HW, -HW + 0.25, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(-HW + 0.25, y, 1.72, 0.9, 2.06, iron, lglass, 45)
+    for y in (BY + 3.3,): box('sconce arm', -HW, -HW + 0.25, y - 0.015, y + 0.015, 2.05, 2.08, iron, 1.0); lantern(-HW + 0.25, y, 1.72, 0.9, 2.06, iron, lglass, 45)
     # ------------------------------------------------------------ the right side: sectional sofa, coffee table, ottoman with throw, armchair
     SY = -7.7                                  # back of the long sofa
     def sofa_run(x0, x1, y0, y1, facing):
@@ -233,38 +233,57 @@ def build():
     throw(OT[0] - 0.5, OT[0] + 0.45, OT[1] - 0.47, OT[1] + 0.47, 0.55, knit, 0.4)
     model('ArmChair_01', (0.15, -10.3, 0), math.radians(90), width=0.85); model('side_table_01', (0.1, -11.3, 0), 0, height=0.55); candles_cluster(0.1, -11.3, 0.55, wax, 2, 0.8)
     lamp(-0.15, -7.75, 0.0, brass, shade_m, 1.45, 60)                                         # floor lamp by the armchair
-    model('potted_plant_01', (5.4, -11.9, 0), 1.2, height=1.5)
+    model('potted_plant_01', (5.3, -11.75, 0), 1.2, height=1.5)
     # ------------------------------------------------------------ the great arched window in the right wall, the window seat, drapes, the view
-    wy, ww, wrh, wz = BIGW
-    cut(shell, arch_cutter_x(wy, ww, wrh, wz, HW - 0.6, HW + 0.6))
-    gx = group((HW - 0.05, wy, wz), math.pi / 2)
-    t = 0.09
-    for x0, x1, z0, z1 in ((-ww / 2, -ww / 2 + t, 0, wrh), (ww / 2 - t, ww / 2, 0, wrh), (-ww / 2, ww / 2, 0, t)): kid(box('win frame', x0, x1, -0.05, 0.05, z0, z1, frame, 1.0), gx)
-    bpy.ops.mesh.primitive_torus_add(major_radius=ww / 2 - t / 2, minor_radius=t / 2, major_segments=64, minor_segments=8, location=(0, 0, wrh), rotation=(math.pi / 2, 0, 0))
-    o = bpy.context.active_object; o.data.materials.append(frame); kid(o, gx)
-    bm2 = bmesh.new(); bm2.from_mesh(o.data); bmesh.ops.delete(bm2, geom=[v for v in bm2.verts if v.co.y < -t * 0.4], context='VERTS'); bm2.to_mesh(o.data); bm2.free()
-    for x in (-ww / 6, ww / 6): kid(box('mullion', x - 0.03, x + 0.03, -0.035, 0.035, t, wrh + math.sqrt(max(0, (ww / 2) ** 2 - x * x)) - 0.08, frame, 1.0), gx)
-    kid(box('transom', -ww / 2 + t, ww / 2 - t, -0.035, 0.035, wrh - 0.03, wrh + 0.03, frame, 1.0), gx)
-    bm = bmesh.new(); vs = [bm.verts.new((-ww / 2 + t, 0, 0.05)), bm.verts.new((ww / 2 - t, 0, 0.05))]
-    for i in range(41): a_ = i / 40 * math.pi; vs.append(bm.verts.new((math.cos(a_) * (ww / 2 - t), 0, wrh + math.sin(a_) * (ww / 2 - t))))
-    bm.faces.new(vs); kid(obj_from_bm('glass', bm, glass), gx)
-    g2 = group((HW - 0.15, wy, wz), math.pi / 2); stone_arch(g2, ww, wrh, 0.3, trim, 0.2, half=True)
-    a = light((HW + 1.8, wy, wz + 1.3), 1300, (0.85, 0.92, 1.0), kind='AREA'); a.data.size = ww; a.rotation_euler = (0, math.radians(-90), 0)
-    box('window seat', HW - 0.7, HW, wy - ww / 2 - 0.4, wy + ww / 2 + 0.4, 0.0, 0.5, wood, 1.0, 0.01)
-    pillow(HW - 0.36, wy, 0.56, 0.62, ww + 0.7, 0.12, p1)
-    for k, m in enumerate((p2, p3, p1, p2)): pillow(HW - 0.14, wy - 1.1 + k * 0.7, 0.82, 0.14, 0.45, 0.4, m).rotation_euler = (0, math.radians(-12), 0)
-    model('wooden_bowl_01', (HW - 0.35, wy + 1.2, 0.62), 0, width=0.3)
-    for s in (-1, 1):
-        curtain('curtain', [(HW - 0.25, wy + s * (ww / 2 + 0.15)), (HW - 0.3, wy + s * (ww / 2 + 0.6))], 0.0, wz + wrh + ww / 2 + 0.3, drape, 0.06, 8)
-        curtain('sheer', [(HW - 0.18, wy + s * (ww / 2 - 0.1)), (HW - 0.2, wy + s * (ww / 2 + 0.2))], 0.5, wz + wrh + ww / 2 + 0.3, sheer, 0.04, 6)
-    box('curtain rod', HW - 0.3, HW - 0.26, wy - ww / 2 - 0.8, wy + ww / 2 + 0.8, wz + wrh + ww / 2 + 0.3, wz + wrh + ww / 2 + 0.34, brass, 1.0)
-    for y in (wy - ww / 2 - 0.9, wy + ww / 2 + 0.9): box('sconce arm', HW - 0.25, HW, y - 0.015, y + 0.015, 2.1, 2.13, iron, 1.0); lantern(HW - 0.25, y, 1.78, 0.9, 2.11, iron, lglass, 45)
-    for k in range(10): leaf_cluster(ivy, HW - 0.2, wy - ww / 2 - 0.4 + k * (ww + 0.8) / 9, WALL_H + 0.3, 9, 0.25, 0.6 if k % 2 else 0.2)
-    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(40, 17.3, 1), verts=bm.verts)
-    bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
-    view = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'master', 'view.jpg'), 1.25)); uvl = view.data.uv_layers.new()
-    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 40 + 0.5, co.z / 17.3 + 0.5)
-    view.rotation_euler = (0, 0, -math.pi / 2); view.location = (HW + 14, wy, 2.2)
+    WINS = [(1, -4.2, 2.8, 1.6, 0.5, True), (1, -9.5, 2.8, 1.6, 0.55, False), (1, -14.0, 2.6, 1.6, 0.55, True), (-1, -13.0, 2.4, 1.5, 0.6, False)]
+    t = 0.09; cutters_all = []
+    for sd, wy, ww, wrh, wz, seat in WINS:
+        wx = sd * HW
+        cut(shell, arch_cutter_x(wy, ww, wrh, wz, wx - 0.6, wx + 0.6))
+        cutters_all.append((sd, wy, ww, wrh, wz))
+        gx = group((wx - sd * 0.05, wy, wz), sd * math.pi / 2)
+        for x0, x1, z0, z1 in ((-ww / 2, -ww / 2 + t, 0, wrh), (ww / 2 - t, ww / 2, 0, wrh), (-ww / 2, ww / 2, 0, t)): kid(box('win frame', x0, x1, -0.05, 0.05, z0, z1, frame, 1.0), gx)
+        bpy.ops.mesh.primitive_torus_add(major_radius=ww / 2 - t / 2, minor_radius=t / 2, major_segments=64, minor_segments=8, location=(0, 0, wrh), rotation=(math.pi / 2, 0, 0))
+        o = bpy.context.active_object; o.data.materials.append(frame); kid(o, gx)
+        bm2 = bmesh.new(); bm2.from_mesh(o.data); bmesh.ops.delete(bm2, geom=[v for v in bm2.verts if v.co.y < -t * 0.4], context='VERTS'); bm2.to_mesh(o.data); bm2.free()
+        for x in (-ww / 6, ww / 6): kid(box('mullion', x - 0.03, x + 0.03, -0.035, 0.035, t, wrh + math.sqrt(max(0, (ww / 2) ** 2 - x * x)) - 0.08, frame, 1.0), gx)
+        kid(box('transom', -ww / 2 + t, ww / 2 - t, -0.035, 0.035, wrh - 0.03, wrh + 0.03, frame, 1.0), gx)
+        bm = bmesh.new(); vs = [bm.verts.new((-ww / 2 + t, 0, 0.05)), bm.verts.new((ww / 2 - t, 0, 0.05))]
+        for i in range(41): a_ = i / 40 * math.pi; vs.append(bm.verts.new((math.cos(a_) * (ww / 2 - t), 0, wrh + math.sin(a_) * (ww / 2 - t))))
+        bm.faces.new(vs); kid(obj_from_bm('glass', bm, glass), gx)
+        g2 = group((wx - sd * 0.15, wy, wz), sd * math.pi / 2); stone_arch(g2, ww, wrh, 0.3, trim, 0.2, half=True)
+        a = light((wx + sd * 1.8, wy, wz + 1.3), 1100, (0.85, 0.92, 1.0), kind='AREA'); a.data.size = ww; a.rotation_euler = (0, sd * math.radians(-90), 0)
+        box('window sill', min(wx, wx - sd * 0.35), max(wx, wx - sd * 0.35), wy - ww / 2 - 0.1, wy + ww / 2 + 0.1, wz - 0.06, wz, trim, 1.0)
+        if seat:
+            box('window seat', min(wx, wx - sd * 0.7), max(wx, wx - sd * 0.7), wy - ww / 2 - 0.3, wy + ww / 2 + 0.3, 0.0, min(0.48, wz - 0.02), wood, 1.0, 0.01)
+            pillow(wx - sd * 0.36, wy, 0.54, 0.62, ww + 0.5, 0.12, p1)
+            for k, m in enumerate((p2, p3, p1, p2)): pillow(wx - sd * 0.14, wy - 1.05 + k * 0.7, 0.8, 0.14, 0.45, 0.4, m).rotation_euler = (0, sd * math.radians(-12), 0)
+        ctop = wz + wrh + ww / 2 + 0.35
+        for s_ in (-1, 1):
+            curtain('curtain', [(wx - sd * 0.25, wy + s_ * (ww / 2 + 0.12)), (wx - sd * 0.3, wy + s_ * (ww / 2 + 0.65))], 0.0, ctop, drape, 0.07, 9)
+            curtain('sheer', [(wx - sd * 0.18, wy + s_ * (ww / 2 - 0.15)), (wx - sd * 0.2, wy + s_ * (ww / 2 + 0.2))], 0.0, ctop, sheer, 0.04, 6)
+            for z in (0.95,): torus('tie back', 0.05, 0.012, (wx - sd * 0.28, wy + s_ * (ww / 2 + 0.35), z), (0, 0, 0), brass)
+        box('curtain rod', min(wx - sd * 0.3, wx - sd * 0.26), max(wx - sd * 0.3, wx - sd * 0.26), wy - ww / 2 - 0.85, wy + ww / 2 + 0.85, ctop, ctop + 0.04, brass, 1.0)
+        for y in (wy - ww / 2 - 0.85, wy + ww / 2 + 0.85):
+            bpy.ops.mesh.primitive_uv_sphere_add(radius=0.04, location=(wx - sd * 0.28, y, ctop + 0.02)); bpy.context.active_object.data.materials.append(brass)
+        for k in range(8): leaf_cluster(ivy, wx - sd * 0.2, wy - ww / 2 - 0.3 + k * (ww + 0.6) / 7, ctop + 0.1, 8, 0.22, 0.5 if k % 2 else 0.15)
+    # cut the wall beams, posts and ribs where they would cross a window
+    for o in [o for o in list(bpy.data.objects) if o.type == 'MESH' and o.name.split('.')[0] in ('rib', 'wall plate', 'wall post')]:
+        bpy.context.view_layer.update()
+        lo = [min((o.matrix_world @ Vector(c))[i] for c in o.bound_box) for i in range(3)]; hi = [max((o.matrix_world @ Vector(c))[i] for c in o.bound_box) for i in range(3)]
+        cs = []
+        for sd, wy, ww, wrh, wz in cutters_all:
+            wx = sd * HW
+            if hi[1] < wy - ww / 2 - 0.1 or lo[1] > wy + ww / 2 + 0.1: continue
+            if (sd > 0 and hi[0] < HW - 0.7) or (sd < 0 and lo[0] > -HW + 0.7): continue
+            cs += arch_cutter_x(wy, ww + 0.1, wrh, wz, wx - 0.8, wx + 0.8)
+        if cs: cut(o, cs)
+    for sd, x in ((1, HW + 14), (-1, -HW - 14)):
+        bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(60, 22, 1), verts=bm.verts)
+        bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
+        view = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'master', 'view.jpg'), 1.25)); uvl = view.data.uv_layers.new()
+        for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 60 + 0.5, co.z / 22 + 0.5)
+        view.rotation_euler = (0, 0, -sd * math.pi / 2); view.location = (x, -8.0, 3.0)
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(30, 13, 1), verts=bm.verts)
     bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X')); bmesh.ops.translate(bm, vec=(acx, AD + 11, 1.7), verts=bm.verts)
     v2 = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'master', 'view.jpg'), 1.25)); uvl = v2.data.uv_layers.new()
@@ -297,10 +316,9 @@ def build():
     model('ClassicConsole_01', (-3.4, -L + 0.35, 0), 0, width=1.5); lamp(-3.8, -L + 0.35, 0.95, brass, shade_m, 0.4, 40); model('brass_vase_02', (-3.0, -L + 0.35, 0.95), 0, height=0.3)
     model('ClassicConsole_01', (3.2, -L + 0.35, 0), 0, width=1.5); candles_cluster(3.2, -L + 0.35, 0.95, wax, 3, 1.0); model('fancy_picture_frame_01', (3.2, -L + 0.06, 1.9), math.pi, width=0.75)
     model('ArmChair_01', (-HW + 0.75, -13.4, 0), math.radians(140), width=0.8); model('side_table_01', (-HW + 0.5, -14.4, 0), 0, height=0.55); lamp(-HW + 0.5, -14.4, 0.55, brass, shade_m, 0.4, 35)
-    model('wooden_bookshelf_worn', (HW - 0.3, -14.2, 0), -math.pi / 2, height=2.1)
     model('treasure_chest', (-HW + 0.55, -6.15, 0), math.pi / 2, width=0.85) if False else None
     # writing desk on the left wall behind the bed
-    model('wooden_table_02', (-HW + 0.45, -5.6, 0), math.pi / 2, width=1.3); model('dining_chair_02', (-HW + 1.15, -5.6, 0), math.pi / 2, height=0.95)
+    model('wooden_table_02', (-HW + 0.45, -5.6, 0), math.pi / 2, width=1.3); model('dining_chair_02', (-HW + 1.15, -5.6, 0), -math.pi / 2, height=0.95)
     lamp(-HW + 0.35, -5.1, 0.8, brass, shade_m, 0.4, 40); model('book_encyclopedia_set_01', (-HW + 0.35, -6.0, 0.8), math.pi / 2, width=0.35); candle((-HW + 0.45, -5.7, 0.8), 0.14, 6)
     model('hanging_picture_frame_02', (-HW + 0.05, -5.6, 1.8), math.pi / 2, width=0.8)
     # a long console behind the sofa with lamps, books and a plant
@@ -313,11 +331,11 @@ def build():
     for k in range(3): model('wicker_basket_02', (1.2 + k * 1.3, SY + 0.32, 0.24), 0, width=0.38)
     # a round tea table with two chairs by the big window
     model('round_wooden_table_01', (2.6, -4.6, 0), 0, width=1.0); model('tea_set_01', (2.6, -4.6, 0.75), 0, width=0.4); candles_cluster(2.85, -4.4, 0.75, wax, 2, 0.7)
-    model('dining_chair_02', (1.8, -4.6, 0), -math.pi / 2, height=0.95); model('dining_chair_02', (3.4, -4.6, 0), math.pi / 2, height=0.95)
+    model('dining_chair_02', (1.8, -4.6, 0), math.pi / 2, height=0.95); model('dining_chair_02', (3.4, -4.6, 0), -math.pi / 2, height=0.95)
     # the front: a round table with a big bouquet, a tall tree in the corner
     model('round_wooden_table_01', (1.8, -13.6, 0), 0, width=1.1); model('ceramic_vase_02', (1.8, -13.6, 0.75), 0, height=0.3); bouquet(1.8, -13.6, 1.03, petals, ivy, 40, 0.3)
     candles_cluster(2.15, -13.85, 0.75, wax, 2, 0.8)
-    model('potted_plant_01', (HW - 0.6, -15.2, 0), 0.8, height=2.3); model('potted_plant_02', (-1.0, -L + 0.5, 0), 0.3, height=0.9)
+    model('potted_plant_01', (4.6, -15.35, 0), 0.8, height=2.3); model('potted_plant_02', (-1.0, -L + 0.5, 0), 0.3, height=0.9)
     blocks('books', BOOKS, bookm)
     w = bpy.data.worlds.new('w'); bpy.context.scene.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = (0.45, 0.5, 0.6, 1); w.node_tree.nodes['Background'].inputs[1].default_value = 0.08
     for (x, y) in ((-3, -3.0), (3, -3.0), (-3, -8.0), (3, -8.0), (-3, -13.0), (3, -13.0)):
