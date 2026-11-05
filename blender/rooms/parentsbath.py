@@ -84,28 +84,31 @@ def build():
         x, y = rnd.uniform(-HW + 0.2, HW - 0.2), rnd.uniform(-L + 0.4, -0.2)
         leaf_cluster(ivy, x, y, H - 0.35, 10, 0.4, rnd.choice((0.2, 0.5, 1.2)))
     # ------------------------------------------------------------ the huge arched window onto the lake
-    cut(back, arch_cutter_y(WX, WW, WRH, WZ, -0.2, 0.8)); box_uv(back, 1.6)
-    g = group((WX, 0.25, WZ)); t = 0.1
-    for x0, x1, z0, z1 in ((-WW / 2, -WW / 2 + t, 0, WRH), (WW / 2 - t, WW / 2, 0, WRH), (-WW / 2, WW / 2, 0, t)): kid(box('win frame', x0, x1, -0.05, 0.05, z0, z1, frame, 1.0), g)
-    bpy.ops.mesh.primitive_torus_add(major_radius=WW / 2 - t / 2, minor_radius=t / 2, major_segments=64, minor_segments=8, location=(0, 0, WRH), rotation=(math.pi / 2, 0, 0))
-    o = bpy.context.active_object; o.data.materials.append(frame); kid(o, g)
-    bm2 = bmesh.new(); bm2.from_mesh(o.data); bmesh.ops.delete(bm2, geom=[v for v in bm2.verts if v.co.y < -t * 0.4], context='VERTS'); bm2.to_mesh(o.data); bm2.free()
-    for x in (-WW / 4, WW / 4): kid(box('mullion', x - 0.035, x + 0.035, -0.04, 0.04, t, WRH + math.sqrt(max(0, (WW / 2) ** 2 - x * x)) - 0.1, frame, 1.0), g)
-    bm = bmesh.new(); vs = [bm.verts.new((-WW / 2 + t, 0, 0.05)), bm.verts.new((WW / 2 - t, 0, 0.05))]
-    for i in range(41): a = i / 40 * math.pi; vs.append(bm.verts.new((math.cos(a) * (WW / 2 - t), 0, WRH + math.sin(a) * (WW / 2 - t))))
-    bm.faces.new(vs); kid(obj_from_bm('glass', bm, glass), g)
-    g2 = group((WX, 0.0, WZ)); stone_arch(g2, WW, WRH, 0.3, beam, 0.24, half=True)
-    box('window sill', WX - WW / 2 - 0.15, WX + WW / 2 + 0.15, -0.45, 0.25, WZ - 0.08, WZ, wall, 1.0)
-    a = light((WX, 1.8, WZ + 1.6), 450, (1.0, 0.92, 0.82), kind='AREA'); a.data.size = WW; a.rotation_euler = (math.radians(-90), 0, 0)
-    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(44, 19, 1), verts=bm.verts)
-    bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X')); bmesh.ops.translate(bm, vec=(WX, 14, 2.6), verts=bm.verts)
+    BAYS = (-2.25, 0.0, 2.25); BW, BRH, BZ = 2.0, 2.5, 0.4      # three tall arched bays filling the whole back wall
+    cut(back, sum((arch_cutter_y(bx, BW, BRH, BZ, -0.2, 0.8) for bx in BAYS), [])); box_uv(back, 1.6)
+    t = 0.09
+    for bx in BAYS:
+        g = group((bx, 0.25, BZ))
+        for x0, x1, z0, z1 in ((-BW / 2, -BW / 2 + t, 0, BRH), (BW / 2 - t, BW / 2, 0, BRH), (-BW / 2, BW / 2, 0, t)): kid(box('win frame', x0, x1, -0.05, 0.05, z0, z1, frame, 1.0), g)
+        bpy.ops.mesh.primitive_torus_add(major_radius=BW / 2 - t / 2, minor_radius=t / 2, major_segments=48, minor_segments=8, location=(0, 0, BRH), rotation=(math.pi / 2, 0, 0))
+        o = bpy.context.active_object; o.data.materials.append(frame); kid(o, g)
+        bm2 = bmesh.new(); bm2.from_mesh(o.data); bmesh.ops.delete(bm2, geom=[v for v in bm2.verts if v.co.y < -t * 0.4], context='VERTS'); bm2.to_mesh(o.data); bm2.free()
+        kid(box('mullion', -0.03, 0.03, -0.04, 0.04, t, BRH + BW / 2 - 0.08, frame, 1.0), g)
+        kid(box('transom', -BW / 2 + t, BW / 2 - t, -0.04, 0.04, BRH - 0.03, BRH + 0.03, frame, 1.0), g)
+        bm = bmesh.new(); vs = [bm.verts.new((-BW / 2 + t, 0, 0.05)), bm.verts.new((BW / 2 - t, 0, 0.05))]
+        for i in range(33): a = i / 32 * math.pi; vs.append(bm.verts.new((math.cos(a) * (BW / 2 - t), 0, BRH + math.sin(a) * (BW / 2 - t))))
+        bm.faces.new(vs); kid(obj_from_bm('glass', bm, glass), g)
+        g2 = group((bx, 0.0, BZ)); stone_arch(g2, BW, BRH, 0.3, beam, 0.18, half=True)
+        a = light((bx, 1.8, BZ + 1.8), 260, (1.0, 0.92, 0.82), kind='AREA'); a.data.size = BW; a.rotation_euler = (math.radians(-90), 0, 0)
+        for k in range(14):
+            a_ = k / 13 * math.pi; r = BW / 2 + 0.25
+            leaf_cluster(ivy, bx + math.cos(a_) * r, -0.1, BZ + BRH + math.sin(a_) * r, 8, 0.22, 0.4 if k % 3 else 0.9)
+    box('window sill', -HW, HW, -0.4, 0.25, BZ - 0.08, BZ, wall, 1.0)
+    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(56, 24, 1), verts=bm.verts)
+    bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X')); bmesh.ops.translate(bm, vec=(0, 14, 3.0), verts=bm.verts)
     view = obj_from_bm('lake view', bm, image_mat('view', A('assets', 'rooms', 'master', 'view.jpg'), 0.9)); uvl = view.data.uv_layers.new()
-    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = ((co.x - WX) / 44 + 0.45, (co.z - 2.6) / 19 + 0.5)
-    for (x, h) in ((WX - 1.2, 0.35), (WX + 0.2, 0.3), (WX + 1.3, 0.38)): model('potted_plant_04', (x, -0.2, WZ), rnd.uniform(0, 6), height=h)
-    for k in range(24):
-        a_ = k / 23 * math.pi; r = WW / 2 + 0.35
-        leaf_cluster(ivy, WX + math.cos(a_) * r, -0.1, WZ + WRH + math.sin(a_) * r, 10, 0.25, 0.4 if k % 3 else 0.9)
-    model('potted_plant_01', (-HW + 0.55, -0.6, 0), 0.5, height=2.0); model('potted_plant_01', (WX + WW / 2 + 0.45, -0.5, 0), 1.6, height=1.5)
+    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 56 + 0.5, (co.z - 3.0) / 24 + 0.5)
+    for (x, h) in ((-2.8, 0.35), (-1.1, 0.3), (0.6, 0.38), (2.6, 0.32)): model('potted_plant_04', (x, -0.2, BZ), rnd.uniform(0, 6), height=h)
     # ------------------------------------------------------------ the copper slipper tub on a round rug
     TX, TY = -1.0, -2.1
     bm = bmesh.new(); bmesh.ops.create_circle(bm, cap_ends=True, segments=96, radius=1.6); uv = bm.loops.layers.uv.new()
@@ -119,11 +122,11 @@ def build():
     for k in range(3): cyl('rolled towel', 0.06, 0.3, (TX + 1.45, TY - 0.42 + k * 0.12, 0.51), (0, math.pi / 2, 0), towel, 16)
     model('potted_plant_02', (TX + 1.4, -0.7, 0), 0.6, height=0.9)
     # a cushioned chair in the front-left corner with a throw, like the image
-    model('ArmChair_01', (-HW + 0.75, -6.45, 0), math.radians(-60), width=0.8)
-    model('potted_plant_01', (-HW + 0.45, -3.55, 0), 2.2, height=1.3)
+    model('ArmChair_01', (1.75, -6.55, 0), math.radians(200), width=0.78)
+    model('potted_plant_01', (-HW + 0.45, -3.65, 0), 2.2, height=1.3)
     # ------------------------------------------------------------ a round cedar hot tub with steps, lit water, candles and a towel bench
     cedar = pbr('oak_wood_planks', 'materials', (0.82, 0.52, 0.3), 0.7)
-    hx, hy, hr = 0.55, -5.0, 0.85
+    hx, hy, hr = -2.55, -6.2, 0.85
     ht = cyl('hot tub', hr, 0.85, (hx, hy, 0.425), (0, 0, 0), cedar, 48); box_uv(ht, 0.6)
     cut(ht, [cyl('c', hr - 0.08, 0.9, (hx, hy, 0.6), (0, 0, 0), cedar, 48)])
     for z in (0.15, 0.72): torus('tub hoop', hr + 0.01, 0.015, (hx, hy, z), (0, 0, 0), iron)
@@ -132,12 +135,12 @@ def build():
         box('stave line', hx + math.cos(a_) * (hr + 0.002) - 0.004, hx + math.cos(a_) * (hr + 0.002) + 0.004, hy + math.sin(a_) * (hr + 0.002) - 0.004, hy + math.sin(a_) * (hr + 0.002) + 0.004, 0.02, 0.84, beam, 1.0)
     cyl('hot tub water', hr - 0.08, 0.02, (hx, hy, 0.7), (0, 0, 0), flat('tub water', (0.25, 0.62, 0.6), 0.02, transmission=0.55), 48)
     light((hx, hy, 0.4), 40, (0.4, 0.9, 1.0), radius=0.2)
-    for k in range(2): box('tub step', hx - 0.35, hx + 0.35, hy - hr - 0.3 - k * 0.0, hy - hr + 0.02, 0.0, 0.22 * (k + 1), cedar, 1.0, 0.01) if k == 0 else box('tub step', hx - 0.35, hx + 0.35, hy - hr - 0.15, hy - hr + 0.02, 0.22, 0.44, cedar, 1.0, 0.01)
-    candles_cluster(hx - hr - 0.25, hy + 0.3, 0.0, wax, 3, 1.0); candles_cluster(hx + hr + 0.25, hy - 0.4, 0.0, wax, 3, 1.0)
+    box('tub step', hx + hr - 0.02, hx + hr + 0.3, hy - 0.35, hy + 0.35, 0.0, 0.22, cedar, 1.0, 0.01); box('tub step', hx + hr - 0.02, hx + hr + 0.15, hy - 0.35, hy + 0.35, 0.22, 0.44, cedar, 1.0, 0.01)
+    candles_cluster(hx + hr + 0.3, hy + 0.65, 0.0, wax, 3, 1.0)
     for a_ in (0.6, 2.4): bpy.ops.mesh.primitive_uv_sphere_add(radius=0.02, location=(hx + math.cos(a_) * (hr - 0.04), hy + math.sin(a_) * (hr - 0.04), 0.87)); candle((hx + math.cos(a_) * (hr - 0.04), hy + math.sin(a_) * (hr - 0.04), 0.85), 0.1, 6)
-    model('painted_wooden_bench', (hx, -6.55, 0), 0, width=1.3)
-    for k in range(3): cyl('rolled towel', 0.065, 0.36, (hx - 0.35 + k * 0.35, -6.55, 0.52), (math.pi / 2, 0, 0), towel, 16)
-    model('potted_plant_02', (hx + 1.3, -6.5, 0), 0.4, height=0.9)
+    model('painted_wooden_bench', (0.9, -6.85, 0), 0, width=1.2)
+    for k in range(3): cyl('rolled towel', 0.065, 0.36, (0.6 + k * 0.3, -6.85, 0.52), (math.pi / 2, 0, 0), towel, 16)
+    model('potted_plant_02', (-1.3, -6.75, 0), 0.4, height=0.85)
     # ------------------------------------------------------------ a makeup table on the left wall: round lit mirror, stool, lamp, brushes and jars
     mx, my = -HW, -4.9
     model('wooden_table_02', (mx + 0.38, my, 0), math.pi / 2, width=1.3)
@@ -186,10 +189,10 @@ def build():
     model('ceramic_vase_02', (RX - 0.3, (VY0 + VY1) / 2 + 0.45, VH), 0, height=0.2)
     box('hanging towel', RX - 0.7, RX - 0.66, VY0 + 0.4, VY0 + 0.75, 0.42, 0.86, towel, 1.0, 0.02)
     # the tall open shelf of lanterns and jars beside the vanity (back-right corner)
-    for z in (0.5, 1.0, 1.5, 2.0, 2.5): shelf(RX - 0.4, RX, -0.4, 0.0, z, beam) if False else box('corner shelf', 1.6, 2.6, -0.42, -0.02, z - 0.03, z, beam, 1.0)
-    for x in (1.6, 2.6): box('corner shelf side', x - 0.03, x + 0.03, -0.42, -0.02, 0.0, 2.8, beam, 1.0)
-    for z in (0.5, 1.5, 2.5): jars_row(1.65, 2.55, -0.2, z, True, 5, jar_glass, fills, brass)
-    for z in (1.0, 2.0): lantern(2.1, -0.22, z, 0.6, None, iron, lglass, 20)
+    for z in (0.5, 1.0, 1.5, 2.0): box('wall shelf', -HW, -HW + 0.36, -2.9, -1.7, z - 0.03, z, beam, 1.0)
+    for y in (-2.9, -1.7): box('wall shelf side', -HW, -HW + 0.36, y - 0.03, y + 0.03, 0.0, 2.3, beam, 1.0)
+    for z in (0.5, 1.5): jars_row(-2.85, -1.75, -HW + 0.18, z, False, 5, jar_glass, fills, brass)
+    for z in (1.0, 2.0): lantern(-HW + 0.2, -2.3, z, 0.6, None, iron, lglass, 20)
     # ------------------------------------------------------------ the toilet in a timber-framed nook at the front right
     box('nook wall', HW - 1.45, HW - 1.3, -6.1, -4.6, 0.0, 2.2, cab, 1.0)
     box('nook lintel', HW - 1.45, HW, -4.7, -4.55, 2.1, 2.25, beam, 1.0)
@@ -206,13 +209,11 @@ def build():
         f = light((0.4, y, H - 0.6), 160, (1.0, 0.75, 0.5), kind='AREA'); f.data.size = 2.5
 
 def walk_rects():
-    R = [(-0.4, -0.05, -6.15, -3.7), (-0.4, 2.0, -6.15, -5.95) if False else (-0.4, 1.55, -6.2, -6.05),
-         (-2.45, -0.4, -6.0, -3.7),                          # in front of the makeup table
-         (1.55, 2.0, -6.2, -3.7),                            # right of the hot tub
-         (-2.45, 2.0, -6.5, -6.15), (-1.0, 0.2, -L + 0.4, -6.15),   # the front, to the door
+    R = [(-1.55, 2.0, -6.4, -3.7),                          # the open middle
+         (-2.75, -1.55, -5.25, -3.7),                       # in front of the makeup table
+         (-0.95, 0.15, -L + 0.4, -6.4),                     # to the door
          (-0.05, HW - 0.8, -3.7, -0.6),                     # beside the tub, in front of the vanity
-         (-HW + 0.6, -2.0, -3.7, -0.6),                     # the left of the tub, to the window
-         (HW - 1.25, HW - 0.25, -6.6, -4.7) if False else (-0.7, -0.1, -L - 0.4, -L + 0.5)]   # the doorway
+         (-3.05, -2.0, -3.7, -0.6)]                         # left of the tub
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 
 def main():
