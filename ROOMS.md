@@ -17,6 +17,7 @@ Each room is rebuilt as a real 3D room from its image, then saved so they can be
 | Baby room | `blender/rooms/nursery.py` (sheepskin: `tools/nursery_textures.py`) | `assets/rooms/nursery/nursery.glb` | [room.html?r=nursery](room.html?r=nursery) | ![](docs/rooms/nursery.png) |
 | Master bedroom | `blender/rooms/bedroom.py` (rug: `tools/bedroom_textures.py`) | `assets/rooms/bedroom/bedroom.glb` | [room.html?r=bedroom](room.html?r=bedroom) | ![](docs/rooms/bedroom.png) |
 | Parents' bathroom | `blender/rooms/parentsbath.py` | `assets/rooms/parentsbath/parentsbath.glb` | [room.html?r=parentsbath](room.html?r=parentsbath) | ![](docs/rooms/parentsbath.png) |
+| Parents' walk-in closet | `blender/rooms/closet.py` (runner: `tools/closet_textures.py`) | `assets/rooms/closet/closet.glb` | [room.html?r=closet](room.html?r=closet) | ![](docs/rooms/closet.png) |
 
 ## Adding the next room
 
