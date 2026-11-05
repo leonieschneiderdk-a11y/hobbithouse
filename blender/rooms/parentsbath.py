@@ -123,7 +123,7 @@ def build():
     model('potted_plant_02', (TX + 1.4, -0.7, 0), 0.6, height=0.9)
     # a cushioned chair in the front-left corner with a throw, like the image
     model('ArmChair_01', (1.75, -6.55, 0), math.radians(200), width=0.78)
-    model('potted_plant_01', (-HW + 0.45, -3.65, 0), 2.2, height=1.3)
+    model('potted_plant_01', (-HW + 0.45, -1.3, 0), 2.2, height=1.3)
     # ------------------------------------------------------------ a round cedar hot tub with steps, lit water, candles and a towel bench
     cedar = pbr('oak_wood_planks', 'materials', (0.82, 0.52, 0.3), 0.7)
     hx, hy, hr = -2.55, -6.2, 0.85
@@ -142,7 +142,7 @@ def build():
     for k in range(3): cyl('rolled towel', 0.065, 0.36, (0.6 + k * 0.3, -6.85, 0.52), (math.pi / 2, 0, 0), towel, 16)
     model('potted_plant_02', (-1.3, -6.75, 0), 0.4, height=0.85)
     # ------------------------------------------------------------ a makeup table on the left wall: round lit mirror, stool, lamp, brushes and jars
-    mx, my = -HW, -4.9
+    mx, my = -HW, -3.75
     model('wooden_table_02', (mx + 0.38, my, 0), math.pi / 2, width=1.3)
     box('makeup drawer', mx + 0.68, mx + 0.7, my - 0.3, my + 0.3, 0.58, 0.7, cab, 1.0, 0.005)
     cyl('makeup mirror', 0.5, 0.02, (mx + 0.03, my, 1.55), (0, math.pi / 2, 0), mirror, 48)
@@ -210,7 +210,7 @@ def build():
 
 def walk_rects():
     R = [(-1.55, 2.0, -6.4, -3.7),                          # the open middle
-         (-2.75, -1.55, -5.25, -3.7),                       # in front of the makeup table
+         (-2.75, -1.55, -5.3, -4.45),                       # between the makeup table and the hot tub
          (-0.95, 0.15, -L + 0.4, -6.4),                     # to the door
          (-0.05, HW - 0.8, -3.7, -0.6),                     # beside the tub, in front of the vanity
          (-3.05, -2.0, -3.7, -0.6)]                         # left of the tub
