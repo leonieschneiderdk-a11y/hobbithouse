@@ -1,8 +1,8 @@
 """Hobbit-house parents' walk-in closet, rebuilt as a real 3D room from the 'Walk-in closet (parents)' image.
 Blender axes: the back wall is at y = 0, the closet runs toward the camera to y = -L. Floor-to-ceiling wooden cabinetry
 with lit cubbies all round (hanging clothes, folded stacks, boxes, shoes), a peaked plank ceiling with beams and an oval
-skylight window full of mountains and vines, a central island with drawers, plants and folded linens, a knit ottoman,
-a dark kilim runner on pale stone, and a small water closet with a toilet behind a timber partition at the front.
+skylight in the middle of the roof, framed in vines, a central island with drawers, plants and folded linens, a knit ottoman,
+a dark kilim runner on pale stone.
 
     python blender/rooms/closet.py --render docs/rooms/closet.png --samples 96 --glb assets/rooms/closet/closet.glb
 """
@@ -21,6 +21,8 @@ W, L, WALL_H, RIDGE = 5.2, 8.0, 2.9, 4.1
 HW = W / 2
 D = 0.5                                        # cabinet depth
 rnd = random.Random(131)
+SKY_Y, SKY_RX, SKY_RY = -3.8, 1.3, 1.0
+CEILS = []
 CAMS = {'main': (0.0, -L + 0.45, 1.55, 89, 0, 14)}
 ITEMS = []                                     # (cx, cy, cz, sx, sy, sz, mat) boxes: clothes, boxes, shoes
 
@@ -136,50 +138,49 @@ def build():
         bm = bmesh.new(); vs = [bm.verts.new(p) for p in ((s * (HW + 0.3), 0.3, WALL_H - 0.08), (0, 0.3, RIDGE), (0, -L - 0.3, RIDGE), (s * (HW + 0.3), -L - 0.3, WALL_H - 0.08))]
         bm.faces.new(vs if s > 0 else vs[::-1]); o = obj_from_bm('ceiling', bm, ceil); box_uv(o, 1.4)
         sl = o.modifiers.new('s', 'SOLIDIFY'); sl.thickness = 0.12; sl.offset = 1
+        bpy.context.view_layer.objects.active = o; bpy.ops.object.modifier_apply(modifier='s'); CEILS.append(o)
+    CEILS_ = None
     for k in range(7):
         y = -0.5 - k * (L - 1.0) / 6
+        if abs(y - SKY_Y) < SKY_RY + 0.2: continue
         for s in (-1, 1):
             a_ = math.atan2(RIDGE - WALL_H, HW); ln = math.hypot(HW, RIDGE - WALL_H)
             b = box('rafter', -ln / 2, ln / 2, y - 0.09, y + 0.09, -0.2, 0.0, beam, 1.2); b.rotation_euler = (0, a_ if s > 0 else -a_, 0); b.location = (s * HW / 2, 0, (WALL_H + RIDGE) / 2 - 0.02)
-        if k > 0: box('collar tie', -HW + 0.5, HW - 0.5, y - 0.08, y + 0.08, WALL_H + 0.35, WALL_H + 0.5, beam, 1.2)
-    box('ridge beam', -0.12, 0.12, -L, 0.0, RIDGE - 0.28, RIDGE - 0.04, beam, 1.2)
+        box('collar tie', -HW + 0.5, HW - 0.5, y - 0.08, y + 0.08, WALL_H + 0.35, WALL_H + 0.5, beam, 1.2)
+    for y0, y1 in ((-L, SKY_Y - SKY_RY), (SKY_Y + SKY_RY, 0.0)): box('ridge beam', -0.12, 0.12, y0, y1, RIDGE - 0.28, RIDGE - 0.04, beam, 1.2)
     for s in (-1, 1): box('wall plate', s * HW - 0.2, s * HW + 0.2, -L, 0.0, WALL_H - 0.2, WALL_H, beam, 1.2)
     # ------------------------------------------------------------ the oval skylight window high in the back wall, with mountains and vines
-    WZ = 3.3
-    oc_ = cyl('c', 1.0, 1.4, (0, 0.2, WZ), (math.pi / 2, 0, 0), plaster, 64); oc_.scale = (1.5, 0.72, 1); bpy.context.view_layer.update(); cut(back, [oc_])
-    oc = [o for o in bpy.data.objects if o.name == 'c']
-    gw = group((0, 0.15, WZ)); t = torus('oval window frame', 0.98, 0.07, (0, 0, 0), (math.pi / 2, 0, 0), frame); kid(t, gw)
-    kid(box('mullion', -0.03, 0.03, -0.03, 0.03, -1.0, 1.0, frame, 1.0), gw); kid(cyl('glass', 0.97, 0.01, (0, 0, 0), (math.pi / 2, 0, 0), glass, 64), gw)
-    gw.scale = (1.5, 1, 0.72)
-    a = light((0, 1.4, WZ), 500, (0.85, 0.92, 1.0), kind='AREA'); a.data.size = 2.0; a.rotation_euler = (math.radians(-90), 0, 0)
-    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(24, 10.4, 1), verts=bm.verts)
-    bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X')); bmesh.ops.translate(bm, vec=(0, 8, 3.6), verts=bm.verts)
+    # the oval skylight in the middle of the roof, framed in vines, with the mountains and sky above
+    for o in CEILS:
+        c = cyl('c', 1.0, 3.0, (0, SKY_Y, RIDGE), (0, 0, 0), ceil, 64); c.scale = (SKY_RX, SKY_RY, 1); bpy.context.view_layer.update(); cut(o, [c])
+    zc = RIDGE - 0.15
+    for z in (zc - 0.12, zc + 0.12):
+        t = torus('skylight frame', 1.0, 0.07, (0, SKY_Y, z), (0, 0, 0), frame); t.scale = (SKY_RX, SKY_RY, 1)
+    box('skylight curb', -SKY_RX, SKY_RX, SKY_Y - 0.035, SKY_Y + 0.035, zc + 0.3, zc + 0.38, frame, 1.0)
+    for x in (-SKY_RX * 0.5, SKY_RX * 0.5): box('skylight bar', x - 0.03, x + 0.03, SKY_Y - SKY_RY * 0.87, SKY_Y + SKY_RY * 0.87, zc + 0.3, zc + 0.36, frame, 1.0)
+    g = cyl('glass', 1.0, 0.01, (0, SKY_Y, zc + 0.4), (0, 0, 0), glass, 64); g.scale = (SKY_RX, SKY_RY, 1)
+    shaft = cyl('skylight shaft', 1.06, 0.55, (0, SKY_Y, zc + 0.15), (0, 0, 0), ceil, 64); shaft.scale = (SKY_RX, SKY_RY, 1)
+    sc_ = cyl('c', 1.0, 0.8, (0, SKY_Y, zc + 0.15), (0, 0, 0), ceil, 64); sc_.scale = (SKY_RX - 0.04, SKY_RY - 0.04, 1); bpy.context.view_layer.update(); cut(shaft, [sc_])
+    a = light((0, SKY_Y, zc + 0.6), 700, (0.85, 0.92, 1.0), kind='AREA'); a.data.shape = 'ELLIPSE'; a.data.size = SKY_RX * 2; a.data.size_y = SKY_RY * 2
+    bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(30, 13, 1), verts=bm.verts)
+    bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
     view = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'kitchen', 'view.jpg'), 1.1)); uvl = view.data.uv_layers.new()
-    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 24 + 0.5, (co.z - 3.6) / 10.4 + 0.5)
-    for k in range(22):
-        a_ = k / 21 * 2 * math.pi; leaf_cluster(ivy, math.cos(a_) * 1.6, -0.12, WZ + math.sin(a_) * 0.8, 8, 0.2, 0.5 if math.sin(a_) > 0 else 0.15)
+    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 30 + 0.5, co.z / 13 + 0.5)
+    view.location = (0, SKY_Y + 9, RIDGE + 5.5); view.rotation_euler = (math.radians(-30), 0, 0)
+    sky = box('sky', -20, 20, -20, 20, RIDGE + 9, RIDGE + 9.1, image_mat('sky', A('assets', 'rooms', 'kitchen', 'view.jpg'), 1.0), 40.0)
+    for k in range(30):
+        a_ = k / 30 * 2 * math.pi; leaf_cluster(ivy, math.cos(a_) * (SKY_RX + 0.15), SKY_Y + math.sin(a_) * (SKY_RY + 0.15), zc - 0.2, 9, 0.22, 0.7 if k % 3 == 0 else 0.25)
     # ------------------------------------------------------------ cabinetry all round
     cabinetry(-HW + 0.05, HW - 0.05, 0.0, -1, True, wood, glow, ['fold', 'hang', 'hang', 'fold'], unit=1.27)       # back wall
     WC_Y = -L + 1.55                                                                                                 # water closet at the front left
     cabinetry(-L + 0.05, -0.55, -HW, 1, False, wood, glow, ['shoe', 'fold', 'hang', 'hang', 'fold', 'box', 'fold', 'shoe'], unit=0.85) if False else None
-    cabinetry(WC_Y + 0.1, -D - 0.05, -HW, 1, False, wood, glow, ['fold', 'hang', 'shoe', 'fold', 'hang', 'box'], unit=0.85)
+    cabinetry(-L + 0.05, -D - 0.05, -HW, 1, False, wood, glow, ['fold', 'hang', 'shoe', 'fold', 'hang', 'box', 'fold', 'hang', 'shoe'], unit=0.82)
     cabinetry(-L + 0.05, -D - 0.05, HW, -1, False, wood, glow, ['shoe', 'fold', 'hang', 'fold', 'box', 'hang', 'fold', 'shoe', 'fold'], unit=0.82)
     blocks('closet contents', ITEMS, CLOTH_HANG + CLOTH_FOLD[4:] + SHOES + BOXES) if False else None
     mats = []
     for it in ITEMS:
         if it[6] not in mats: mats.append(it[6])
     blocks('closet contents', [it[:6] + (mats.index(it[6]),) for it in ITEMS], mats)
-    # ------------------------------------------------------------ the water closet: timber partition with a door opening, toilet inside
-    px = -HW + 1.25
-    box('wc partition', px - 0.06, px + 0.06, -L, WC_Y + 0.1, 0.0, 2.6, wood, 1.0, 0.01)
-    box('wc partition', -HW, px, WC_Y, WC_Y + 0.12, 0.0, 2.6, wood, 1.0, 0.01) if False else None
-    box('wc wall', -HW, px + 0.06, WC_Y + 0.0, WC_Y + 0.12, 0.0, 2.6, wood, 1.0, 0.01)
-    cut(bpy.data.objects[[o.name for o in bpy.data.objects if o.name.startswith('wc partition')][0]], [box('c', px - 0.5, px + 0.5, -L + 0.3, -L + 1.15, 0.0, 2.1, wood)])
-    box('wc door lintel', px - 0.08, px + 0.08, -L + 0.25, -L + 1.2, 2.1, 2.2, beam, 1.0)
-    toilet(-HW + 0.45, WC_Y - 0.6, math.pi / 2, ceramic, seat_wood)
-    box('toilet roll arm', -HW, -HW + 0.12, WC_Y - 1.08, WC_Y - 1.06, 0.68, 0.7, BRASS, 1.0); cyl('toilet roll', 0.055, 0.11, (-HW + 0.1, WC_Y - 1.07, 0.62), (math.pi / 2, 0, 0), CLOTH_HANG[1], 16)
-    light((-HW + 0.6, WC_Y - 0.7, 2.3), 35, (1.0, 0.72, 0.45), radius=0.15)
-    model('potted_plant_04', (px, -L + 0.2, 2.6), 0, height=0.3) if False else None
     # ------------------------------------------------------------ the island with drawers, plants and folded linens; the runner and the ottoman
     IX, IY0, IY1, IH = 0.0, -5.2, -2.4, 0.95
     box('island', IX - 0.55, IX + 0.55, IY0, IY1, 0.1, IH - 0.06, wood, 1.0, 0.01)
@@ -207,7 +208,7 @@ def build():
     for (x, y) in ((-0.4, -6.15), (0.4, -6.15), (-0.4, -5.75), (0.4, -5.75)): cyl('ottoman leg', 0.03, 0.06, (x, y, 0.03), (0, 0, 0), wood, 10)
     # pendant over the island and soft fill
     lt = flat('lamp shade', (0.95, 0.82, 0.6), 0.8, emit=(1.0, 0.75, 0.45), strength=3)
-    for y in (-3.3, -4.6):
+    for y in (-2.4, -5.3):
         cyl('pendant cord', 0.006, RIDGE - 0.3 - 2.55, (0, y, (RIDGE - 0.3 + 2.55) / 2), (0, 0, 0), BRASS, 6)
         bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=False, segments=24, radius1=0.2, radius2=0.06, depth=0.2); obj_from_bm('pendant shade', bm, lt, True).location = (0, y, 2.5)
         light((0, y, 2.38), 55, radius=0.1)
@@ -216,12 +217,12 @@ def build():
         f = light((0, y, WALL_H), 70, (1.0, 0.72, 0.45), kind='AREA'); f.data.size = 2.0
 
 def walk_rects():
-    R = [(-HW + D + 0.3, -0.85, -L + 0.4 + 1.6, -D - 0.35),     # left aisle (past the water closet)
+    R = [(-HW + D + 0.3, -0.85, -L + 0.4, -D - 0.35),           # left aisle
          (0.85, HW - D - 0.3, -L + 0.4, -D - 0.35),             # right aisle
          (-HW + D + 0.3, HW - D - 0.3, -2.25, -D - 0.35),        # behind the island
-         (-0.85 if False else -HW + 1.45, HW - D - 0.3, -L + 0.4, -6.35),   # the front, by the ottoman
+         (-HW + D + 0.3, HW - D - 0.3, -L + 0.4, -6.35),   # the front, by the ottoman
          (-HW + 1.45, 0.85, -5.45, -5.3) if False else (-1.3, -0.85, -6.35, -5.3),
-         (-HW + 0.35, -HW + 1.1, -L + 0.4, WC_Y_W - 0.25)]      # inside the water closet
+         ]
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
 WC_Y_W = -L + 1.55
 
