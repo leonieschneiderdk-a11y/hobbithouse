@@ -165,9 +165,9 @@ def build():
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=1); bmesh.ops.scale(bm, vec=(30, 13, 1), verts=bm.verts)
     bmesh.ops.rotate(bm, verts=bm.verts, matrix=Matrix.Rotation(math.radians(90), 4, 'X'))
     view = obj_from_bm('valley view', bm, image_mat('view', A('assets', 'rooms', 'kitchen', 'view.jpg'), 1.1)); uvl = view.data.uv_layers.new()
-    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 30 + 0.5, co.z / 13 + 0.5)
-    view.location = (0, SKY_Y + 9, RIDGE + 5.5); view.rotation_euler = (math.radians(-30), 0, 0)
-    sky = box('sky', -20, 20, -20, 20, RIDGE + 9, RIDGE + 9.1, image_mat('sky', A('assets', 'rooms', 'kitchen', 'view.jpg'), 1.0), 40.0)
+    for i, l in enumerate(uvl.data): co = view.data.vertices[view.data.loops[i].vertex_index].co; l.uv = (co.x / 30 + 0.5, 0.42 + (co.z / 13 + 0.5) * 0.58)
+    view.location = (0, SKY_Y + 10, RIDGE + 7.0); view.rotation_euler = (math.radians(-35), 0, 0)
+    sky = box('sky', -30, 30, -30, 30, RIDGE + 11, RIDGE + 11.1, flat('sky', (0.45, 0.62, 0.85), 1, emit=(0.45, 0.62, 0.85), strength=1.2), 40.0)
     for k in range(30):
         a_ = k / 30 * 2 * math.pi; leaf_cluster(ivy, math.cos(a_) * (SKY_RX + 0.15), SKY_Y + math.sin(a_) * (SKY_RY + 0.15), zc - 0.2, 9, 0.22, 0.7 if k % 3 == 0 else 0.25)
     # ------------------------------------------------------------ cabinetry all round
