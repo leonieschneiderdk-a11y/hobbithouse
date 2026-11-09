@@ -1,0 +1,128 @@
+{
+ "name": "Father's Office",
+ "glb": "assets/rooms/office/office.glb",
+ "spawn": {
+  "x": -2.45,
+  "z": 3.0,
+  "yaw": -1.5708
+ },
+ "walk": [
+  [
+   -2.5500000000000003,
+   -1.45,
+   0.75,
+   6.199999999999999
+  ],
+  [
+   1.45,
+   2.5500000000000003,
+   0.75,
+   6.199999999999999
+  ],
+  [
+   -1.45,
+   1.45,
+   0.7,
+   1.5
+  ],
+  [
+   -1.45,
+   1.45,
+   4.7,
+   5.3
+  ]
+ ],
+ "probe": false,
+ "tints": {
+  "Armchair_01": [
+   0.22,
+   0.1,
+   0.05
+  ],
+  "clay_plaster": [
+   0.42,
+   0.3,
+   0.2
+  ],
+  "globe map": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rough_wood": [
+   0.32,
+   0.21,
+   0.13
+  ],
+  "rug": [
+   1.0,
+   1.0,
+   1.0
+  ],
+  "rustic_stone_wall": [
+   0.62,
+   0.54,
+   0.46
+  ],
+  "weathered_brown_planks": [
+   0.42,
+   0.29,
+   0.19
+  ],
+  "wood_cabinet_worn_long": [
+   0.4,
+   0.26,
+   0.16
+  ],
+  "wood_floor_worn": [
+   0.55,
+   0.38,
+   0.24
+  ],
+  "wood_table_worn": [
+   0.42,
+   0.28,
+   0.18
+  ]
+ },
+ "floor": "wood_floor_worn",
+ "lights": [
+  {
+   "x": 2.4000000000000004,
+   "y": 1.8,
+   "z": 3.0,
+   "color": "#ffe8d0",
+   "power": 10,
+   "range": 6
+  },
+  {
+   "x": -0.75,
+   "y": 1.45,
+   "z": 3.05,
+   "color": "#ffb877",
+   "power": 7,
+   "range": 4
+  },
+  {
+   "x": 0.0,
+   "y": 2.2,
+   "z": 0.6,
+   "color": "#ffb877",
+   "power": 7,
+   "range": 5
+  },
+  {
+   "x": 0.0,
+   "y": 0.6,
+   "z": 5.6,
+   "color": "#ff8a3a",
+   "power": 9,
+   "range": 5
+  }
+ ],
+ "exposure": 0.85,
+ "version": 1,
+ "wallBoost": 1.0,
+ "maxFlameLights": 6,
+ "flameColor": "#ffb877"
+}

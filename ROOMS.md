@@ -19,6 +19,7 @@ Each room is rebuilt as a real 3D room from its image, then saved so they can be
 | Parents' bathroom | `blender/rooms/parentsbath.py` | `assets/rooms/parentsbath/parentsbath.glb` | [room.html?r=parentsbath](room.html?r=parentsbath) | ![](docs/rooms/parentsbath.png) |
 | Parents' walk-in closet | `blender/rooms/closet.py` (runner: `tools/closet_textures.py`) | `assets/rooms/closet/closet.glb` | [room.html?r=closet](room.html?r=closet) | ![](docs/rooms/closet.png) |
 | Red room | `blender/rooms/redroom.py` (damask and rug: `tools/redroom_textures.py`) | `assets/rooms/redroom/redroom.glb` | [room.html?r=redroom](room.html?r=redroom) | ![](docs/rooms/redroom.png) |
+| Father's office | `blender/rooms/office.py` (mug text: `assets/rooms/office/mug_decal.png`) | `assets/rooms/office/office.glb` | [room.html?r=office](room.html?r=office) | ![](docs/rooms/office.png) |
 
 ## Adding the next room
 
