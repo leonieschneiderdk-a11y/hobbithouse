@@ -170,21 +170,21 @@ def build():
     light((DX - 0.75, DY - 0.05, lb + 0.48), 60, (1.0, 0.72, 0.42), radius=0.08)
     for k in range(4): BOOKS.append((DX - 0.25, DY - 0.35, T + 0.025 + k * 0.045, 0.32, 0.24, 0.042, [1, 7, 3, 2][k]))
     # leather case, laptop, the mug, a plant, papers
-    box('leather case', DX - 0.05, DX + 0.45, DY - 0.15, DY + 0.12, T, T + 0.18, case, 1.0, 0.02); box('case strap', DX + 0.18, DX + 0.22, DY - 0.16, DY + 0.13, T + 0.02, T + 0.19, BRASS, 1.0)
-    lx, ly = DX + 0.75, DY + 0.05
+    box('leather case', DX + 0.5, DX + 0.95, DY - 0.42, DY - 0.12, T, T + 0.18, case, 1.0, 0.02); box('case strap', DX + 0.7, DX + 0.74, DY - 0.43, DY - 0.11, T + 0.02, T + 0.19, BRASS, 1.0)
+    lx, ly = DX, DY + 0.24                                       # the laptop sits in the middle, right in front of the big chair
     box('laptop base', lx - 0.17, lx + 0.17, ly - 0.12, ly + 0.12, T, T + 0.015, alu, 1.0, 0.004)
-    lid = box('laptop lid', -0.17, 0.17, -0.006, 0.006, 0.0, 0.23, alu, 1.0, 0.004); lid.location = (lx, ly + 0.12, T + 0.015); lid.rotation_euler = (math.radians(-18), 0, 0)
-    sc_ = box('laptop screen', -0.155, 0.155, -0.008, -0.006, 0.015, 0.215, screen, 1.0); sc_.location = lid.location; sc_.rotation_euler = lid.rotation_euler
-    box('papers', DX + 0.55, DX + 0.85, DY - 0.45, DY - 0.2, T, T + 0.01, flat('paper', (0.85, 0.82, 0.74), 0.8), 1.0)
-    mx, my = DX + 0.62, DY - 0.42
+    lid = box('laptop lid', -0.17, 0.17, -0.006, 0.006, 0.0, 0.23, alu, 1.0, 0.004); lid.location = (lx, ly - 0.12, T + 0.015); lid.rotation_euler = (math.radians(18), 0, 0)   # screen faces the big chair
+    sc_ = box('laptop screen', -0.155, 0.155, 0.006, 0.008, 0.015, 0.215, screen, 1.0); sc_.location = lid.location; sc_.rotation_euler = lid.rotation_euler
+    box('papers', DX - 0.52, DX - 0.24, DY + 0.04, DY + 0.3, T, T + 0.01, flat('paper', (0.85, 0.82, 0.74), 0.8), 1.0)
+    mx, my = DX + 0.32, DY + 0.38
     mo = cyl('mug', 0.05, 0.11, (mx, my, T + 0.055), (0, 0, 0), mug, 32); bm = bmesh.new(); bm.from_mesh(mo.data)
     bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.normal.z > 0.9], context='FACES'); bm.to_mesh(mo.data); bm.free()
     mod = mo.modifiers.new('wall', 'SOLIDIFY'); mod.thickness = 0.005
-    torus('mug handle', 0.035, 0.009, (mx + 0.065, my, T + 0.06), (math.pi / 2, 0, 0), mug)
+    torus('mug handle', 0.035, 0.009, (mx - 0.065, my, T + 0.06), (math.pi / 2, 0, 0), mug)
     cyl('coffee', 0.045, 0.005, (mx, my, T + 0.092), (0, 0, 0), flat('coffee', (0.06, 0.03, 0.015), 0.1), 32)
     bm = bmesh.new(); uvl = bm.loops.layers.uv.new(); n = 12; vs = []
     for i in range(n + 1):
-        a = math.pi + 0.35 + i / n * (math.pi - 0.7)                       # the front half of the mug, facing the camera (-y)
+        a = 0.35 + i / n * (math.pi - 0.7)                                 # the half of the mug facing the big chair (+y), so dad reads it
         for z in (T + 0.004, T + 0.106): vs.append(bm.verts.new((mx + math.cos(a) * 0.0505, my + math.sin(a) * 0.0505, z)))
     for i in range(n):
         f = bm.faces.new((vs[2 * i], vs[2 * i + 2], vs[2 * i + 3], vs[2 * i + 1]))
@@ -193,7 +193,7 @@ def build():
     model('planter_pot_clay', (DX + 0.95, DY + 0.4, T), 0, height=0.14); leaf_cluster(ivy, DX + 0.95, DY + 0.4, T + 0.2, 12, 0.12, 0.05, (0.08, 0.14))
     bouquet_mat = [flat('petal pink', (0.9, 0.45, 0.55), 0.6), flat('petal white', (0.95, 0.92, 0.88), 0.6)]
     from kitchen import bouquet; bouquet(DX + 0.95, DY + 0.4, T + 0.15, bouquet_mat, ivy, 8, 0.1)
-    BOOKS.append((DX + 0.3, DY + 0.4, T + 0.02, 0.2, 0.14, 0.035, 2))
+    BOOKS.append((DX - 0.3, DY + 0.42, T + 0.02, 0.2, 0.14, 0.035, 2))
     # tufted leather chesterfield chair behind the desk
     CX, CY = DX, DY + 1.0
     g = group((CX, CY, 0), 0.0)
@@ -241,6 +241,7 @@ def build():
     model('standing_picture_frame_01', (-0.75, FW + 0.75, 1.44), math.pi, height=0.25)
     from spa import candles_cluster; candles_cluster(-1.1, FW + 0.75, 1.44, flat('wax', (0.92, 0.88, 0.78), 0.45), 3, 0.8)
     model('fancy_picture_frame_01', (0, FW + 0.52, 2.1), math.pi, width=0.9)
+    for a0, a1 in ((-HW + 0.3, -1.3), (1.3, HW - 0.3)): bookcase_run(a0, a1, FW, 1, True, wood, top=2.7)   # shelves either side of the chimney
     bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=0.5); uvl = bm.loops.layers.uv.new()
     for f in bm.faces:
         for l in f.loops: l[uvl].uv = (l.vert.co.x + 0.5, l.vert.co.y + 0.5)
@@ -256,8 +257,8 @@ def build():
         f = light((0, y, H - 0.4), 60, (1.0, 0.72, 0.45), kind='AREA'); f.data.size = 2.5
 
 def walk_rects():
-    R = [(-HW + 0.65, -1.45, -L + 0.4, -0.75),               # by the door on the left, from the fireplace corner to the books
-         (1.45, HW - 0.65, -L + 0.4, -0.75),                  # the right side, along the window seat
+    R = [(-HW + 0.65, -1.45, -L + 0.75, -0.75),               # by the door on the left, from the fireplace corner to the books
+         (1.45, HW - 0.65, -L + 0.75, -0.75),                  # the right side, along the window seat
          (-1.45, 1.45, -1.5, -0.7),                           # between the big chair and the bookcase
          (-1.45, 1.45, -5.3, -4.7)]                           # between the visitor's chairs and the hearth
     return [[x0, x1, -y1, -y0] for x0, x1, y0, y1 in R]
